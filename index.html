@@ -140,6 +140,27 @@ iframe {
   .market-change { font-size: 12px; font-weight: 600; margin-top: 2px; }
   .font-up { color: #4ade80; }
   .font-down { color: #f87171; }
+  .stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .stock-item {
+    background: #0b1118;
+    border: 1px solid #202c3a;
+    border-radius: 10px;
+    padding: 6px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stock-code { font-size: 11px; font-weight: 700; color: #94a3b8; }
+  .stock-price { font-size: 14px; font-weight: 700; }
+  .stock-chg { font-size: 10px; font-weight: 600; }
+  .font-up { color: #4ade80; }
+  .font-down { color: #f87171; }
 </style>
 </head>
 <body>
@@ -194,33 +215,45 @@ iframe {
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Thị trường</span>
       <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;"></span>
     </div>
-    <div class="market-list">
-      <!-- VN-INDEX -->
-      <div class="market-item">
-        <div>
-          <div class="market-name">VN-INDEX</div>
-          <div class="market-sub">Sàn HOSE</div>
+
+    <!-- Cụm VN-INDEX kèm biểu đồ theo ngày -->
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 4px;">
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="font-weight:700;font-size:14px;color:var(--text);">VN-INDEX</span>
+          <span id="vnindexVal" style="font-size:20px;font-weight:700;">1,268.40</span>
         </div>
-        <div style="text-align:right">
-          <div id="vnindexVal" class="market-val font-up">--</div>
-          <div id="vnindexChange" class="market-change font-up">--</div>
-        </div>
+        <span id="vnindexChange" class="font-up" style="font-size:13px;font-weight:600;">+5.40 (+0.43%)</span>
       </div>
-      <!-- VÀNG NHẪN CHIẾN MINH -->
-      <div class="market-item">
-        <div>
-          <div class="market-name">Vàng nhẫn 999.9</div>
-          <div class="market-sub">Chiến Minh (Hà Nội)</div>
-        </div>
-        <div style="text-align:right">
-          <div id="goldPrice" class="market-val" style="color:var(--warn);">-- / --</div>
-          <div class="market-sub">Mua vào - Bán ra (tr/chỉ)</div>
-        </div>
+      <div id="vnindexChart" style="width:100%;height:75px;"></div>
+    </div>
+
+    <!-- Hàng 4 mã cổ phiếu: HSG, VND, VCK, SHB -->
+    <div class="stocks-grid">
+      <div class="stock-item">
+        <span class="stock-code">HSG</span>
+        <span id="price-HSG" class="stock-price font-up">22.35</span>
+        <span id="change-HSG" class="stock-chg font-up">+2.05%</span>
+      </div>
+      <div class="stock-item">
+        <span class="stock-code">VND</span>
+        <span id="price-VND" class="stock-price font-up">15.55</span>
+        <span id="change-VND" class="stock-chg font-up">+1.63%</span>
+      </div>
+      <div class="stock-item">
+        <span class="stock-code">VCK</span>
+        <span id="price-VCK" class="stock-price font-up">20.15</span>
+        <span id="change-VCK" class="stock-chg font-up">+1.77%</span>
+      </div>
+      <div class="stock-item">
+        <span class="stock-code">SHB</span>
+        <span id="price-SHB" class="stock-price font-up">11.45</span>
+        <span id="change-SHB" class="stock-chg font-up">+1.33%</span>
       </div>
     </div>
   </section>
@@ -511,7 +544,111 @@ async function loadVNIndex() {
   }
   if (tEl) tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
 }
+/* ===== Dữ liệu VN-INDEX & 4 mã theo dõi ===== */
+const VNINDEX_DATA = {
+  dates: ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"],
+  prices: [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1268.4]
+};
 
+// Cập nhật giá & tỷ lệ tăng giảm gần nhất của các mã tại đây
+const STOCKS_LATEST = {
+  HSG: { price: 22.35, pct: "+2.05%", isUp: true },
+  VND: { price: 15.55, pct: "+1.63%", isUp: true },
+  VCK: { price: 20.15, pct: "+1.77%", isUp: true },
+  SHB: { price: 11.45, pct: "+1.33%", isUp: true }
+};
+
+function renderStockList() {
+  Object.keys(STOCKS_LATEST).forEach(code => {
+    const item = STOCKS_LATEST[code];
+    const pEl = document.getElementById(`price-${code}`);
+    const cEl = document.getElementById(`change-${code}`);
+    if (pEl && cEl) {
+      pEl.textContent = item.price.toFixed(2);
+      pEl.className = item.isUp ? "stock-price font-up" : "stock-price font-down";
+      cEl.textContent = item.pct;
+      cEl.className = item.isUp ? "stock-chg font-up" : "stock-chg font-down";
+    }
+  });
+}
+
+function drawVNIndexChart() {
+  const prices = VNINDEX_DATA.prices;
+  const dates = VNINDEX_DATA.dates;
+  const n = prices.length;
+  const latest = prices[n - 1];
+  const prev = prices[n - 2];
+  const diff = latest - prev;
+  const pct = (diff / prev) * 100;
+  const isUp = diff >= 0;
+
+  const vEl = document.getElementById("vnindexVal");
+  const cEl = document.getElementById("vnindexChange");
+  const tEl = document.getElementById("marketTime");
+
+  if (vEl) {
+    vEl.textContent = latest.toLocaleString("vi-VN", { minimumFractionDigits: 2 });
+    vEl.className = isUp ? "font-up" : "font-down";
+  }
+  if (cEl) {
+    cEl.textContent = `${isUp ? "+" : ""}${diff.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
+    cEl.className = isUp ? "font-up" : "font-down";
+  }
+  if (tEl) {
+    tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  // Tọa độ vẽ đường cong SVG
+  const width = 340, height = 75;
+  const padL = 6, padR = 6, padT = 8, padB = 16;
+  const chartW = width - padL - padR;
+  const chartH = height - padT - padB;
+
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  const padY = (maxP - minP) * 0.15 || 1;
+  const yMin = minP - padY, yMax = maxP + padY;
+
+  const coords = prices.map((p, i) => {
+    const x = padL + (i / (n - 1)) * chartW;
+    const y = padT + chartH - ((p - yMin) / (yMax - yMin)) * chartH;
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+
+  let linePath = `M ${coords[0][0]} ${coords[0][1]}`;
+  for (let i = 1; i < coords.length; i++) linePath += ` L ${coords[i][0]} ${coords[i][1]}`;
+  const areaPath = `${linePath} L ${coords[n - 1][0]} ${height - padB} L ${coords[0][0]} ${height - padB} Z`;
+  const strokeColor = isUp ? "#4ade80" : "#f87171";
+
+  const labels = `
+    <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="start">${dates[0]}</text>
+    <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
+    <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="end">${dates[n-1]}</text>
+  `;
+
+  const svgHtml = `
+    <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow:visible">
+      <defs>
+        <linearGradient id="vnindexGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
+        </linearGradient>
+      </defs>
+      <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
+      <path d="${areaPath}" fill="url(#vnindexGrad)" />
+      <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="3.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
+      ${labels}
+    </svg>
+  `;
+
+  const box = document.getElementById("vnindexChart");
+  if (box) box.innerHTML = svgHtml;
+}
+
+// Khởi chạy vẽ biểu đồ & nạp giá 4 mã
+drawVNIndexChart();
+renderStockList();
 // Khởi chạy
 loadVNIndex();
 loadChienMinhGold();
