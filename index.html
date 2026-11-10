@@ -646,50 +646,118 @@ function drawVNIndexChart() {
   if (box) box.innerHTML = svgHtml;
 }
 
-// Khởi chạy vẽ biểu đồ & nạp giá 4 mã
-drawVNIndexChart();
-renderStockList();
-// Khởi chạy
-loadVNIndex();
-loadChienMinhGold();
-setInterval(loadVNIndex, 60000);         // 1 phút nạp lại chứng khoán
-setInterval(loadChienMinhGold, 10 * 60000); // 10 phút cào lại giá vàng Chiến Minh
-
-async function loadVNIndex() {
-  const vEl = document.getElementById("vnindexVal");
-  const cEl = document.getElementById("vnindexChange");
+/* ===== Tự động cập nhật VN-INDEX & Cổ phiếu từ Bảng điện ===== */
+async function fetchRealMarketData() {
   const tEl = document.getElementById("marketTime");
-  if (!vEl) return;
+  if (tEl) tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
 
+  // 1. Kéo điểm số VN-INDEX
   try {
-    // Kéo dữ liệu snapshot VN-Index
     const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    const idx = data.dataIndex; // Thông tin chỉ số sàn
-    const current = idx.indexValue;
-    const change = idx.change;
-    const pct = idx.changePercent;
+    if (res.ok) {
+      const json = await res.json();
+      const idx = json.dataIndex;
+      const cur = parseFloat(idx.indexValue);
+      const diff = parseFloat(idx.change);
+      const pct = parseFloat(idx.changePercent);
+      const isUp = diff >= 0;
 
-    vEl.textContent = Number(current).toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const isUp = change >= 0;
-    cEl.textContent = `${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
-    cEl.className = isUp ? "market-change font-up" : "market-change font-down";
-    vEl.className = isUp ? "market-val font-up" : "market-val font-down";
+      // Cập nhật số liệu hiển thị
+      const vEl = document.getElementById("vnindexVal");
+      const cEl = document.getElementById("vnindexChange");
+      if (vEl && cEl) {
+        vEl.textContent = cur.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        vEl.className = isUp ? "font-up" : "font-down";
+        cEl.textContent = `${isUp ? "+" : ""}${diff.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
+        cEl.className = isUp ? "font-up" : "font-down";
+      }
+
+      // Đẩy điểm số hôm nay vào điểm cuối biểu đồ và vẽ lại
+      VNINDEX_DATA.prices[VNINDEX_DATA.prices.length - 1] = cur;
+      renderChartOnly();
+    }
   } catch (e) {
-    // Dự phòng hiển thị nếu mạng chậm hoặc ngoài giờ giao dịch
-    vEl.textContent = "1,258.40";
-    cEl.textContent = "+5.12 (+0.41%)";
+    renderChartOnly();
   }
 
-  if (tEl) {
-    tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  // 2. Kéo giá khớp lệnh thật của các mã (HSG, VND, SHB...)
+  try {
+    const stockCodes = ["HSG", "VND", "SHB"];
+    const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:${stockCodes.join(",")}&size=${stockCodes.length}`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      data.data.forEach(item => {
+        const code = item.code;
+        const price = item.close / 1000; // Đổi về đơn vị nghìn đồng
+        const pct = item.changePercent;
+        const isUp = pct >= 0;
+
+        const pEl = document.getElementById(`price-${code}`);
+        const cEl = document.getElementById(`change-${code}`);
+        if (pEl && cEl) {
+          pEl.textContent = price.toFixed(2);
+          pEl.className = isUp ? "stock-price font-up" : "stock-price font-down";
+          cEl.textContent = `${isUp ? "+" : ""}${pct.toFixed(2)}%`;
+          cEl.className = isUp ? "stock-chg font-up" : "stock-chg font-down";
+        }
+      });
+    }
+  } catch (e) {
+    // Nếu API ngoài giờ chặn CORS thì giữ dữ liệu mặc định
   }
 }
 
-renderGold();
-loadVNIndex();
-setInterval(loadVNIndex, 60000); // 1 phút cập nhật điểm số một lần
-</script>
-</body>
-</html>
+function renderChartOnly() {
+  const prices = VNINDEX_DATA.prices;
+  const dates = VNINDEX_DATA.dates;
+  const n = prices.length;
+  const latest = prices[n - 1];
+  const isUp = latest >= prices[n - 2];
+
+  const width = 360, height = 105;
+  const padL = 6, padR = 6, padT = 8, padB = 22;
+  const chartW = width - padL - padR, chartH = height - padT - padB;
+  const minP = Math.min(...prices), maxP = Math.max(...prices);
+  const padY = (maxP - minP) * 0.15 || 1;
+  const yMin = minP - padY, yMax = maxP + padY;
+
+  const coords = prices.map((p, i) => {
+    const x = padL + (i / (n - 1)) * chartW;
+    const y = padT + chartH - ((p - yMin) / (yMax - yMin)) * chartH;
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+
+  let linePath = `M ${coords[0][0]} ${coords[0][1]}`;
+  for (let i = 1; i < coords.length; i++) linePath += ` L ${coords[i][0]} ${coords[i][1]}`;
+  const areaPath = `${linePath} L ${coords[n - 1][0]} ${height - padB} L ${coords[0][0]} ${height - padB} Z`;
+  const strokeColor = isUp ? "#4ade80" : "#f87171";
+
+  const labels = `
+    <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="start">${dates[0]}</text>
+    <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
+    <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="end">${dates[n-1]}</text>
+  `;
+
+  const box = document.getElementById("vnindexChart");
+  if (box) {
+    box.innerHTML = `
+      <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow:visible">
+        <defs>
+          <linearGradient id="vnGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.32"/>
+            <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
+          </linearGradient>
+        </defs>
+        <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
+        <path d="${areaPath}" fill="url(#vnGrad)" />
+        <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="4.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
+        ${labels}
+      </svg>
+    `;
+  }
+}
+
+// Khởi chạy ngay và lặp lại mỗi 60 giây
+fetchRealMarketData();
+setInterval(fetchRealMarketData, 60000);
