@@ -105,8 +105,8 @@
 .photo-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Đổi cover thành contain */
-    border-radius: 14px;
+    object-fit: cover;
+    object-position: top center; /* Luôn giữ trọn phần đầu/mặt, chỉ xén phần dưới áo */
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
   }
@@ -154,13 +154,10 @@
     </div>
   </section>
 
-  <section class="card">
-    <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
-      <span>Khoảnh khắc</span>
-      <span id="photoCounter" style="font-size:13px;color:var(--muted);font-weight:normal;"></span>
-    </div>
-    <div class="photo-wrap">
-      <img id="photoSlide" src="" alt="Khung ảnh" />
+<section class="card" style="padding:0;position:relative;overflow:hidden;">
+    <div id="photoCounter" style="position:absolute;top:12px;right:16px;font-size:12px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
+    <div class="photo-wrap" style="height:100%;border:none;border-radius:22px;">
+      <img id="photoSlide" src="" alt="Khung ảnh" style="border-radius:22px;" />
     </div>
   </section>
 
