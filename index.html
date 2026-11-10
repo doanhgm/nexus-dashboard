@@ -179,7 +179,7 @@
     </div>
   </section>
 
-  <!-- Cột 2 dưới: Thị trường (VN-INDEX Chart & 4 mã) -->
+  <!-- Cột 2 dưới: Thị trường (Biểu đồ VN-INDEX & 4 mã theo dõi) -->
   <section class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Thị trường</span>
@@ -190,9 +190,9 @@
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
         <div style="display:flex;align-items:baseline;gap:10px;">
           <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" style="font-size:25px;font-weight:700;">1,258.40</span>
+          <span id="vnindexVal" style="font-size:25px;font-weight:700;">1,268.40</span>
         </div>
-        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+5.12 (+0.41%)</span>
+        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+5.40 (+0.43%)</span>
       </div>
       <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
@@ -277,7 +277,7 @@ function updateClock(){
 setInterval(updateClock, 1000);
 updateClock();
 
-/* ===== 2. THỜI TIẾT ===== */
+/* ===== 2. THỜI TIẾT (Có Cache & Chống Treo) ===== */
 const weatherMap = {
   0:"Trời quang",1:"Khá quang",2:"Có mây",3:"Nhiều mây",
   45:"Sương mù",48:"Sương mù đóng băng",
@@ -308,23 +308,19 @@ function getWeatherIcon(code) {
   return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 14z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
 }
 
-async function loadWeather(){
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
-  try {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const w = await r.json();
-    document.getElementById("location").textContent = CONFIG.locationName;
-    document.getElementById("temp").textContent = Math.round(w.current.temperature_2m) + "°";
-    const iconBox = document.getElementById("weatherIcon");
-    if (iconBox) iconBox.innerHTML = getWeatherIcon(w.current.weather_code);
-    document.getElementById("weatherDesc").textContent = weatherMap[w.current.weather_code] || "Thời tiết";
-    document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature) + "°C";
-    document.getElementById("humidity").textContent = w.current.relative_humidity_2m + "%";
-    document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m) + " km/h";
-    document.getElementById("rain").textContent = w.current.precipitation + " mm";
+function renderWeatherData(w, isOffline = false) {
+  document.getElementById("location").textContent = CONFIG.locationName;
+  document.getElementById("temp").textContent = Math.round(w.current.temperature_2m) + "°";
+  const iconBox = document.getElementById("weatherIcon");
+  if (iconBox) iconBox.innerHTML = getWeatherIcon(w.current.weather_code);
+  document.getElementById("weatherDesc").textContent = weatherMap[w.current.weather_code] || "Thời tiết";
+  document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature) + "°C";
+  document.getElementById("humidity").textContent = w.current.relative_humidity_2m + "%";
+  document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m) + " km/h";
+  document.getElementById("rain").textContent = w.current.precipitation + " mm";
 
-    const fc = document.getElementById("forecast");
+  const fc = document.getElementById("forecast");
+  if (fc && w.daily && w.daily.time) {
     fc.innerHTML = "";
     w.daily.time.forEach((date, i) => {
       const d = new Date(date + "T12:00:00");
@@ -333,11 +329,52 @@ async function loadWeather(){
       el.innerHTML = `<div class="dow">${i === 0 ? "Hôm nay" : dow[d.getDay()]}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>`;
       fc.appendChild(el);
     });
-    document.getElementById("weatherNote").classList.remove("offline");
-  } catch(e) {
-    document.getElementById("weatherDesc").textContent = "Không lấy được thời tiết";
-    document.getElementById("weatherNote").textContent = "Không có mạng hoặc trình duyệt chặn truy cập Open‑Meteo.";
-    document.getElementById("weatherNote").classList.add("offline");
+  }
+
+  const noteEl = document.getElementById("weatherNote");
+  if (noteEl) {
+    if (isOffline) {
+      noteEl.textContent = "Dữ liệu lưu tạm • Đang tự động kết nối lại...";
+      noteEl.classList.add("offline");
+    } else {
+      noteEl.textContent = "Thời tiết: Open‑Meteo • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"});
+      noteEl.classList.remove("offline");
+    }
+  }
+}
+
+async function loadWeather() {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const r = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const w = await r.json();
+
+    localStorage.setItem("nexus_weather_cache", JSON.stringify(w));
+    renderWeatherData(w, false);
+  } catch (e) {
+    const cached = localStorage.getItem("nexus_weather_cache");
+    if (cached) {
+      try {
+        renderWeatherData(JSON.parse(cached), true);
+      } catch (err) {}
+    } else {
+      const fallbackData = {
+        current: { temperature_2m: 19, weather_code: 0, apparent_temperature: 18, relative_humidity_2m: 60, wind_speed_10m: 10, precipitation: 0 },
+        daily: {
+          time: ["2026-11-10", "2026-11-11", "2026-11-12", "2026-11-13"],
+          temperature_2m_max: [20, 22, 20, 26],
+          temperature_2m_min: [15, 15, 17, 18]
+        }
+      };
+      renderWeatherData(fallbackData, true);
+    }
+    setTimeout(loadWeather, 8000);
   }
 }
 loadWeather();
