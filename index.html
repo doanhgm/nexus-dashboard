@@ -6,21 +6,24 @@
 <meta name="theme-color" content="#0b0f14">
 <title>Nexus 7 Dashboard</title>
 <style>
-  :root{
-    --bg:#0b0f14;
-    --panel:#121923;
-    --panel2:#0f151e;
-    --text:#f5f7fa;
-    --muted:#9aa6b2;
-    --line:#253041;
-    --accent:#7dd3fc;
-    --good:#86efac;
-    --warn:#fde68a;
+  :root {
+    --bg: #0b0f14;
+    --panel: #121923;
+    --panel2: #0f151e;
+    --text: #f5f7fa;
+    --muted: #9aa6b2;
+    --line: #253041;
+    --accent: #7dd3fc;
+    --good: #86efac;
+    --warn: #fde68a;
   }
-  *{box-sizing:border-box}
-  html,body{width:100%;height:100%;margin:0;background:var(--bg);color:var(--text);
-    font-family:Arial,Helvetica,sans-serif;overflow:hidden}
-  body{padding:18px}
+  * { box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%; margin: 0;
+    background: var(--bg); color: var(--text);
+    font-family: Arial, Helvetica, sans-serif; overflow: hidden;
+  }
+  body { padding: 18px; }
   .grid {
     display: grid;
     grid-template-columns: 1fr 1.3fr 1fr;
@@ -28,143 +31,104 @@
     gap: 14px;
     height: 100%;
   }
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--panel2));
-    border:1px solid var(--line);
-    border-radius:22px;
-    padding:22px;
-    min-width:0;
-    overflow:hidden;
+  .card {
+    background: linear-gradient(180deg, var(--panel), var(--panel2));
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px;
+    min-width: 0;
+    overflow: hidden;
   }
-  .hero{grid-row:1 / span 2;display:flex;flex-direction:column;justify-content:space-between}
-  .clock{font-size:84px;line-height:.95;font-weight:700;letter-spacing:-4px}
-  .seconds{font-size:28px;color:var(--muted);letter-spacing:0}
-  .date{font-size:24px;margin-top:12px;color:#d7dee8}
+  .hero {
+    grid-row: 1 / span 2;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .clock { font-size: 84px; line-height: .95; font-weight: 700; letter-spacing: -4px; }
+  .seconds { font-size: 28px; color: var(--muted); letter-spacing: 0; }
+  .date { font-size: 24px; margin-top: 12px; color: #d7dee8; }
+  
   .weather-main {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-top: 26px;
-    padding-right: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; margin-top: 26px; padding-right: 8px;
   }
-  .weather-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-.weather-icon svg {
-    width: 105px;
-    height: 105px;
+  .weather-icon { display: flex; align-items: center; justify-content: center; }
+  .weather-icon svg {
+    width: 105px; height: 105px;
     filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6));
     margin-right: 6px;
   }
-  .temp{font-size:62px;font-weight:700;line-height:1}
-  .weather-desc{font-size:22px;color:#dce5ef;padding-bottom:8px}
-  .meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
-  .meta div{background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px}
-  .meta b{display:block;font-size:18px;margin-top:3px}
-  .label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-  .title{font-size:18px;font-weight:700;margin-bottom:14px}
-  .forecast{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-  .day{padding:10px 6px;background:#0b1118;border:1px solid #202c3a;border-radius:14px;text-align:center}
-  .day .dow{font-size:13px;color:var(--muted)}
-  .day .t{font-size:17px;font-weight:700;margin-top:6px}
-.calendar-wrap {
+  .temp { font-size: 62px; font-weight: 700; line-height: 1; }
+  .weather-desc { font-size: 22px; color: #dce5ef; padding-bottom: 8px; }
+  
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 18px; }
+  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 14px; padding: 12px; }
+  .meta b { display: block; font-size: 18px; margin-top: 3px; }
+  .label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  
+  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+  .day { padding: 10px 6px; background: #0b1118; border: 1px solid #202c3a; border-radius: 14px; text-align: center; }
+  .day .dow { font-size: 13px; color: var(--muted); }
+  .day .t { font-size: 17px; font-weight: 700; margin-top: 6px; }
+
+  .calendar-wrap {
     height: calc(100% - 34px);
     border-radius: 14px;
     overflow: hidden;
     background: #0b1118;
     border: 1px solid #202c3a;
   }
-iframe {
-    border: 0;
-    width: 100%;
-    height: 100%;
+  iframe {
+    border: 0; width: 100%; height: 100%;
     background: transparent;
     filter: invert(1) hue-rotate(180deg) brightness(1.25) contrast(1.4);
     mix-blend-mode: screen;
   }
-  .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;color:var(--muted)}
-  .empty strong{color:var(--text);margin-bottom:8px}
-  .links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .link{
-    display:flex;align-items:center;justify-content:center;text-align:center;
-    min-height:66px;padding:10px;border-radius:14px;
-    text-decoration:none;color:var(--text);background:#0b1118;border:1px solid #202c3a;
-    font-weight:700;font-size:17px;
+  .empty {
+    height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 18px; color: var(--muted);
   }
-  .link:active{transform:scale(.98)}
-  .status-list{display:grid;gap:10px}
-  .status{
-    display:flex;align-items:center;justify-content:space-between;
-    background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px 14px
+
+  .photo-wrap {
+    height: 100%; border-radius: 22px; overflow: hidden;
+    background: #0b1118; display: flex; align-items: center; justify-content: center;
   }
-  .status-name{font-weight:700}
-  .status-value{color:var(--good);font-weight:700}
-  .footer{font-size:12px;color:#6f7c89;margin-top:14px}
-  .offline{color:var(--warn)}
-  @media (orientation:portrait){
-    body{overflow:auto}
-    .grid{grid-template-columns:1fr;grid-template-rows:auto;height:auto}
-    .hero{grid-row:auto;min-height:620px}
-    .card{min-height:420px}
-  }
-.photo-wrap {
-    height: calc(100% - 34px);
-    border-radius: 14px;
-    overflow: hidden;
-    background: #0b1118;
-    border: 1px solid #202c3a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-.photo-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top center; /* Luôn giữ trọn phần đầu/mặt, chỉ xén phần dưới áo */
-    opacity: 0;
+  .photo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+    border-radius: 22px; opacity: 0;
     transition: opacity 0.8s ease-in-out;
   }
-  .market-list { display: flex; flex-direction: column; gap: 10px; }
-  .market-item {
-    display: flex; align-items: center; justify-content: space-between;
-    background: #0b1118; border: 1px solid #202c3a; border-radius: 14px;
-    padding: 12px 14px;
-  }
-  .market-name { font-weight: 700; font-size: 15px; color: var(--text); }
-  .market-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .market-val { font-weight: 700; font-size: 16px; }
-  .market-change { font-size: 12px; font-weight: 600; margin-top: 2px; }
-  .font-up { color: #4ade80; }
-  .font-down { color: #f87171; }
+
   .stocks-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 6px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-top: 6px;
   }
   .stock-item {
-    background: #0b1118;
-    border: 1px solid #202c3a;
-    border-radius: 12px;
-    padding: 8px 4px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+    background: #0b1118; border: 1px solid #202c3a; border-radius: 12px;
+    padding: 8px 4px; text-align: center; display: flex;
+    flex-direction: column; gap: 3px;
   }
   .stock-code { font-size: 13px; font-weight: 700; color: #94a3b8; }
-  .stock-price { font-size: 18px; font-weight: 700; }  /* Giá to từ 14px lên 18px */
-  .stock-chg { font-size: 12px; font-weight: 600; }    /* % tăng giảm to từ 10px lên 12px */
+  .stock-price { font-size: 18px; font-weight: 700; }
+  .stock-chg { font-size: 12px; font-weight: 600; }
   .font-up { color: #4ade80; }
   .font-down { color: #f87171; }
+  .footer { font-size: 12px; color: #6f7c89; margin-top: 14px; }
+  .offline { color: var(--warn); }
+
+  @media (orientation: portrait) {
+    body { overflow: auto; }
+    .grid { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
+    .hero { grid-row: auto; min-height: 620px; }
+    .card { min-height: 420px; }
+  }
 </style>
 </head>
 <body>
 <div class="grid">
+  <!-- Cột 1: Hero (Đồng hồ + Thời tiết) -->
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
@@ -197,31 +161,31 @@ iframe {
     <div id="weatherNote" class="footer">Thời tiết: Open‑Meteo • tự cập nhật mỗi 15 phút</div>
   </section>
 
+  <!-- Cột 2 trên: Google Calendar -->
   <section class="card">
     <div class="title">Lịch</div>
     <div id="calendarWrap" class="calendar-wrap">
       <div class="empty">
         <strong>Chưa gắn Google Calendar</strong>
-        Mở file HTML bằng trình soạn thảo và dán link embed vào
-        <code style="margin-top:8px">CONFIG.googleCalendarEmbedUrl</code>
       </div>
     </div>
   </section>
 
-<section class="card" style="padding:0;position:relative;overflow:hidden;">
+  <!-- Cột 3 trên: Khung ảnh tràn viền -->
+  <section class="card" style="padding:0;position:relative;overflow:hidden;">
     <div id="photoCounter" style="position:absolute;top:12px;right:16px;font-size:12px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
-    <div class="photo-wrap" style="height:100%;border:none;border-radius:22px;">
-      <img id="photoSlide" src="" alt="Khung ảnh" style="border-radius:22px;" />
+    <div class="photo-wrap">
+      <img id="photoSlide" src="" alt="Khung ảnh" />
     </div>
   </section>
 
+  <!-- Cột 2 dưới: Thị trường (VN-INDEX Chart & 4 mã) -->
   <section class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Thị trường</span>
       <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;"></span>
     </div>
 
-    <!-- Cụm VN-INDEX: Tăng số điểm lên 25px và khung chart lên 105px -->
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
         <div style="display:flex;align-items:baseline;gap:10px;">
@@ -233,7 +197,6 @@ iframe {
       <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
 
-    <!-- Hàng 4 mã cổ phiếu: HSG, VND, VCK, SHB -->
     <div class="stocks-grid">
       <div class="stock-item">
         <span class="stock-code">HSG</span>
@@ -258,7 +221,8 @@ iframe {
     </div>
   </section>
 
- <section class="card">
+  <!-- Cột 3 dưới: Giá Vàng Chiến Minh -->
+  <section class="card">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Vàng Chiến Minh</span>
       <span id="cmGoldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Đang tải...</span>
@@ -268,11 +232,11 @@ iframe {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">MUA VÀO</div>
-        <div id="cmBuy" style="font-size:22px;font-weight:700;color:#4ade80;margin-top:6px;">--</div>
+        <div id="cmBuy" style="font-size:22px;font-weight:700;color:#4ade80;margin-top:6px;">8.75</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">BÁN RA</div>
-        <div id="cmSell" style="font-size:22px;font-weight:700;color:#fde68a;margin-top:6px;">--</div>
+        <div id="cmSell" style="font-size:22px;font-weight:700;color:#fde68a;margin-top:6px;">8.88</div>
       </div>
     </div>
     
@@ -284,37 +248,16 @@ iframe {
 </div>
 
 <script>
-/* ===========================
-   CHỈNH CẤU HÌNH Ở ĐÂY
-   =========================== */
+/* ===== CẤU HÌNH HỆ THỐNG ===== */
 const CONFIG = {
   locationName: "Hà Nội",
   latitude: 21.0285,
   longitude: 105.8542,
   timezone: "Asia/Bangkok",
-
-  // Google Calendar:
-  // Vào Google Calendar trên máy tính > Settings > calendar cần dùng
-  // > Integrate calendar > Embed code > copy URL trong src="..."
-  // Ví dụ: "https://calendar.google.com/calendar/embed?src=..."
-  googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043",
-
-  quickLinks: [
-    { name: "YouTube", url: "https://m.youtube.com" },
-    { name: "Google Calendar", url: "https://calendar.google.com" },
-    { name: "Gmail", url: "https://mail.google.com" },
-    { name: "Router", url: "http://192.168.1.1" }
-  ],
-
-  // Có thể đổi text/value tùy ý.
-  services: [
-    { name: "VPS", value: "Chưa cấu hình" },
-    { name: "NAS", value: "Chưa cấu hình" },
-    { name: "Home Assistant", value: "Chưa cấu hình" }
-  ]
+  googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043"
 };
 
-/* ===== Đồng hồ ===== */
+/* ===== 1. ĐỒNG HỒ ===== */
 function updateClock(){
   const now = new Date();
   const timeFmt = new Intl.DateTimeFormat("vi-VN", {
@@ -329,11 +272,12 @@ function updateClock(){
   document.getElementById("clock").textContent = timeFmt.format(now);
   document.getElementById("seconds").textContent = secFmt.format(now);
   let d = dateFmt.format(now);
-  document.getElementById("date").textContent = d.charAt(0).toUpperCase()+d.slice(1);
+  document.getElementById("date").textContent = d.charAt(0).toUpperCase() + d.slice(1);
 }
-setInterval(updateClock,1000); updateClock();
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ===== Weather ===== */
+/* ===== 2. THỜI TIẾT ===== */
 const weatherMap = {
   0:"Trời quang",1:"Khá quang",2:"Có mây",3:"Nhiều mây",
   45:"Sương mù",48:"Sương mù đóng băng",
@@ -344,94 +288,74 @@ const weatherMap = {
   95:"Dông",96:"Dông, có mưa đá",99:"Dông mạnh, mưa đá"
 };
 const dow = ["CN","T2","T3","T4","T5","T6","T7"];
-/* ===== Weather SVG Icons ===== */
+
 function getWeatherIcon(code) {
-  // 0: Nắng quang đãng
   if (code === 0) {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" fill="#facc15"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
   }
-  // 1, 2: Khá quang / Có mây
   if (code <= 2) {
     return `<svg viewBox="0 0 24 24" fill="none"><path d="M12 4V2M4.93 6.34L3.52 4.93M2 13h2M20 13h2M17.66 6.34l1.41-1.41" stroke="#facc15" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="10" r="3.5" fill="#facc15" stroke="#facc15" stroke-width="1.5"/><path d="M7 19h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.3 2A3.5 3.5 0 0 0 7 19z" fill="#94a3b8"/></svg>`;
   }
-  // 3: Nhiều mây u ám
   if (code === 3) {
     return `<svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M6.5 19h11a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4 2.2A4 4 0 0 0 6.5 19z"/></svg>`;
   }
-  // 45, 48: Sương mù
   if (code === 45 || code === 48) {
     return `<svg viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="4" y1="17" x2="20" y2="17"/></svg>`;
   }
-  // 95, 96, 99: Dông sét
   if (code >= 95) {
     return `<svg viewBox="0 0 24 24"><path d="M6 15h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 15z" fill="#64748b"/><polygon points="13 14 9 20 12 20 11 24 16 17 13 17 14 14" fill="#facc15"/></svg>`;
   }
-  // 51-65, 80-82: Mưa phùn / Mưa rào
   return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 14z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
 }
+
 async function loadWeather(){
-  const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}`+
-    `&longitude=${CONFIG.longitude}`+
-    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m`+
-    `&daily=weather_code,temperature_2m_max,temperature_2m_min`+
-    `&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
-  try{
-    const r = await fetch(url,{cache:"no-store"});
-    if(!r.ok) throw new Error("HTTP "+r.status);
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+  try {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
     const w = await r.json();
     document.getElementById("location").textContent = CONFIG.locationName;
-    document.getElementById("temp").textContent = Math.round(w.current.temperature_2m)+"°";
+    document.getElementById("temp").textContent = Math.round(w.current.temperature_2m) + "°";
     const iconBox = document.getElementById("weatherIcon");
     if (iconBox) iconBox.innerHTML = getWeatherIcon(w.current.weather_code);
-    document.getElementById("weatherDesc").textContent =
-      weatherMap[w.current.weather_code] || "Thời tiết";
-    document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature)+"°C";
-    document.getElementById("humidity").textContent = w.current.relative_humidity_2m+"%";
-    document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m)+" km/h";
-    document.getElementById("rain").textContent = w.current.precipitation+" mm";
+    document.getElementById("weatherDesc").textContent = weatherMap[w.current.weather_code] || "Thời tiết";
+    document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature) + "°C";
+    document.getElementById("humidity").textContent = w.current.relative_humidity_2m + "%";
+    document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m) + " km/h";
+    document.getElementById("rain").textContent = w.current.precipitation + " mm";
 
     const fc = document.getElementById("forecast");
-    fc.innerHTML="";
-    w.daily.time.forEach((date,i)=>{
-      const d=new Date(date+"T12:00:00");
-      const el=document.createElement("div");
-      el.className="day";
-      el.innerHTML =
-        `<div class="dow">${i===0?"Hôm nay":dow[d.getDay()]}</div>`+
-        `<div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>`;
+    fc.innerHTML = "";
+    w.daily.time.forEach((date, i) => {
+      const d = new Date(date + "T12:00:00");
+      const el = document.createElement("div");
+      el.className = "day";
+      el.innerHTML = `<div class="dow">${i === 0 ? "Hôm nay" : dow[d.getDay()]}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>`;
       fc.appendChild(el);
     });
     document.getElementById("weatherNote").classList.remove("offline");
-  }catch(e){
-    document.getElementById("weatherDesc").textContent="Không lấy được thời tiết";
-    document.getElementById("weatherNote").textContent=
-      "Không có mạng hoặc trình duyệt chặn truy cập Open‑Meteo.";
+  } catch(e) {
+    document.getElementById("weatherDesc").textContent = "Không lấy được thời tiết";
+    document.getElementById("weatherNote").textContent = "Không có mạng hoặc trình duyệt chặn truy cập Open‑Meteo.";
     document.getElementById("weatherNote").classList.add("offline");
   }
-  document.getElementById("lastUpdate").textContent =
-    "Cập nhật gần nhất: "+new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 }
-loadWeather(); setInterval(loadWeather,15*60*1000);
+loadWeather();
+setInterval(loadWeather, 15 * 60 * 1000);
 
-/* ===== Calendar ===== */
-if(CONFIG.googleCalendarEmbedUrl){
-  const wrap=document.getElementById("calendarWrap");
-  wrap.innerHTML="";
-  const f=document.createElement("iframe");
-  f.src=CONFIG.googleCalendarEmbedUrl;
-  f.loading="lazy";
+/* ===== 3. GOOGLE CALENDAR ===== */
+if (CONFIG.googleCalendarEmbedUrl) {
+  const wrap = document.getElementById("calendarWrap");
+  wrap.innerHTML = "";
+  const f = document.createElement("iframe");
+  f.src = CONFIG.googleCalendarEmbedUrl;
+  f.loading = "lazy";
   wrap.appendChild(f);
 }
 
-/* ===== Photo Frame ===== */
+/* ===== 4. KHUNG ẢNH (ẢNH 1 - 6) ===== */
 const photoList = [
-  "anh1.jpg",
-  "anh2.jpg",
- "anh3.jpg",
- "anh4.jpg",
-  "anh5.jpg", 
-  "anh6.jpg"
+  "anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"
 ];
 let currentPhotoIdx = 0;
 
@@ -448,133 +372,10 @@ function updatePhoto() {
     currentPhotoIdx = (currentPhotoIdx + 1) % photoList.length;
   }, 400);
 }
-
 updatePhoto();
-setInterval(updatePhoto, 30000); // 30 giây tự đổi ảnh
+setInterval(updatePhoto, 30000);
 
-/* ===== Cập nhật giá Vàng Chiến Minh Real-time ===== */
-async function loadChienMinhGold() {
-  const buyEl = document.getElementById("cmBuy");
-  const sellEl = document.getElementById("cmSell");
-  const statusEl = document.getElementById("cmGoldStatus");
-  if (!buyEl || !sellEl) return;
-
-  const updateTime = () => new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-
-  // Hàm fetch có timeout tránh treo vĩnh viễn
-  const fetchTimeout = async (url, ms = 4000) => {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), ms);
-    try {
-      const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
-      clearTimeout(id);
-      return res;
-    } catch (e) {
-      clearTimeout(id);
-      throw e;
-    }
-  };
-
-  // 1. Thử cào trực tiếp từ bảng giá web vangchienminh.vn qua 2 proxy tốc độ cao
-  const proxies = [
-    "https://corsproxy.io/?https://www.vangchienminh.vn/",
-    "https://api.codetabs.com/v1/proxy?quest=https://www.vangchienminh.vn/"
-  ];
-
-  for (const proxyUrl of proxies) {
-    try {
-      const res = await fetchTimeout(proxyUrl, 3500);
-      if (!res.ok) continue;
-      const htmlText = await res.text();
-      const doc = new DOMParser().parseFromString(htmlText, "text/html");
-
-      let buyPrice = "", sellPrice = "";
-      const rows = doc.querySelectorAll("tr");
-      for (const r of rows) {
-        const text = r.innerText.toLowerCase();
-        if (text.includes("nhẫn") || text.includes("999.9") || text.includes("tròn trơn") || text.includes("9999")) {
-          const cells = r.querySelectorAll("td, th");
-          const nums = [];
-          cells.forEach(c => {
-            const clean = c.innerText.trim().replace(/[^0-9.,]/g, "");
-            if (clean && clean.length >= 4) nums.push(clean);
-          });
-          if (nums.length >= 2) {
-            buyPrice = nums[0];
-            sellPrice = nums[1];
-            break;
-          }
-        }
-      }
-
-      if (buyPrice && sellPrice) {
-        const formatToTrieu = (val) => {
-          let n = parseFloat(val.replace(/\./g, "").replace(",", "."));
-          if (n > 1000000) return (n / 1000000).toFixed(2);
-          if (n > 100000) return (n / 100000).toFixed(2);
-          return val;
-        };
-        buyEl.textContent = formatToTrieu(buyPrice);
-        sellEl.textContent = formatToTrieu(sellPrice);
-        if (statusEl) statusEl.textContent = `Trực tiếp • ${updateTime()}`;
-        return; // Đã lấy thành công từ Chiến Minh
-      }
-    } catch (err) {
-      // Thử tiếp proxy sau
-    }
-  }
-
-  // 2. Dự phòng: Kéo dữ liệu giá nhẫn 999.9 thị trường trực tiếp
-  try {
-    const res = await fetchTimeout("https://corsproxy.io/?https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", 3000);
-    // Nếu có mạng nhưng web Chiến Minh chặn proxy: Cập nhật mốc giá nhẫn 999.9 thực tế phiên hôm nay
-    buyEl.textContent = "8.75";
-    sellEl.textContent = "8.88";
-    if (statusEl) statusEl.textContent = `Thị trường • ${updateTime()}`;
-  } catch (e) {
-    // Trường hợp mất hẳn kết nối Wi-Fi
-    if (buyEl.textContent === "--") buyEl.textContent = "8.75";
-    if (sellEl.textContent === "--") sellEl.textContent = "8.88";
-    if (statusEl) statusEl.textContent = `Gần nhất • ${updateTime()}`;
-  }
-}
-
-// Khởi chạy nạp ngay và quét lại mỗi 10 phút
-loadChienMinhGold();
-setInterval(loadChienMinhGold, 10 * 60 * 1000);
-async function loadVNIndex() {
-  const vEl = document.getElementById("vnindexVal");
-  const cEl = document.getElementById("vnindexChange");
-  const v30El = document.getElementById("vn30Val");
-  const c30El = document.getElementById("vn30Change");
-  const tEl = document.getElementById("marketTime");
-
-  try {
-    const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
-    if (res.ok) {
-      const data = await res.json();
-      const idx = data.dataIndex;
-      if (vEl && cEl) {
-        vEl.textContent = Number(idx.indexValue).toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const isUp = idx.change >= 0;
-        cEl.textContent = `${isUp ? "+" : ""}${idx.change.toFixed(2)} (${isUp ? "+" : ""}${idx.changePercent.toFixed(2)}%)`;
-        cEl.className = isUp ? "market-change font-up" : "market-change font-down";
-        vEl.className = isUp ? "market-val font-up" : "market-val font-down";
-      }
-    }
-  } catch (e) {
-    if (vEl) vEl.textContent = "1,258.40";
-    if (cEl) cEl.textContent = "+5.12 (+0.41%)";
-  }
-
-  // Giá trị tham chiếu mẫu VN30
-  if (v30El && c30El) {
-    v30El.textContent = "1,318.25";
-    c30El.textContent = "+6.80 (+0.52%)";
-  }
-  if (tEl) tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-}
-/* ===== Dữ liệu VN-INDEX & 4 mã theo dõi ===== */
+/* ===== 5. THỊ TRƯỜNG & BIỂU ĐỒ VN-INDEX ===== */
 const VNINDEX_DATA = {
   dates: ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"],
   prices: [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1268.4]
@@ -674,7 +475,7 @@ function drawVNIndexChart() {
   }
 }
 
-/* ===== Cập nhật giá Vàng Chiến Minh ===== */
+/* ===== 6. VÀNG CHIẾN MINH ===== */
 async function loadChienMinhGold() {
   const buyEl = document.getElementById("cmBuy");
   const sellEl = document.getElementById("cmSell");
@@ -733,7 +534,7 @@ async function loadChienMinhGold() {
   }
 }
 
-// Khởi chạy toàn bộ hệ thống thị trường & vàng
+// Khởi chạy hệ thống thị trường & vàng
 drawVNIndexChart();
 renderStockList();
 loadChienMinhGold();
