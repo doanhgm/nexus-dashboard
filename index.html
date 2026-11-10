@@ -40,7 +40,24 @@
   .clock{font-size:84px;line-height:.95;font-weight:700;letter-spacing:-4px}
   .seconds{font-size:28px;color:var(--muted);letter-spacing:0}
   .date{font-size:24px;margin-top:12px;color:#d7dee8}
-  .weather-main{display:flex;align-items:flex-end;gap:14px;margin-top:26px}
+  .weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 26px;
+    padding-right: 8px;
+  }
+  .weather-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .weather-icon svg {
+    width: 68px;
+    height: 68px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
   .temp{font-size:62px;font-weight:700;line-height:1}
   .weather-desc{font-size:22px;color:#dce5ef;padding-bottom:8px}
   .meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
@@ -124,11 +141,14 @@
       <div id="date" class="date">Đang tải...</div>
 
       <div class="weather-main">
-        <div id="temp" class="temp">--°</div>
-        <div>
-          <div id="weatherDesc" class="weather-desc">Đang lấy thời tiết...</div>
-          <div id="location" style="color:var(--muted)">Hà Nội</div>
+        <div style="display:flex;align-items:flex-end;gap:14px;">
+          <div id="temp" class="temp">--°</div>
+          <div>
+            <div id="weatherDesc" class="weather-desc">Đang lấy thời tiết...</div>
+            <div id="location" style="color:var(--muted)">Hà Nội</div>
+          </div>
         </div>
+        <div id="weatherIcon" class="weather-icon"></div>
       </div>
 
       <div class="meta">
@@ -242,7 +262,31 @@ const weatherMap = {
   95:"Dông",96:"Dông, có mưa đá",99:"Dông mạnh, mưa đá"
 };
 const dow = ["CN","T2","T3","T4","T5","T6","T7"];
-
+/* ===== Weather SVG Icons ===== */
+function getWeatherIcon(code) {
+  // 0: Nắng quang đãng
+  if (code === 0) {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" fill="#facc15"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+  }
+  // 1, 2: Khá quang / Có mây
+  if (code <= 2) {
+    return `<svg viewBox="0 0 24 24" fill="none"><path d="M12 4V2M4.93 6.34L3.52 4.93M2 13h2M20 13h2M17.66 6.34l1.41-1.41" stroke="#facc15" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="10" r="3.5" fill="#facc15" stroke="#facc15" stroke-width="1.5"/><path d="M7 19h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.3 2A3.5 3.5 0 0 0 7 19z" fill="#94a3b8"/></svg>`;
+  }
+  // 3: Nhiều mây u ám
+  if (code === 3) {
+    return `<svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M6.5 19h11a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4 2.2A4 4 0 0 0 6.5 19z"/></svg>`;
+  }
+  // 45, 48: Sương mù
+  if (code === 45 || code === 48) {
+    return `<svg viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="4" y1="17" x2="20" y2="17"/></svg>`;
+  }
+  // 95, 96, 99: Dông sét
+  if (code >= 95) {
+    return `<svg viewBox="0 0 24 24"><path d="M6 15h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 15z" fill="#64748b"/><polygon points="13 14 9 20 12 20 11 24 16 17 13 17 14 14" fill="#facc15"/></svg>`;
+  }
+  // 51-65, 80-82: Mưa phùn / Mưa rào
+  return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 14z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
 async function loadWeather(){
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}`+
@@ -256,6 +300,8 @@ async function loadWeather(){
     const w = await r.json();
     document.getElementById("location").textContent = CONFIG.locationName;
     document.getElementById("temp").textContent = Math.round(w.current.temperature_2m)+"°";
+    const iconBox = document.getElementById("weatherIcon");
+    if (iconBox) iconBox.innerHTML = getWeatherIcon(w.current.weather_code);
     document.getElementById("weatherDesc").textContent =
       weatherMap[w.current.weather_code] || "Thời tiết";
     document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature)+"°C";
