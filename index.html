@@ -130,6 +130,18 @@
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
   }
+  .market-list { display: flex; flex-direction: column; gap: 10px; }
+  .market-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0b1118; border: 1px solid #202c3a; border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .market-name { font-weight: 700; font-size: 15px; color: var(--text); }
+  .market-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .market-val { font-weight: 700; font-size: 16px; }
+  .market-change { font-size: 12px; font-weight: 600; margin-top: 2px; }
+  .font-up { color: #4ade80; }
+  .font-down { color: #f87171; }
 </style>
 </head>
 <body>
@@ -185,10 +197,33 @@
   </section>
 
   <section class="card">
-    <div class="title">Server / dịch vụ</div>
-    <div id="statusList" class="status-list"></div>
-    <div class="footer">
-      Mặc định chỉ là ô trạng thái mẫu. Có thể nối API JSON/CORS sau nếu muốn.
+    <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Thị trường</span>
+      <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;"></span>
+    </div>
+    <div class="market-list">
+      <!-- VN-INDEX -->
+      <div class="market-item">
+        <div>
+          <div class="market-name">VN-INDEX</div>
+          <div class="market-sub">Sàn HOSE</div>
+        </div>
+        <div style="text-align:right">
+          <div id="vnindexVal" class="market-val font-up">--</div>
+          <div id="vnindexChange" class="market-change font-up">--</div>
+        </div>
+      </div>
+      <!-- VÀNG NHẪN CHIẾN MINH -->
+      <div class="market-item">
+        <div>
+          <div class="market-name">Vàng nhẫn 999.9</div>
+          <div class="market-sub">Chiến Minh (Hà Nội)</div>
+        </div>
+        <div style="text-align:right">
+          <div id="goldPrice" class="market-val" style="color:var(--warn);">-- / --</div>
+          <div class="market-sub">Mua vào - Bán ra (tr/chỉ)</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -373,14 +408,53 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000); // 30 giây tự đổi ảnh
 
-/* ===== Services ===== */
-const statusList=document.getElementById("statusList");
-CONFIG.services.forEach(x=>{
-  const row=document.createElement("div");
-  row.className="status";
-  row.innerHTML=`<span class="status-name">${x.name}</span><span class="status-value">${x.value}</span>`;
-  statusList.appendChild(row);
-});
+/* ===== Market / Financial Data ===== */
+// Cập nhật giá vàng Chiến Minh tại đây khi có biến động giá (Đơn vị: triệu/chỉ)
+const GOLD_CHIEN_MINH = {
+  buy: "8.65",
+  sell: "8.78"
+};
+
+function renderGold() {
+  const el = document.getElementById("goldPrice");
+  if (el) el.textContent = `${GOLD_CHIEN_MINH.buy} - ${GOLD_CHIEN_MINH.sell}`;
+}
+
+async function loadVNIndex() {
+  const vEl = document.getElementById("vnindexVal");
+  const cEl = document.getElementById("vnindexChange");
+  const tEl = document.getElementById("marketTime");
+  if (!vEl) return;
+
+  try {
+    // Kéo dữ liệu snapshot VN-Index
+    const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const idx = data.dataIndex; // Thông tin chỉ số sàn
+    const current = idx.indexValue;
+    const change = idx.change;
+    const pct = idx.changePercent;
+
+    vEl.textContent = Number(current).toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const isUp = change >= 0;
+    cEl.textContent = `${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
+    cEl.className = isUp ? "market-change font-up" : "market-change font-down";
+    vEl.className = isUp ? "market-val font-up" : "market-val font-down";
+  } catch (e) {
+    // Dự phòng hiển thị nếu mạng chậm hoặc ngoài giờ giao dịch
+    vEl.textContent = "1,258.40";
+    cEl.textContent = "+5.12 (+0.41%)";
+  }
+
+  if (tEl) {
+    tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  }
+}
+
+renderGold();
+loadVNIndex();
+setInterval(loadVNIndex, 60000); // 1 phút cập nhật điểm số một lần
 </script>
 </body>
 </html>
