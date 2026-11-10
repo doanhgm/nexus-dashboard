@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b0f14">
+<title>Nexus 7 Dashboard</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --panel:#121923;
+    --panel2:#0f151e;
+    --text:#f5f7fa;
+    --muted:#9aa6b2;
+    --line:#253041;
+    --accent:#7dd3fc;
+    --good:#86efac;
+    --warn:#fde68a;
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;background:var(--bg);color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+  body{padding:18px}
+  .grid{
+    display:grid;
+    grid-template-columns:1.05fr 1fr 1fr;
+    grid-template-rows:1fr 1fr;
+    gap:14px;
+    height:100%;
+  }
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:22px;
+    min-width:0;
+    overflow:hidden;
+  }
+  .hero{grid-row:1 / span 2;display:flex;flex-direction:column;justify-content:space-between}
+  .clock{font-size:84px;line-height:.95;font-weight:700;letter-spacing:-4px}
+  .seconds{font-size:28px;color:var(--muted);letter-spacing:0}
+  .date{font-size:24px;margin-top:12px;color:#d7dee8}
+  .weather-main{display:flex;align-items:flex-end;gap:14px;margin-top:26px}
+  .temp{font-size:62px;font-weight:700;line-height:1}
+  .weather-desc{font-size:22px;color:#dce5ef;padding-bottom:8px}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
+  .meta div{background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px}
+  .meta b{display:block;font-size:18px;margin-top:3px}
+  .label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .title{font-size:18px;font-weight:700;margin-bottom:14px}
+  .forecast{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+  .day{padding:10px 6px;background:#0b1118;border:1px solid #202c3a;border-radius:14px;text-align:center}
+  .day .dow{font-size:13px;color:var(--muted)}
+  .day .t{font-size:17px;font-weight:700;margin-top:6px}
+  .calendar-wrap{height:calc(100% - 34px);border-radius:14px;overflow:hidden;background:#0b1118;border:1px solid #202c3a}
+  iframe{border:0;width:100%;height:100%;background:white}
+  .empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;color:var(--muted)}
+  .empty strong{color:var(--text);margin-bottom:8px}
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .link{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    min-height:66px;padding:10px;border-radius:14px;
+    text-decoration:none;color:var(--text);background:#0b1118;border:1px solid #202c3a;
+    font-weight:700;font-size:17px;
+  }
+  .link:active{transform:scale(.98)}
+  .status-list{display:grid;gap:10px}
+  .status{
+    display:flex;align-items:center;justify-content:space-between;
+    background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px 14px
+  }
+  .status-name{font-weight:700}
+  .status-value{color:var(--good);font-weight:700}
+  .footer{font-size:12px;color:#6f7c89;margin-top:14px}
+  .offline{color:var(--warn)}
+  @media (orientation:portrait){
+    body{overflow:auto}
+    .grid{grid-template-columns:1fr;grid-template-rows:auto;height:auto}
+    .hero{grid-row:auto;min-height:620px}
+    .card{min-height:420px}
+  }
+</style>
+</head>
+<body>
+<div class="grid">
+  <section class="card hero">
+    <div>
+      <div class="label">NEXUS 7 DASHBOARD</div>
+      <div style="margin-top:18px">
+        <span id="clock" class="clock">--:--</span>
+        <span id="seconds" class="seconds">--</span>
+      </div>
+      <div id="date" class="date">Đang tải...</div>
+
+      <div class="weather-main">
+        <div id="temp" class="temp">--°</div>
+        <div>
+          <div id="weatherDesc" class="weather-desc">Đang lấy thời tiết...</div>
+          <div id="location" style="color:var(--muted)">Hà Nội</div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div><span class="label">Cảm giác</span><b id="feels">--°C</b></div>
+        <div><span class="label">Độ ẩm</span><b id="humidity">--%</b></div>
+        <div><span class="label">Gió</span><b id="wind">-- km/h</b></div>
+        <div><span class="label">Mưa</span><b id="rain">-- mm</b></div>
+      </div>
+
+      <div id="forecast" class="forecast"></div>
+    </div>
+    <div id="weatherNote" class="footer">Thời tiết: Open‑Meteo • tự cập nhật mỗi 15 phút</div>
+  </section>
+
+  <section class="card">
+    <div class="title">Lịch</div>
+    <div id="calendarWrap" class="calendar-wrap">
+      <div class="empty">
+        <strong>Chưa gắn Google Calendar</strong>
+        Mở file HTML bằng trình soạn thảo và dán link embed vào
+        <code style="margin-top:8px">CONFIG.googleCalendarEmbedUrl</code>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="title">Lối tắt</div>
+    <div id="links" class="links"></div>
+    <div class="footer">Sửa danh sách trong <b>CONFIG.quickLinks</b>.</div>
+  </section>
+
+  <section class="card">
+    <div class="title">Server / dịch vụ</div>
+    <div id="statusList" class="status-list"></div>
+    <div class="footer">
+      Mặc định chỉ là ô trạng thái mẫu. Có thể nối API JSON/CORS sau nếu muốn.
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="title">Ghi chú nhanh</div>
+    <div style="font-size:19px;line-height:1.6;color:#dce5ef">
+      • Chạm/chuột vào lối tắt để mở app/web.<br>
+      • Để màn hình ngang cho bố cục đẹp nhất.<br>
+      • Nếu chạy cố định: dùng ACC giới hạn pin khoảng 60–80%.<br>
+      • Nhấn <b>F11</b> nếu trình duyệt hỗ trợ toàn màn hình.
+    </div>
+    <div id="lastUpdate" class="footer"></div>
+  </section>
+</div>
+
+<script>
+/* ===========================
+   CHỈNH CẤU HÌNH Ở ĐÂY
+   =========================== */
+const CONFIG = {
+  locationName: "Hà Nội",
+  latitude: 21.0285,
+  longitude: 105.8542,
+  timezone: "Asia/Bangkok",
+
+  // Google Calendar:
+  // Vào Google Calendar trên máy tính > Settings > calendar cần dùng
+  // > Integrate calendar > Embed code > copy URL trong src="..."
+  // Ví dụ: "https://calendar.google.com/calendar/embed?src=..."
+  googleCalendarEmbedUrl: "",
+
+  quickLinks: [
+    { name: "YouTube", url: "https://m.youtube.com" },
+    { name: "Google Calendar", url: "https://calendar.google.com" },
+    { name: "Gmail", url: "https://mail.google.com" },
+    { name: "Router", url: "http://192.168.1.1" }
+  ],
+
+  // Có thể đổi text/value tùy ý.
+  services: [
+    { name: "VPS", value: "Chưa cấu hình" },
+    { name: "NAS", value: "Chưa cấu hình" },
+    { name: "Home Assistant", value: "Chưa cấu hình" }
+  ]
+};
+
+/* ===== Đồng hồ ===== */
+function updateClock(){
+  const now = new Date();
+  const timeFmt = new Intl.DateTimeFormat("vi-VN", {
+    timeZone: CONFIG.timezone, hour:"2-digit", minute:"2-digit", hour12:false
+  });
+  const secFmt = new Intl.DateTimeFormat("vi-VN", {
+    timeZone: CONFIG.timezone, second:"2-digit"
+  });
+  const dateFmt = new Intl.DateTimeFormat("vi-VN", {
+    timeZone: CONFIG.timezone, weekday:"long", day:"2-digit", month:"2-digit", year:"numeric"
+  });
+  document.getElementById("clock").textContent = timeFmt.format(now);
+  document.getElementById("seconds").textContent = secFmt.format(now);
+  let d = dateFmt.format(now);
+  document.getElementById("date").textContent = d.charAt(0).toUpperCase()+d.slice(1);
+}
+setInterval(updateClock,1000); updateClock();
+
+/* ===== Weather ===== */
+const weatherMap = {
+  0:"Trời quang",1:"Khá quang",2:"Có mây",3:"Nhiều mây",
+  45:"Sương mù",48:"Sương mù đóng băng",
+  51:"Mưa phùn nhẹ",53:"Mưa phùn",55:"Mưa phùn dày",
+  61:"Mưa nhẹ",63:"Mưa vừa",65:"Mưa to",
+  71:"Tuyết nhẹ",73:"Tuyết",75:"Tuyết dày",
+  80:"Mưa rào nhẹ",81:"Mưa rào",82:"Mưa rào mạnh",
+  95:"Dông",96:"Dông, có mưa đá",99:"Dông mạnh, mưa đá"
+};
+const dow = ["CN","T2","T3","T4","T5","T6","T7"];
+
+async function loadWeather(){
+  const url =
+    `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}`+
+    `&longitude=${CONFIG.longitude}`+
+    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m`+
+    `&daily=weather_code,temperature_2m_max,temperature_2m_min`+
+    `&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+  try{
+    const r = await fetch(url,{cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const w = await r.json();
+    document.getElementById("location").textContent = CONFIG.locationName;
+    document.getElementById("temp").textContent = Math.round(w.current.temperature_2m)+"°";
+    document.getElementById("weatherDesc").textContent =
+      weatherMap[w.current.weather_code] || "Thời tiết";
+    document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature)+"°C";
+    document.getElementById("humidity").textContent = w.current.relative_humidity_2m+"%";
+    document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m)+" km/h";
+    document.getElementById("rain").textContent = w.current.precipitation+" mm";
+
+    const fc = document.getElementById("forecast");
+    fc.innerHTML="";
+    w.daily.time.forEach((date,i)=>{
+      const d=new Date(date+"T12:00:00");
+      const el=document.createElement("div");
+      el.className="day";
+      el.innerHTML =
+        `<div class="dow">${i===0?"Hôm nay":dow[d.getDay()]}</div>`+
+        `<div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>`;
+      fc.appendChild(el);
+    });
+    document.getElementById("weatherNote").classList.remove("offline");
+  }catch(e){
+    document.getElementById("weatherDesc").textContent="Không lấy được thời tiết";
+    document.getElementById("weatherNote").textContent=
+      "Không có mạng hoặc trình duyệt chặn truy cập Open‑Meteo.";
+    document.getElementById("weatherNote").classList.add("offline");
+  }
+  document.getElementById("lastUpdate").textContent =
+    "Cập nhật gần nhất: "+new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+}
+loadWeather(); setInterval(loadWeather,15*60*1000);
+
+/* ===== Calendar ===== */
+if(CONFIG.googleCalendarEmbedUrl){
+  const wrap=document.getElementById("calendarWrap");
+  wrap.innerHTML="";
+  const f=document.createElement("iframe");
+  f.src=CONFIG.googleCalendarEmbedUrl;
+  f.loading="lazy";
+  wrap.appendChild(f);
+}
+
+/* ===== Links ===== */
+const links=document.getElementById("links");
+CONFIG.quickLinks.forEach(x=>{
+  const a=document.createElement("a");
+  a.className="link"; a.href=x.url; a.textContent=x.name;
+  links.appendChild(a);
+});
+
+/* ===== Services ===== */
+const statusList=document.getElementById("statusList");
+CONFIG.services.forEach(x=>{
+  const row=document.createElement("div");
+  row.className="status";
+  row.innerHTML=`<span class="status-name">${x.name}</span><span class="status-value">${x.value}</span>`;
+  statusList.appendChild(row);
+});
+</script>
+</body>
+</html>
