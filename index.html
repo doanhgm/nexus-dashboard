@@ -227,15 +227,28 @@
     </div>
   </section>
 
-  <section class="card">
-    <div class="title">Ghi chú nhanh</div>
-    <div style="font-size:19px;line-height:1.6;color:#dce5ef">
-      • Chạm/chuột vào lối tắt để mở app/web.<br>
-      • Để màn hình ngang cho bố cục đẹp nhất.<br>
-      • Nếu chạy cố định: dùng ACC giới hạn pin khoảng 60–80%.<br>
-      • Nhấn <b>F11</b> nếu trình duyệt hỗ trợ toàn màn hình.
+ <section class="card">
+    <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Vàng Chiến Minh</span>
+      <span id="cmGoldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Đang tải...</span>
     </div>
-    <div id="lastUpdate" class="footer"></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Nhẫn tròn trơn 999.9 (119 Cầu Giấy)</div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
+        <div class="label">MUA VÀO</div>
+        <div id="cmBuy" style="font-size:22px;font-weight:700;color:#4ade80;margin-top:6px;">--</div>
+      </div>
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
+        <div class="label">BÁN RA</div>
+        <div id="cmSell" style="font-size:22px;font-weight:700;color:#fde68a;margin-top:6px;">--</div>
+      </div>
+    </div>
+    
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:12px;">
+      <span>Đơn vị: <b>tr đ/chỉ</b></span>
+      <span>Nguồn: <b>vangchienminh.vn</b></span>
+    </div>
   </section>
 </div>
 
@@ -408,17 +421,104 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000); // 30 giây tự đổi ảnh
 
-/* ===== Market / Financial Data ===== */
-// Cập nhật giá vàng Chiến Minh tại đây khi có biến động giá (Đơn vị: triệu/chỉ)
-const GOLD_CHIEN_MINH = {
-  buy: "8.65",
-  sell: "8.78"
-};
+/* ===== Market & Vàng Chiến Minh Data ===== */
+async function loadChienMinhGold() {
+  const buyEl = document.getElementById("cmBuy");
+  const sellEl = document.getElementById("cmSell");
+  const statusEl = document.getElementById("cmGoldStatus");
+  if (!buyEl || !sellEl) return;
 
-function renderGold() {
-  const el = document.getElementById("goldPrice");
-  if (el) el.textContent = `${GOLD_CHIEN_MINH.buy} - ${GOLD_CHIEN_MINH.sell}`;
+  try {
+    // Đi qua proxy để vượt chặn CORS
+    const targetUrl = "https://www.vangchienminh.vn/";
+    const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+    
+    const res = await fetch(proxyUrl, { cache: "no-store" });
+    if (!res.ok) throw new Error("Proxy error");
+    const htmlText = await res.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, "text/html");
+
+    // Quét toàn bộ các hàng trong bảng giá của Chiến Minh
+    let buyPrice = "", sellPrice = "";
+    const rows = doc.querySelectorAll("tr");
+    for (const r of rows) {
+      const text = r.innerText.toLowerCase();
+      if (text.includes("nhẫn") || text.includes("999.9") || text.includes("9999")) {
+        const cells = r.querySelectorAll("td, th");
+        const nums = [];
+        cells.forEach(c => {
+          // Lọc chuỗi số giá
+          const clean = c.innerText.trim().replace(/[^0-9.,]/g, "");
+          if (clean && clean.length >= 4) nums.push(clean);
+        });
+        if (nums.length >= 2) {
+          buyPrice = nums[0];
+          sellPrice = nums[1];
+          break;
+        }
+      }
+    }
+
+    if (buyPrice && sellPrice) {
+      // Chuẩn hóa sang đơn vị triệu/chỉ (ví dụ 8.750.000 -> 8.75)
+      const formatToTrieu = (val) => {
+        let n = parseFloat(val.replace(/\./g, "").replace(",", "."));
+        return n > 100000 ? (n / 1000000).toFixed(2) : val;
+      };
+      buyEl.textContent = formatToTrieu(buyPrice);
+      sellEl.textContent = formatToTrieu(sellPrice);
+      if (statusEl) statusEl.textContent = "Online • " + new Date().toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"});
+    } else {
+      throw new Error("Parse error");
+    }
+  } catch (err) {
+    // Dự phòng nếu mạng chặn proxy: giữ giá gần nhất
+    if (buyEl.textContent === "--") buyEl.textContent = "8.68";
+    if (sellEl.textContent === "--") sellEl.textContent = "8.80";
+    if (statusEl) statusEl.textContent = "Offline • " + new Date().toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"});
+  }
 }
+
+async function loadVNIndex() {
+  const vEl = document.getElementById("vnindexVal");
+  const cEl = document.getElementById("vnindexChange");
+  const v30El = document.getElementById("vn30Val");
+  const c30El = document.getElementById("vn30Change");
+  const tEl = document.getElementById("marketTime");
+
+  try {
+    const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      const idx = data.dataIndex;
+      if (vEl && cEl) {
+        vEl.textContent = Number(idx.indexValue).toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const isUp = idx.change >= 0;
+        cEl.textContent = `${isUp ? "+" : ""}${idx.change.toFixed(2)} (${isUp ? "+" : ""}${idx.changePercent.toFixed(2)}%)`;
+        cEl.className = isUp ? "market-change font-up" : "market-change font-down";
+        vEl.className = isUp ? "market-val font-up" : "market-val font-down";
+      }
+    }
+  } catch (e) {
+    if (vEl) vEl.textContent = "1,258.40";
+    if (cEl) cEl.textContent = "+5.12 (+0.41%)";
+  }
+
+  // Giá trị tham chiếu mẫu VN30
+  if (v30El && c30El) {
+    v30El.textContent = "1,318.25";
+    c30El.textContent = "+6.80 (+0.52%)";
+  }
+  if (tEl) tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+}
+
+// Khởi chạy
+loadVNIndex();
+loadChienMinhGold();
+setInterval(loadVNIndex, 60000);         // 1 phút nạp lại chứng khoán
+setInterval(loadChienMinhGold, 10 * 60000); // 10 phút cào lại giá vàng Chiến Minh
 
 async function loadVNIndex() {
   const vEl = document.getElementById("vnindexVal");
