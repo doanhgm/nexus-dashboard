@@ -143,22 +143,22 @@ iframe {
   .stocks-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 8px;
     margin-top: 6px;
   }
   .stock-item {
     background: #0b1118;
     border: 1px solid #202c3a;
-    border-radius: 10px;
-    padding: 6px 4px;
+    border-radius: 12px;
+    padding: 8px 4px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
   }
-  .stock-code { font-size: 11px; font-weight: 700; color: #94a3b8; }
-  .stock-price { font-size: 14px; font-weight: 700; }
-  .stock-chg { font-size: 10px; font-weight: 600; }
+  .stock-code { font-size: 13px; font-weight: 700; color: #94a3b8; }
+  .stock-price { font-size: 18px; font-weight: 700; }  /* Giá to từ 14px lên 18px */
+  .stock-chg { font-size: 12px; font-weight: 600; }    /* % tăng giảm to từ 10px lên 12px */
   .font-up { color: #4ade80; }
   .font-down { color: #f87171; }
 </style>
@@ -221,16 +221,16 @@ iframe {
       <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;"></span>
     </div>
 
-    <!-- Cụm VN-INDEX kèm biểu đồ theo ngày -->
+    <!-- Cụm VN-INDEX: Tăng số điểm lên 25px và khung chart lên 105px -->
     <div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 4px;">
-        <div style="display:flex;align-items:baseline;gap:8px;">
-          <span style="font-weight:700;font-size:14px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" style="font-size:20px;font-weight:700;">1,268.40</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
+          <span id="vnindexVal" style="font-size:25px;font-weight:700;">1,258.40</span>
         </div>
-        <span id="vnindexChange" class="font-up" style="font-size:13px;font-weight:600;">+5.40 (+0.43%)</span>
+        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+5.12 (+0.41%)</span>
       </div>
-      <div id="vnindexChart" style="width:100%;height:75px;"></div>
+      <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
 
     <!-- Hàng 4 mã cổ phiếu: HSG, VND, VCK, SHB -->
@@ -599,8 +599,8 @@ function drawVNIndexChart() {
   }
 
   // Tọa độ vẽ đường cong SVG
-  const width = 340, height = 75;
-  const padL = 6, padR = 6, padT = 8, padB = 16;
+  const width = 360, height = 105;
+  const padL = 6, padR = 6, padT = 8, padB = 22;
   const chartW = width - padL - padR;
   const chartH = height - padT - padB;
 
@@ -621,10 +621,10 @@ function drawVNIndexChart() {
   const strokeColor = isUp ? "#4ade80" : "#f87171";
 
   const labels = `
-    <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="start">${dates[0]}</text>
-    <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
-    <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="9" text-anchor="end">${dates[n-1]}</text>
-  `;
+  <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="start">${dates[0]}</text>
+  <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
+  <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="end">${dates[n-1]}</text>
+`;
 
   const svgHtml = `
     <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow:visible">
@@ -636,8 +636,8 @@ function drawVNIndexChart() {
       </defs>
       <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
       <path d="${areaPath}" fill="url(#vnindexGrad)" />
-      <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-      <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="3.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
+      <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="4.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
       ${labels}
     </svg>
   `;
