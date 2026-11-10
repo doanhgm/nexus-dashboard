@@ -299,13 +299,29 @@ if(CONFIG.googleCalendarEmbedUrl){
   wrap.appendChild(f);
 }
 
-/* ===== Links ===== */
-const links=document.getElementById("links");
-CONFIG.quickLinks.forEach(x=>{
-  const a=document.createElement("a");
-  a.className="link"; a.href=x.url; a.textContent=x.name;
-  links.appendChild(a);
-});
+/* ===== Photo Frame ===== */
+const photoList = [
+  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=800&auto=format&fit=crop"
+];
+let currentPhotoIdx = 0;
+
+function updatePhoto() {
+  const imgEl = document.getElementById("photoSlide");
+  const countEl = document.getElementById("photoCounter");
+  if (!imgEl || photoList.length === 0) return;
+
+  imgEl.style.opacity = "0";
+  setTimeout(() => {
+    imgEl.src = photoList[currentPhotoIdx];
+    if (countEl) countEl.textContent = `${currentPhotoIdx + 1}/${photoList.length}`;
+    imgEl.onload = () => { imgEl.style.opacity = "1"; };
+    currentPhotoIdx = (currentPhotoIdx + 1) % photoList.length;
+  }, 400);
+}
+
+updatePhoto();
+setInterval(updatePhoto, 30000); // 30 giây tự đổi ảnh
 
 /* ===== Services ===== */
 const statusList=document.getElementById("statusList");
