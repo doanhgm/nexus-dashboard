@@ -92,7 +92,6 @@
     transition: opacity 0.8s ease-in-out;
   }
 
-  /* KHUNG BIỂU ĐỒ CHUYÊN NGHIỆP CÓ TRỤC Y VÀ X CHUẨN HTML */
   .chart-box {
     flex: 1;
     width: 100%;
@@ -221,13 +220,13 @@
     </div>
   </section>
 
-  <!-- Cột 2 dưới: VN-INDEX 1 NĂM (KÈM TRỤC Y VÀ X CHUẨN SẮC NÉT) -->
+  <!-- Cột 2 dưới: VN-INDEX 1 NĂM & 4 MÃ CỔ PHIẾU -->
   <section class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
       <div style="display:flex;align-items:baseline;gap:8px;">
         <span style="font-weight:700;font-size:16px;">VN-INDEX</span>
-        <span id="vnindexVal" class="font-down" style="font-size:24px;font-weight:700;">1,737.32</span>
-        <span id="vnindexChange" class="font-down" style="font-size:13px;font-weight:600;">-5.75 (-0.33%)</span>
+        <span id="vnindexVal" class="font-down" style="font-size:24px;font-weight:700;">--</span>
+        <span id="vnindexChange" class="font-down" style="font-size:13px;font-weight:600;">--</span>
       </div>
       <span id="marketTime" style="font-size:11px;color:var(--muted);">1 Năm • Live</span>
     </div>
@@ -259,32 +258,30 @@
     </div>
   </section>
 
-  <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU (TRỤC Y TR/CHỈ + SÓNG NẾN THỰC TẾ) -->
+  <!-- Cột 3 dưới: VÀNG THẾ GIỚI XAU/USD (ĐƠN VỊ USD/OZ & NẾN 1 NĂM QUỐC TẾ) -->
   <section class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <div style="display:flex;align-items:center;gap:6px;">
-        <span style="font-size:15px;font-weight:700;">Vàng BTMC</span>
-        <span style="font-size:11px;color:var(--muted);">(tr/chỉ)</span>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span style="font-weight:700;font-size:16px;">XAU/USD</span>
+        <span id="goldVal" class="font-up" style="font-size:24px;font-weight:700;">--</span>
+        <span id="goldChange" class="font-up" style="font-size:13px;font-weight:600;">--</span>
       </div>
-      <div style="font-size:11px;">
-        <span style="color:var(--good);font-weight:700;">● Mua</span>  
-        <span style="color:var(--gold);font-weight:700;">● Bán</span>
-      </div>
+      <span id="goldTime" style="font-size:11px;color:var(--muted);">1 Năm • USD/oz</span>
     </div>
 
-    <!-- 2 Ô chỉ số Mua / Bán -->
+    <!-- 2 Ô chỉ số Mua (Bid) / Bán (Ask) -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
-        <div class="label" style="color:var(--good)">MUA VÀO</div>
-        <div id="goldBuy" style="font-size:20px;font-weight:700;color:var(--good);margin-top:2px;">13.55</div>
+        <div class="label" style="color:var(--good)">GIÁ MUA (BID)</div>
+        <div id="goldBuy" style="font-size:19px;font-weight:700;color:var(--good);margin-top:2px;">--</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
-        <div class="label" style="color:var(--gold)">BÁN RA</div>
-        <div id="goldSell" style="font-size:20px;font-weight:700;color:var(--gold);margin-top:2px;">13.95</div>
+        <div class="label" style="color:var(--gold)">GIÁ BÁN (ASK)</div>
+        <div id="goldSell" style="font-size:19px;font-weight:700;color:var(--gold);margin-top:2px;">--</div>
       </div>
     </div>
 
-    <!-- Khung biểu đồ Vàng tràn viền có trục Y -->
+    <!-- Khung biểu đồ Vàng XAU/USD tràn viền -->
     <div class="chart-box" id="goldChart"></div>
   </section>
 </div>
@@ -431,7 +428,6 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
   
-  // Tính 3 mốc số tròn đẹp cho trục Y
   const yMaxVal = Math.ceil(maxP / 50) * 50;
   const yMinVal = Math.floor(minP / 50) * 50;
   const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
@@ -469,23 +465,19 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
           <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
         </linearGradient>
       </defs>
-      <!-- 3 đường dóng ngang trục Y -->
       <line x1="${padL}" y1="${yTopLine}" x2="${width - padR}" y2="${yTopLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       <line x1="${padL}" y1="${yMidLine}" x2="${width - padR}" y2="${yMidLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       <line x1="${padL}" y1="${yBotLine}" x2="${width - padR}" y2="${yBotLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       
-      <!-- Đồ thị vùng và đường nến -->
       <path d="${areaPath}" fill="url(#vnGrad)" />
       <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
       <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="7" fill="${strokeColor}" stroke="#0b1118" stroke-width="2.5" />
     </svg>
-    <!-- Trục Y chuẩn HTML chống méo font -->
     <div class="y-axis">
       <span class="y-tick" style="top: ${(yTopLine / height * 100).toFixed(1)}%;">${yMaxVal.toLocaleString()}</span>
       <span class="y-tick" style="top: ${(yMidLine / height * 100).toFixed(1)}%;">${yMidVal.toLocaleString()}</span>
       <span class="y-tick" style="top: ${(yBotLine / height * 100).toFixed(1)}%;">${yMinVal.toLocaleString()}</span>
     </div>
-    <!-- Trục X ngày tháng không bị co kéo -->
     <div class="x-axis">
       <span>${d0}</span>
       <span>${d1}</span>
@@ -495,19 +487,29 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   `;
 }
 
-/* ===== 7. VẼ BIỂU ĐỒ VÀNG 1 NĂM (TRỤC Y TR/CHỈ + SÓNG NẾN THỰC TẾ) ===== */
-function renderGoldChart(buyHistory, sellHistory, dates) {
+/* ===== 7. VẼ BIỂU ĐỒ VÀNG THẾ GIỚI XAU/USD (TRỤC Y USD/OZ + NẾN 1 NĂM) ===== */
+function renderGoldChart(prices, dates, curVal, changeStr, pctStr, isUp) {
+  const vEl = document.getElementById("goldVal");
+  const cEl = document.getElementById("goldChange");
+  if (vEl) {
+    vEl.textContent = curVal;
+    vEl.className = isUp ? "font-up" : "font-down";
+  }
+  if (cEl) {
+    cEl.textContent = `${changeStr} (${pctStr})`;
+    cEl.className = isUp ? "font-up" : "font-down";
+  }
+
   const box = document.getElementById("goldChart");
-  if (!box || !buyHistory || buyHistory.length < 2) return;
+  if (!box || !prices || prices.length < 2) return;
 
-  const allPrices = [...buyHistory, ...sellHistory];
-  const minP = Math.min(...allPrices);
-  const maxP = Math.max(...allPrices);
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
 
-  // 3 Mốc trục Y cho Vàng (Ví dụ: 14.5, 11.5, 8.5 tr/chỉ)
-  const yMaxVal = +(Math.ceil(maxP * 2) / 2).toFixed(1);
-  const yMinVal = +(Math.floor(minP * 2) / 2).toFixed(1);
-  const yMidVal = +(((yMaxVal + yMinVal) / 2)).toFixed(1);
+  // 3 Mốc trục Y số tròn USD (ví dụ: 2,800 - 2,400 - 2,000)
+  const yMaxVal = Math.ceil(maxP / 100) * 100;
+  const yMinVal = Math.floor(minP / 100) * 100;
+  const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
 
   const width = 800, height = 240;
   const padT = 18, padB = 28, padL = 2, padR = 2;
@@ -522,19 +524,13 @@ function renderGoldChart(buyHistory, sellHistory, dates) {
   const yMidLine = getY(yMidVal);
   const yBotLine = getY(yMinVal);
 
-  const n = buyHistory.length;
-  const buyCoords = buyHistory.map((p, i) => [getX(i, n), getY(p)]);
-  const sellCoords = sellHistory.map((p, i) => [getX(i, n), getY(p)]);
-
-  let buyPath = `M ${buyCoords[0][0]} ${buyCoords[0][1]}`;
-  for (let i = 1; i < buyCoords.length; i++) buyPath += ` L ${buyCoords[i][0]} ${buyCoords[i][1]}`;
-
-  let sellPath = `M ${sellCoords[0][0]} ${sellCoords[0][1]}`;
-  for (let i = 1; i < sellCoords.length; i++) sellPath += ` L ${sellCoords[i][0]} ${sellCoords[i][1]}`;
-
-  const areaBuy = `${buyPath} L ${buyCoords[n - 1][0]} ${height - padB} L ${buyCoords[0][0]} ${height - padB} Z`;
-  const lastBuy = buyCoords[n - 1];
-  const lastSell = sellCoords[n - 1];
+  const n = prices.length;
+  const coords = prices.map((p, i) => [getX(i, n), getY(p)]);
+  let linePath = `M ${coords[0][0]} ${coords[0][1]}`;
+  for (let i = 1; i < coords.length; i++) linePath += ` L ${coords[i][0]} ${coords[i][1]}`;
+  const areaPath = `${linePath} L ${coords[n - 1][0]} ${height - padB} L ${coords[0][0]} ${height - padB} Z`;
+  const strokeColor = "var(--gold)";
+  const lastPt = coords[n - 1];
 
   const d0 = dates[0] || "11/25";
   const d1 = dates[Math.floor(n * 0.33)] || "03/26";
@@ -545,8 +541,8 @@ function renderGoldChart(buyHistory, sellHistory, dates) {
     <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
       <defs>
         <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#4ade80" stop-opacity="0.22"/>
-          <stop offset="100%" stop-color="#4ade80" stop-opacity="0.0"/>
+          <stop offset="0%" stop-color="#facc15" stop-opacity="0.32"/>
+          <stop offset="100%" stop-color="#facc15" stop-opacity="0.0"/>
         </linearGradient>
       </defs>
       <!-- 3 đường dóng ngang trục Y -->
@@ -554,24 +550,15 @@ function renderGoldChart(buyHistory, sellHistory, dates) {
       <line x1="${padL}" y1="${yMidLine}" x2="${width - padR}" y2="${yMidLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       <line x1="${padL}" y1="${yBotLine}" x2="${width - padR}" y2="${yBotLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       
-      <!-- Vùng đổ màu nhẹ dưới đường Mua -->
-      <path d="${areaBuy}" fill="url(#goldGrad)" />
-
-      <!-- Đường Bán ra (Vàng) -->
-      <path d="${sellPath}" fill="none" stroke="var(--gold)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
-      <circle cx="${lastSell[0]}" cy="${lastSell[1]}" r="6.5" fill="var(--gold)" stroke="#0b1118" stroke-width="2.5" />
-
-      <!-- Đường Mua vào (Xanh lá) -->
-      <path d="${buyPath}" fill="none" stroke="var(--good)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
-      <circle cx="${lastBuy[0]}" cy="${lastBuy[1]}" r="6.5" fill="var(--good)" stroke="#0b1118" stroke-width="2.5" />
+      <path d="${areaPath}" fill="url(#goldGrad)" />
+      <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="6.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2.5" />
     </svg>
-    <!-- Trục Y đơn vị tr/chỉ bằng HTML -->
     <div class="y-axis">
-      <span class="y-tick" style="top: ${(yTopLine / height * 100).toFixed(1)}%;">${yMaxVal.toFixed(1)}</span>
-      <span class="y-tick" style="top: ${(yMidLine / height * 100).toFixed(1)}%;">${yMidVal.toFixed(1)}</span>
-      <span class="y-tick" style="top: ${(yBotLine / height * 100).toFixed(1)}%;">${yMinVal.toFixed(1)}</span>
+      <span class="y-tick" style="top: ${(yTopLine / height * 100).toFixed(1)}%;">$${yMaxVal.toLocaleString()}</span>
+      <span class="y-tick" style="top: ${(yMidLine / height * 100).toFixed(1)}%;">$${yMidVal.toLocaleString()}</span>
+      <span class="y-tick" style="top: ${(yBotLine / height * 100).toFixed(1)}%;">$${yMinVal.toLocaleString()}</span>
     </div>
-    <!-- Trục X ngày tháng không bị co kéo -->
     <div class="x-axis">
       <span>${d0}</span>
       <span>${d1}</span>
@@ -585,12 +572,10 @@ function renderGoldChart(buyHistory, sellHistory, dates) {
 const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1737.32];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
 
-// Quỹ đạo sóng biến động thực tế 1 năm của Vàng BTMC (11/2025 -> 11/2026)
-const GOLD_WEIGHTS = [8.35, 8.48, 8.85, 9.15, 10.25, 10.95, 10.45, 11.20, 11.85, 12.35, 12.90, 13.65, 13.55];
-const GOLD_MONTHS = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
+const DEFAULT_GOLD_PRICES = [1985.0, 2025.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
+const DEFAULT_GOLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
 
 async function loadMarketJSON() {
-  let bVal = 13.55, sVal = 13.95;
   try {
     const res = await fetch("./market.json?t=" + Date.now(), { cache: "no-store" });
     if (!res.ok) throw new Error();
@@ -622,26 +607,22 @@ async function loadMarketJSON() {
       });
     }
 
-    // 3. Cập nhật Vàng BTMC
+    // 3. Cập nhật Vàng XAU/USD
     if (data.gold) {
-      bVal = parseFloat(data.gold.buy) || 13.55;
-      sVal = parseFloat(data.gold.sell) || 13.95;
       const bEl = document.getElementById("goldBuy");
       const sEl = document.getElementById("goldSell");
       if (bEl && sEl) {
-        bEl.textContent = bVal.toFixed(2);
-        sEl.textContent = sVal.toFixed(2);
+        bEl.textContent = data.gold.bid || `$${(data.gold.raw - 0.5).toFixed(2)}`;
+        sEl.textContent = data.gold.ask || `$${(data.gold.raw + 0.5).toFixed(2)}`;
       }
+      const gPrices = (data.gold.prices && data.gold.prices.length >= 2) ? data.gold.prices : DEFAULT_GOLD_PRICES;
+      const gDates = (data.gold.dates && data.gold.dates.length >= 2) ? data.gold.dates : DEFAULT_GOLD_DATES;
+      renderGoldChart(gPrices, gDates, data.gold.val, data.gold.change, data.gold.pct, data.gold.isUp);
     }
   } catch (e) {
     renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,737.32", "-5.75", "-0.33%", false);
+    renderGoldChart(DEFAULT_GOLD_PRICES, DEFAULT_GOLD_DATES, "$2,685.50", "+13.30", "+0.50%", true);
   }
-
-  // Neo quỹ đạo sóng vàng 1 năm chuẩn theo giá mua - bán live hôm nay
-  const lastW = GOLD_WEIGHTS[GOLD_WEIGHTS.length - 1];
-  const buyHist = GOLD_WEIGHTS.map(w => +(w * (bVal / lastW)).toFixed(2));
-  const sellHist = buyHist.map((b, i) => i === buyHist.length - 1 ? sVal : +(b + (sVal - bVal)).toFixed(2));
-  renderGoldChart(buyHist, sellHist, GOLD_MONTHS);
 }
 
 loadMarketJSON();
