@@ -141,7 +141,13 @@
             <div id="location" style="color:var(--muted)">Hà Nội</div>
           </div>
         </div>
-        <div id="weatherIcon" class="weather-icon"></div>
+        <!-- Nhúng sẵn biểu tượng mặt trời trực tiếp trong HTML -->
+        <div id="weatherIcon" class="weather-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" fill="#facc15"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+        </div>
       </div>
 
       <div class="meta">
@@ -151,7 +157,12 @@
         <div><span class="label">Mưa</span><b id="rain">0 mm</b></div>
       </div>
 
-      <div id="forecast" class="forecast"></div>
+      <div id="forecast" class="forecast">
+        <div class="day"><div class="dow">Hôm nay</div><div class="t">20° / 15°</div></div>
+        <div class="day"><div class="dow">T5</div><div class="t">22° / 15°</div></div>
+        <div class="day"><div class="dow">T6</div><div class="t">20° / 17°</div></div>
+        <div class="day"><div class="dow">T7</div><div class="t">26° / 18°</div></div>
+      </div>
     </div>
     <div id="weatherNote" class="footer">Thời tiết: Open‑Meteo • Cập nhật tự động</div>
   </section>
@@ -181,9 +192,9 @@
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
         <div style="display:flex;align-items:baseline;gap:10px;">
           <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" style="font-size:25px;font-weight:700;">--</span>
+          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">1,258.40</span>
         </div>
-        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">--</span>
+        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+5.12 (+0.41%)</span>
       </div>
       <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
@@ -191,23 +202,23 @@
     <div class="stocks-grid">
       <div class="stock-item">
         <span class="stock-code">HSG</span>
-        <span id="price-HSG" class="stock-price">--</span>
-        <span id="change-HSG" class="stock-chg">--</span>
+        <span id="price-HSG" class="stock-price font-up">22.35</span>
+        <span id="change-HSG" class="stock-chg font-up">+2.05%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VND</span>
-        <span id="price-VND" class="stock-price">--</span>
-        <span id="change-VND" class="stock-chg">--</span>
+        <span id="price-VND" class="stock-price font-up">15.55</span>
+        <span id="change-VND" class="stock-chg font-up">+1.63%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VCK</span>
-        <span id="price-VCK" class="stock-price">--</span>
-        <span id="change-VCK" class="stock-chg">--</span>
+        <span id="price-VCK" class="stock-price font-up">20.15</span>
+        <span id="change-VCK" class="stock-chg font-up">+1.77%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">SHB</span>
-        <span id="price-SHB" class="stock-price">--</span>
-        <span id="change-SHB" class="stock-chg">--</span>
+        <span id="price-SHB" class="stock-price font-up">11.45</span>
+        <span id="change-SHB" class="stock-chg font-up">+1.33%</span>
       </div>
     </div>
   </section>
@@ -223,258 +234,13 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">MUA VÀO</div>
-        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">--</div>
+        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">8.75</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">BÁN RA</div>
-        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">--</div>
+        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">8.88</div>
       </div>
     </div>
     
     <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:12px;">
-      <span>Đơn vị: <b>tr đ/chỉ</b></span>
-      <span>Nguồn: <b>btmc.vn</b></span>
-    </div>
-  </section>
-</div>
-
-<script>
-/* ===== 1. CẤU HÌNH HỆ THỐNG ===== */
-const CONFIG = {
-  locationName: "Hà Nội",
-  latitude: 21.0285,
-  longitude: 105.8542,
-  timezone: "Asia/Bangkok",
-  googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043"
-};
-
-/* ===== 2. ĐỒNG HỒ ===== */
-function updateClock(){
-  const now = new Date();
-  const timeFmt = new Intl.DateTimeFormat("vi-VN", {
-    timeZone: CONFIG.timezone, hour:"2-digit", minute:"2-digit", hour12:false
-  });
-  const secFmt = new Intl.DateTimeFormat("vi-VN", {
-    timeZone: CONFIG.timezone, second:"2-digit"
-  });
-  const dateFmt = new Intl.DateTimeFormat("vi-VN", {
-    timeZone: CONFIG.timezone, weekday:"long", day:"2-digit", month:"2-digit", year:"numeric"
-  });
-  document.getElementById("clock").textContent = timeFmt.format(now);
-  document.getElementById("seconds").textContent = secFmt.format(now);
-  let d = dateFmt.format(now);
-  document.getElementById("date").textContent = d.charAt(0).toUpperCase() + d.slice(1);
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ===== 3. THỜI TIẾT ===== */
-const weatherMap = {
-  0:"Trời quang", 1:"Khá quang", 2:"Có mây", 3:"Nhiều mây",
-  45:"Sương mù", 48:"Sương mù đóng băng",
-  51:"Mưa phùn nhẹ", 53:"Mưa phùn", 55:"Mưa phùn dày",
-  61:"Mưa nhẹ", 63:"Mưa vừa", 65:"Mưa to",
-  71:"Tuyết nhẹ", 73:"Tuyết", 75:"Tuyết dày",
-  80:"Mưa rào nhẹ", 81:"Mưa rào", 82:"Mưa rào mạnh",
-  95:"Dông", 96:"Dông, có mưa đá", 99:"Dông mạnh, mưa đá"
-};
-const dow = ["CN","T2","T3","T4","T5","T6","T7"];
-
-function getWeatherIcon(code) {
-  if (code === 0) return `<svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" fill="#facc15"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
-  if (code <= 2) return `<svg viewBox="0 0 24 24" fill="none"><path d="M12 4V2M4.93 6.34L3.52 4.93M2 13h2M20 13h2M17.66 6.34l1.41-1.41" stroke="#facc15" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="10" r="3.5" fill="#facc15" stroke="#facc15" stroke-width="1.5"/><path d="M7 19h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.3 2A3.5 3.5 0 0 0 7 19z" fill="#94a3b8"/></svg>`;
-  if (code === 3) return `<svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M6.5 19h11a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4 2.2A4 4 0 0 0 6.5 19z"/></svg>`;
-  if (code === 45 || code === 48) return `<svg viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="4" y1="17" x2="20" y2="17"/></svg>`;
-  if (code >= 95) return `<svg viewBox="0 0 24 24"><path d="M6 15h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 15z" fill="#64748b"/><polygon points="13 14 9 20 12 20 11 24 16 17 13 17 14 14" fill="#facc15"/></svg>`;
-  return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 14z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
-}
-
-function renderWeatherData(w) {
-  document.getElementById("location").textContent = CONFIG.locationName;
-  document.getElementById("temp").textContent = Math.round(w.current.temperature_2m) + "°";
-  const iconBox = document.getElementById("weatherIcon");
-  if (iconBox) iconBox.innerHTML = getWeatherIcon(w.current.weather_code);
-  document.getElementById("weatherDesc").textContent = weatherMap[w.current.weather_code] || "Thời tiết";
-  document.getElementById("feels").textContent = Math.round(w.current.apparent_temperature) + "°C";
-  document.getElementById("humidity").textContent = w.current.relative_humidity_2m + "%";
-  document.getElementById("wind").textContent = Math.round(w.current.wind_speed_10m) + " km/h";
-  document.getElementById("rain").textContent = w.current.precipitation + " mm";
-
-  const fc = document.getElementById("forecast");
-  if (fc && w.daily && w.daily.time) {
-    fc.innerHTML = "";
-    w.daily.time.forEach((date, i) => {
-      const d = new Date(date + "T12:00:00");
-      const el = document.createElement("div");
-      el.className = "day";
-      el.innerHTML = `<div class="dow">${i === 0 ? "Hôm nay" : dow[d.getDay()]}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>`;
-      fc.appendChild(el);
-    });
-  }
-
-  const noteEl = document.getElementById("weatherNote");
-  if (noteEl) {
-    noteEl.textContent = "Thời tiết: Open‑Meteo • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"});
-  }
-}
-
-async function loadWeather() {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
-  try {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error();
-    const w = await r.json();
-    localStorage.setItem("nexus_weather_cache", JSON.stringify(w));
-    renderWeatherData(w);
-  } catch (e) {
-    const cached = localStorage.getItem("nexus_weather_cache");
-    if (cached) {
-      try { renderWeatherData(JSON.parse(cached)); return; } catch (err) {}
-    }
-  }
-}
-loadWeather();
-setInterval(loadWeather, 15 * 60 * 1000);
-
-/* ===== 4. GOOGLE CALENDAR ===== */
-if (CONFIG.googleCalendarEmbedUrl) {
-  const wrap = document.getElementById("calendarWrap");
-  wrap.innerHTML = "";
-  const f = document.createElement("iframe");
-  f.src = CONFIG.googleCalendarEmbedUrl;
-  f.loading = "lazy";
-  wrap.appendChild(f);
-}
-
-/* ===== 5. KHUNG ẢNH CÁ NHÂN ===== */
-const photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
-let currentPhotoIdx = 0;
-
-function updatePhoto() {
-  const imgEl = document.getElementById("photoSlide");
-  const countEl = document.getElementById("photoCounter");
-  if (!imgEl || photoList.length === 0) return;
-
-  imgEl.style.opacity = "0";
-  setTimeout(() => {
-    imgEl.src = photoList[currentPhotoIdx];
-    if (countEl) countEl.textContent = `${currentPhotoIdx + 1}/${photoList.length}`;
-    imgEl.onload = () => { imgEl.style.opacity = "1"; };
-    currentPhotoIdx = (currentPhotoIdx + 1) % photoList.length;
-  }, 400);
-}
-updatePhoto();
-setInterval(updatePhoto, 30000);
-
-/* ===== 6 & 7. NẠP DỮ LIỆU TỰ ĐỘNG TỪ FILE MARKET.JSON ===== */
-const MARKET_HISTORY = {
-  dates: ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"],
-  prices: [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1252.72]
-};
-
-function renderChart(curVal, isUp) {
-  const prices = [...MARKET_HISTORY.prices];
-  if (curVal) prices[prices.length - 1] = curVal;
-  const dates = MARKET_HISTORY.dates;
-  const n = prices.length;
-
-  const width = 360, height = 105;
-  const padL = 6, padR = 6, padT = 8, padB = 22;
-  const chartW = width - padL - padR, chartH = height - padT - padB;
-  const minP = Math.min(...prices), maxP = Math.max(...prices);
-  const padY = (maxP - minP) * 0.15 || 1;
-  const yMin = minP - padY, yMax = maxP + padY;
-
-  const coords = prices.map((p, i) => {
-    const x = padL + (i / (n - 1)) * chartW;
-    const y = padT + chartH - ((p - yMin) / (yMax - yMin)) * chartH;
-    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
-  });
-
-  let linePath = `M ${coords[0][0]} ${coords[0][1]}`;
-  for (let i = 1; i < coords.length; i++) linePath += ` L ${coords[i][0]} ${coords[i][1]}`;
-  const areaPath = `${linePath} L ${coords[n - 1][0]} ${height - padB} L ${coords[0][0]} ${height - padB} Z`;
-  const strokeColor = isUp ? "var(--good)" : "var(--danger)";
-
-  const labels = `
-    <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="start">${dates[0]}</text>
-    <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
-    <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="end">${dates[n-1]}</text>
-  `;
-
-  const box = document.getElementById("vnindexChart");
-  if (box) {
-    box.innerHTML = `
-      <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow:visible">
-        <defs>
-          <linearGradient id="vnGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.32"/>
-            <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
-          </linearGradient>
-        </defs>
-        <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
-        <path d="${areaPath}" fill="url(#vnGrad)" />
-        <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
-        <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="4.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
-        ${labels}
-      </svg>
-    `;
-  }
-}
-
-async function loadLocalMarketData() {
-  try {
-    // Đọc trực tiếp từ file nội bộ trong repo, không bao giờ lo bị chặn CORS
-    const res = await fetch("./market.json?t=" + Date.now(), { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-
-    // 1. Cập nhật VN-INDEX
-    const vEl = document.getElementById("vnindexVal");
-    const cEl = document.getElementById("vnindexChange");
-    const tEl = document.getElementById("marketTime");
-
-    if (vEl && cEl && data.vnindex) {
-      vEl.textContent = data.vnindex.val;
-      vEl.className = data.vnindex.isUp ? "font-up" : "font-down";
-      cEl.textContent = `${data.vnindex.change} (${data.vnindex.pct})`;
-      cEl.className = data.vnindex.isUp ? "font-up" : "font-down";
-      renderChart(data.vnindex.raw, data.vnindex.isUp);
-    }
-    if (tEl && data.time) tEl.textContent = data.time;
-
-    // 2. Cập nhật 4 mã cổ phiếu
-    if (data.stocks) {
-      Object.keys(data.stocks).forEach(code => {
-        const item = data.stocks[code];
-        const pEl = document.getElementById(`price-${code}`);
-        const cEl = document.getElementById(`change-${code}`);
-        if (pEl && cEl) {
-          pEl.textContent = Number(item.price).toFixed(2);
-          pEl.className = item.isUp ? "stock-price font-up" : "stock-price font-down";
-          cEl.textContent = item.pct;
-          cEl.className = item.isUp ? "stock-chg font-up" : "stock-chg font-down";
-        }
-      });
-    }
-
-    // 3. Cập nhật Giá Vàng
-    if (data.gold) {
-      const bEl = document.getElementById("goldBuy");
-      const sEl = document.getElementById("goldSell");
-      if (bEl && sEl) {
-        bEl.textContent = data.gold.buy;
-        sEl.textContent = data.gold.sell;
-      }
-    }
-  } catch (err) {
-    // Dự phòng hiển thị ban đầu nếu file json vừa mới khởi tạo
-    renderChart(1252.72, false);
-  }
-}
-
-loadLocalMarketData();
-setInterval(loadLocalMarketData, 60000); // 1 phút nạp lại file 1 lần
-</script>
-</body>
-</html>
+      <span>Đơn vị: <b>tr đ/chỉ
