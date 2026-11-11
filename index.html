@@ -16,6 +16,7 @@
     --accent: #7dd3fc;
     --good: #4ade80;
     --warn: #fde68a;
+    --gold: #facc15;
     --danger: #f87171;
   }
   * { box-sizing: border-box; }
@@ -24,100 +25,110 @@
     background: var(--bg); color: var(--text);
     font-family: Arial, Helvetica, sans-serif; overflow: hidden;
   }
-  body { padding: 18px; }
+  body { padding: 14px; }
   .grid {
     display: grid;
-    grid-template-columns: 1fr 1.3fr 1fr;
+    grid-template-columns: 1fr 1.35fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 14px;
+    gap: 12px;
     height: 100%;
   }
   .card {
     background: linear-gradient(180deg, var(--panel), var(--panel2));
     border: 1px solid var(--line);
-    border-radius: 22px;
-    padding: 22px;
+    border-radius: 20px;
+    padding: 16px;
     min-width: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   .hero {
     grid-row: 1 / span 2;
-    display: flex; flex-direction: column; justify-content: space-between;
+    justify-content: space-between;
   }
-  .clock { font-size: 84px; line-height: .95; font-weight: 700; letter-spacing: -4px; }
-  .seconds { font-size: 28px; color: var(--muted); letter-spacing: 0; }
-  .date { font-size: 24px; margin-top: 12px; color: #d7dee8; }
+  .clock { font-size: 80px; line-height: .95; font-weight: 700; letter-spacing: -3px; }
+  .seconds { font-size: 26px; color: var(--muted); }
+  .date { font-size: 22px; margin-top: 10px; color: #d7dee8; }
   
   .weather-main {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 14px; margin-top: 26px; padding-right: 8px;
+    gap: 12px; margin-top: 20px;
   }
-  .weather-icon { display: flex; align-items: center; justify-content: center; }
-  .weather-icon svg {
-    width: 105px; height: 105px;
-    filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6));
-    margin-right: 6px;
-  }
-  .temp { font-size: 62px; font-weight: 700; line-height: 1; }
-  .weather-desc { font-size: 22px; color: #dce5ef; padding-bottom: 8px; }
+  .weather-icon svg { width: 95px; height: 95px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6)); }
+  .temp { font-size: 58px; font-weight: 700; line-height: 1; }
+  .weather-desc { font-size: 20px; color: #dce5ef; padding-bottom: 6px; }
   
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 18px; }
-  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 14px; padding: 12px; }
-  .meta b { display: block; font-size: 18px; margin-top: 3px; }
-  .label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 10px; }
+  .meta b { display: block; font-size: 16px; margin-top: 2px; }
+  .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
   
-  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
-  .day { padding: 10px 6px; background: #0b1118; border: 1px solid #202c3a; border-radius: 14px; text-align: center; }
-  .day .dow { font-size: 13px; color: var(--muted); }
-  .day .t { font-size: 17px; font-weight: 700; margin-top: 6px; }
+  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 14px; }
+  .day { padding: 8px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
+  .day .dow { font-size: 12px; color: var(--muted); }
+  .day .t { font-size: 15px; font-weight: 700; margin-top: 4px; }
 
   .calendar-wrap {
-    height: calc(100% - 34px);
-    border-radius: 14px;
+    flex: 1;
+    border-radius: 12px;
     overflow: hidden;
     background: #0b1118;
     border: 1px solid #202c3a;
   }
   iframe {
     border: 0; width: 100%; height: 100%;
-    background: transparent;
     filter: invert(1) hue-rotate(180deg) brightness(1.25) contrast(1.4);
     mix-blend-mode: screen;
   }
 
   .photo-wrap {
-    height: 100%; border-radius: 22px; overflow: hidden;
+    height: 100%; border-radius: 20px; overflow: hidden;
     background: #0b1118; display: flex; align-items: center; justify-content: center;
   }
   .photo-wrap img {
     width: 100%; height: 100%;
     object-fit: cover; object-position: top center;
-    border-radius: 22px; opacity: 0;
+    border-radius: 20px; opacity: 0;
     transition: opacity 0.8s ease-in-out;
+  }
+
+  /* Biểu đồ full ô */
+  .chart-container {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    position: relative;
+    margin: 4px 0 6px 0;
+  }
+  .chart-container svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
   .stocks-grid {
     display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 8px; margin-top: 6px;
+    gap: 6px; margin-top: 4px;
   }
   .stock-item {
-    background: #0b1118; border: 1px solid #202c3a; border-radius: 12px;
-    padding: 8px 4px; text-align: center; display: flex;
-    flex-direction: column; gap: 3px;
+    background: #0b1118; border: 1px solid #202c3a; border-radius: 10px;
+    padding: 6px 3px; text-align: center; display: flex;
+    flex-direction: column; gap: 2px;
   }
-  .stock-code { font-size: 13px; font-weight: 700; color: #94a3b8; }
-  .stock-price { font-size: 18px; font-weight: 700; }
-  .stock-chg { font-size: 12px; font-weight: 600; }
+  .stock-code { font-size: 12px; font-weight: 700; color: #94a3b8; }
+  .stock-price { font-size: 16px; font-weight: 700; }
+  .stock-chg { font-size: 11px; font-weight: 600; }
   .font-up { color: var(--good); }
   .font-down { color: var(--danger); }
-  .footer { font-size: 12px; color: #6f7c89; margin-top: 14px; }
+  .footer { font-size: 11px; color: #6f7c89; margin-top: 10px; }
 
   @media (orientation: portrait) {
     body { overflow: auto; }
     .grid { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-    .hero { grid-row: auto; min-height: 620px; }
-    .card { min-height: 420px; }
+    .hero { grid-row: auto; min-height: 600px; }
+    .card { min-height: 400px; }
   }
 </style>
 </head>
@@ -127,14 +138,14 @@
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
-      <div style="margin-top:18px">
+      <div style="margin-top:14px">
         <span id="clock" class="clock">--:--</span>
         <span id="seconds" class="seconds">--</span>
       </div>
       <div id="date" class="date">Đang tải...</div>
 
       <div class="weather-main">
-        <div style="display:flex;align-items:flex-end;gap:14px;">
+        <div style="display:flex;align-items:flex-end;gap:12px;">
           <div id="temp" class="temp">19°</div>
           <div>
             <div id="weatherDesc" class="weather-desc">Trời quang</div>
@@ -174,29 +185,25 @@
 
   <!-- Cột 3 trên: Khung ảnh tràn viền -->
   <section class="card" style="padding:0;position:relative;overflow:hidden;">
-    <div id="photoCounter" style="position:absolute;top:12px;right:16px;font-size:12px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
+    <div id="photoCounter" style="position:absolute;top:10px;right:14px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
     <div class="photo-wrap">
       <img id="photoSlide" src="" alt="Khung ảnh" />
     </div>
   </section>
 
-  <!-- Cột 2 dưới: Thị trường (VN-INDEX & 4 mã theo dõi) -->
-  <section class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
-    <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
-      <span>Thị trường</span>
-      <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;">Đang nạp...</span>
+  <!-- Cột 2 dưới: VN-INDEX 1 NĂM (FULL Ô) & 4 MÃ CỔ PHIẾU -->
+  <section class="card">
+    <div class="title" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span style="font-weight:700;font-size:15px;">VN-INDEX</span>
+        <span id="vnindexVal" class="font-up" style="font-size:22px;font-weight:700;">--</span>
+        <span id="vnindexChange" class="font-up" style="font-size:13px;font-weight:600;">--</span>
+      </div>
+      <span id="marketTime" style="font-size:11px;color:var(--muted);">1 Năm • Live</span>
     </div>
 
-    <div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
-        <div style="display:flex;align-items:baseline;gap:10px;">
-          <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">--</span>
-        </div>
-        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">--</span>
-      </div>
-      <div id="vnindexChart" style="width:100%;height:105px;"></div>
-    </div>
+    <!-- Biểu đồ 1 năm tự co giãn choán hết khoảng trống -->
+    <div class="chart-container" id="vnindexChart"></div>
 
     <div class="stocks-grid">
       <div class="stock-item">
@@ -222,34 +229,37 @@
     </div>
   </section>
 
-  <!-- Cột 3 dưới: Giá Vàng Bảo Tín Minh Châu -->
+  <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU (GIỮ CHỈ SỐ + THÊM BIỂU ĐỒ 2 ĐƯỜNG 1 NĂM FULL Ô) -->
   <section class="card">
-    <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
-      <span>Vàng Bảo Tín Minh Châu</span>
-      <span id="goldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Tự động</span>
+    <div class="title" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+      <span style="font-size:15px;">Vàng BTMC (999.9)</span>
+      <span id="goldStatus" style="font-size:11px;color:var(--muted);">1 Năm • Live</span>
     </div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Nhẫn tròn trơn Vàng Rồng Thăng Long 999.9</div>
-    
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
-        <div class="label">MUA VÀO</div>
-        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">--</div>
+
+    <!-- Giữ nguyên 2 ô chỉ số Mua / Bán -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
+        <div class="label" style="color:var(--good);">MUA VÀO</div>
+        <div id="goldBuy" style="font-size:19px;font-weight:700;color:var(--good);margin-top:2px;">--</div>
       </div>
-      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
-        <div class="label">BÁN RA</div>
-        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">--</div>
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
+        <div class="label" style="color:var(--gold);">BÁN RA</div>
+        <div id="goldSell" style="font-size:19px;font-weight:700;color:var(--gold);margin-top:2px;">--</div>
       </div>
     </div>
-    
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:12px;">
+
+    <!-- Biểu đồ 2 đường (Mua vào - Bán ra) 1 năm full ô -->
+    <div class="chart-container" id="goldChart"></div>
+
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding-top:2px;">
+      <span><b style="color:var(--good)">—</b> Mua   <b style="color:var(--gold)">—</b> Bán</span>
       <span>Đơn vị: <b>tr đ/chỉ</b></span>
-      <span>Nguồn: <b>btmc.vn</b></span>
     </div>
   </section>
 </div>
 
 <script>
-/* ===== 1. CẤU HÌNH HỆ THỐNG ===== */
+/* ===== 1. CẤU HÌNH ===== */
 const CONFIG = {
   locationName: "Hà Nội",
   latitude: 21.0285,
@@ -296,7 +306,7 @@ function getWeatherIcon(code) {
   if (code === 3) return `<svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M6.5 19h11a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4 2.2A4 4 0 0 0 6.5 19z"/></svg>`;
   if (code === 45 || code === 48) return `<svg viewBox="0 0 24 24" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="6" y1="13" x2="18" y2="13"/><line x1="4" y1="17" x2="20" y2="17"/></svg>`;
   if (code >= 95) return `<svg viewBox="0 0 24 24"><path d="M6 15h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 15z" fill="#64748b"/><polygon points="13 14 9 20 12 20 11 24 16 17 13 17 14 14" fill="#facc15"/></svg>`;
-  return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 14z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 24 24"><path d="M6 14h11a4 4 0 0 0 0-8 5 5 0 0 0-9.5 1.8A3.5 3.5 0 0 0 6 15z" fill="#64748b"/><line x1="8" y1="16" x2="7" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="16" x2="11" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/><line x1="16" y1="16" x2="15" y2="21" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/></svg>`;
 }
 
 function renderWeatherData(w) {
@@ -321,11 +331,6 @@ function renderWeatherData(w) {
       fc.appendChild(el);
     });
   }
-
-  const noteEl = document.getElementById("weatherNote");
-  if (noteEl) {
-    noteEl.textContent = "Thời tiết: Open‑Meteo • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"});
-  }
 }
 
 async function loadWeather() {
@@ -346,7 +351,7 @@ async function loadWeather() {
 loadWeather();
 setInterval(loadWeather, 15 * 60 * 1000);
 
-/* ===== 4. GOOGLE CALENDAR ===== */
+/* ===== 4. LỊCH GOOGLE ===== */
 if (CONFIG.googleCalendarEmbedUrl) {
   const wrap = document.getElementById("calendarWrap");
   wrap.innerHTML = "";
@@ -356,7 +361,7 @@ if (CONFIG.googleCalendarEmbedUrl) {
   wrap.appendChild(f);
 }
 
-/* ===== 5. KHUNG ẢNH CÁ NHÂN ===== */
+/* ===== 5. KHUNG ẢNH ===== */
 const photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
 let currentPhotoIdx = 0;
 
@@ -376,11 +381,8 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000);
 
-/* ===== 6 & 7. NẠP DỮ LIỆU TỰ ĐỘNG TỪ MARKET.JSON ===== */
-const FALLBACK_PRICES = [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07];
-const FALLBACK_DATES = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"];
-
-function renderChart(prices, dates, curVal, changeStr, pctStr, isUp) {
+/* ===== 6. VẼ BIỂU ĐỒ VN-INDEX 1 NĂM (FULL Ô) ===== */
+function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const vEl = document.getElementById("vnindexVal");
   const cEl = document.getElementById("vnindexChange");
   if (vEl) {
@@ -392,11 +394,11 @@ function renderChart(prices, dates, curVal, changeStr, pctStr, isUp) {
     cEl.className = isUp ? "font-up" : "font-down";
   }
 
-  const width = 360, height = 105;
-  const padL = 6, padR = 6, padT = 8, padB = 22;
+  const width = 450, height = 145;
+  const padL = 6, padR = 10, padT = 10, padB = 22;
   const chartW = width - padL - padR, chartH = height - padT - padB;
   const minP = Math.min(...prices), maxP = Math.max(...prices);
-  const padY = (maxP - minP) * 0.15 || 1;
+  const padY = (maxP - minP) * 0.1 || 1;
   const yMin = minP - padY, yMax = maxP + padY;
   const n = prices.length;
 
@@ -412,30 +414,94 @@ function renderChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const strokeColor = isUp ? "var(--good)" : "var(--danger)";
 
   const labels = `
-    <text x="${coords[0][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="start">${dates[0]}</text>
-    <text x="${coords[Math.floor(n/2)][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n/2)]}</text>
-    <text x="${coords[n-1][0]}" y="${height - 2}" fill="#64748b" font-size="11" text-anchor="end">${dates[n-1]}</text>
+    <text x="${coords[0][0]}" y="${height - 4}" fill="#64748b" font-size="11" text-anchor="start">${dates[0] || '11/25'}</text>
+    <text x="${coords[Math.floor(n*0.33)][0]}" y="${height - 4}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n*0.33)] || '03/26'}</text>
+    <text x="${coords[Math.floor(n*0.66)][0]}" y="${height - 4}" fill="#64748b" font-size="11" text-anchor="middle">${dates[Math.floor(n*0.66)] || '07/26'}</text>
+    <text x="${coords[n-1][0]}" y="${height - 4}" fill="#64748b" font-size="11" text-anchor="end">${dates[n-1] || '11/26'}</text>
   `;
 
   const box = document.getElementById("vnindexChart");
   if (box) {
     box.innerHTML = `
-      <svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow:visible">
+      <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
         <defs>
           <linearGradient id="vnGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.32"/>
+            <stop offset="0%" stop-color="${strokeColor}" stop-opacity="0.35"/>
             <stop offset="100%" stop-color="${strokeColor}" stop-opacity="0.0"/>
           </linearGradient>
         </defs>
         <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
         <path d="${areaPath}" fill="url(#vnGrad)" />
-        <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${linePath}" fill="none" stroke="${strokeColor}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
         <circle cx="${coords[n-1][0]}" cy="${coords[n-1][1]}" r="4.5" fill="${strokeColor}" stroke="#0b1118" stroke-width="2" />
         ${labels}
       </svg>
     `;
   }
 }
+
+/* ===== 7. VẼ BIỂU ĐỒ VÀNG 2 ĐƯỜNG MUA - BÁN 1 NĂM (FULL Ô) ===== */
+function renderGoldChart(buyHistory, sellHistory, dates) {
+  const width = 340, height = 110;
+  const padL = 6, padR = 10, padT = 10, padB = 22;
+  const chartW = width - padL - padR, chartH = height - padT - padB;
+  
+  const allPrices = [...buyHistory, ...sellHistory];
+  const minP = Math.min(...allPrices), maxP = Math.max(...allPrices);
+  const padY = (maxP - minP) * 0.12 || 1;
+  const yMin = minP - padY, yMax = maxP + padY;
+  const n = buyHistory.length;
+
+  const buyCoords = buyHistory.map((p, i) => {
+    const x = padL + (i / (n - 1)) * chartW;
+    const y = padT + chartH - ((p - yMin) / (yMax - yMin)) * chartH;
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+
+  const sellCoords = sellHistory.map((p, i) => {
+    const x = padL + (i / (n - 1)) * chartW;
+    const y = padT + chartH - ((p - yMin) / (yMax - yMin)) * chartH;
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+
+  let buyPath = `M ${buyCoords[0][0]} ${buyCoords[0][1]}`;
+  for (let i = 1; i < buyCoords.length; i++) buyPath += ` L ${buyCoords[i][0]} ${buyCoords[i][1]}`;
+
+  let sellPath = `M ${sellCoords[0][0]} ${sellCoords[0][1]}`;
+  for (let i = 1; i < sellCoords.length; i++) sellPath += ` L ${sellCoords[i][0]} ${sellCoords[i][1]}`;
+
+  const labels = `
+    <text x="${buyCoords[0][0]}" y="${height - 4}" fill="#64748b" font-size="10" text-anchor="start">${dates[0] || '11/25'}</text>
+    <text x="${buyCoords[Math.floor(n/2)][0]}" y="${height - 4}" fill="#64748b" font-size="10" text-anchor="middle">${dates[Math.floor(n/2)] || '05/26'}</text>
+    <text x="${buyCoords[n-1][0]}" y="${height - 4}" fill="#64748b" font-size="10" text-anchor="end">${dates[n-1] || '11/26'}</text>
+  `;
+
+  const box = document.getElementById("goldChart");
+  if (box) {
+    box.innerHTML = `
+      <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+        <line x1="${padL}" y1="${padT + chartH/2}" x2="${width - padR}" y2="${padT + chartH/2}" stroke="#1e293b" stroke-dasharray="3 3" />
+        
+        <!-- Đường Giá Bán (Màu Vàng chanh) -->
+        <path d="${sellPath}" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="${sellCoords[n-1][0]}" cy="${sellCoords[n-1][1]}" r="4" fill="var(--gold)" stroke="#0b1118" stroke-width="1.8" />
+        
+        <!-- Đường Giá Mua (Màu Xanh lá) -->
+        <path d="${buyPath}" fill="none" stroke="var(--good)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="${buyCoords[n-1][0]}" cy="${buyCoords[n-1][1]}" r="4" fill="var(--good)" stroke="#0b1118" stroke-width="1.8" />
+        
+        ${labels}
+      </svg>
+    `;
+  }
+}
+
+/* ===== 8. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
+const FALLBACK_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1735.49];
+const FALLBACK_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
+const FALLBACK_GOLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
+const FALLBACK_GOLD_BUY = [8.40, 8.85, 9.70, 10.90, 11.95, 12.80, 13.55];
+const FALLBACK_GOLD_SELL = [8.80, 9.25, 10.10, 11.30, 12.35, 13.20, 13.95];
 
 async function loadMarketJSON() {
   try {
@@ -445,14 +511,16 @@ async function loadMarketJSON() {
 
     const tEl = document.getElementById("marketTime");
     const updateTime = data.time || data.updated_at || "";
-    if (tEl && updateTime) tEl.textContent = `Cập nhật • ${updateTime}`;
+    if (tEl && updateTime) tEl.textContent = `1 Năm • ${updateTime}`;
 
+    // 1. Cập nhật VN-INDEX 1 Năm
     if (data.vnindex) {
-      const prices = data.vnindex.prices || FALLBACK_PRICES;
-      const dates = data.vnindex.dates || FALLBACK_DATES;
-      renderChart(prices, dates, data.vnindex.val, data.vnindex.change, data.vnindex.pct, data.vnindex.isUp);
+      const prices = (data.vnindex.prices && data.vnindex.prices.length >= 2) ? data.vnindex.prices : FALLBACK_VN_PRICES;
+      const dates = (data.vnindex.dates && data.vnindex.dates.length >= 2) ? data.vnindex.dates : FALLBACK_VN_DATES;
+      renderVnindexChart(prices, dates, data.vnindex.val, data.vnindex.change, data.vnindex.pct, data.vnindex.isUp);
     }
 
+    // 2. Cập nhật 4 mã cổ phiếu
     if (data.stocks) {
       Object.keys(data.stocks).forEach(code => {
         const item = data.stocks[code];
@@ -467,6 +535,7 @@ async function loadMarketJSON() {
       });
     }
 
+    // 3. Cập nhật Vàng BTMC (Số liệu & Biểu đồ 2 đường 1 năm)
     if (data.gold) {
       const bEl = document.getElementById("goldBuy");
       const sEl = document.getElementById("goldSell");
@@ -474,16 +543,22 @@ async function loadMarketJSON() {
       if (bEl && sEl) {
         bEl.textContent = data.gold.buy;
         sEl.textContent = data.gold.sell;
-        if (statusEl && updateTime) statusEl.textContent = `Tự động • ${updateTime}`;
+        if (statusEl && updateTime) statusEl.textContent = `1 Năm • ${updateTime}`;
       }
+
+      const buyHist = (data.gold.buy_history && data.gold.buy_history.length >= 2) ? data.gold.buy_history : FALLBACK_GOLD_BUY;
+      const sellHist = (data.gold.sell_history && data.gold.sell_history.length >= 2) ? data.gold.sell_history : FALLBACK_GOLD_SELL;
+      const gDates = (data.gold.dates && data.gold.dates.length >= 2) ? data.gold.dates : FALLBACK_GOLD_DATES;
+      renderGoldChart(buyHist, sellHist, gDates);
     }
   } catch (e) {
-    renderChart(FALLBACK_PRICES, FALLBACK_DATES, "1,743.07", "+8.45", "+0.49%", true);
+    renderVnindexChart(FALLBACK_VN_PRICES, FALLBACK_VN_DATES, "1,735.49", "-7.58", "-0.43%", false);
+    renderGoldChart(FALLBACK_GOLD_BUY, FALLBACK_GOLD_SELL, FALLBACK_GOLD_DATES);
   }
 }
 
 loadMarketJSON();
-setInterval(loadMarketJSON, 60000); // Tự quét lại file market.json mỗi phút
+setInterval(loadMarketJSON, 60000); // Tự động quét lại mỗi phút
 </script>
 </body>
 </html>
