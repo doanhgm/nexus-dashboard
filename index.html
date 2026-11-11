@@ -92,6 +92,7 @@
     transition: opacity 0.8s ease-in-out;
   }
 
+  /* KHUNG BIỂU ĐỒ TRỤC Y VÀ X HTML SẮC NÉT */
   .chart-box {
     flex: 1;
     width: 100%;
@@ -258,30 +259,26 @@
     </div>
   </section>
 
-  <!-- Cột 3 dưới: VÀNG THẾ GIỚI XAU/USD (ĐƠN VỊ USD/OZ & NẾN 1 NĂM QUỐC TẾ) -->
+  <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU (GIỮ SỐ BTMC + BIỂU ĐỒ NẾN XAU/USD 1 NĂM) -->
   <section class="card">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
-      <div style="display:flex;align-items:baseline;gap:8px;">
-        <span style="font-weight:700;font-size:16px;">XAU/USD</span>
-        <span id="goldVal" class="font-up" style="font-size:24px;font-weight:700;">--</span>
-        <span id="goldChange" class="font-up" style="font-size:13px;font-weight:600;">--</span>
-      </div>
-      <span id="goldTime" style="font-size:11px;color:var(--muted);">1 Năm • USD/oz</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span style="font-size:15px;font-weight:700;">Vàng BTMC (999.9)</span>
+      <span id="goldStatus" style="font-size:11px;color:var(--muted);">1 Năm • XAU/USD</span>
     </div>
 
-    <!-- 2 Ô chỉ số Mua (Bid) / Bán (Ask) -->
+    <!-- 2 Ô chỉ số Mua / Bán của BTMC chuẩn tr/chỉ -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
-        <div class="label" style="color:var(--good)">GIÁ MUA (BID)</div>
-        <div id="goldBuy" style="font-size:19px;font-weight:700;color:var(--good);margin-top:2px;">--</div>
+        <div class="label" style="color:var(--good)">MUA VÀO (TR/CHỈ)</div>
+        <div id="goldBuy" style="font-size:20px;font-weight:700;color:var(--good);margin-top:2px;">13.55</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
-        <div class="label" style="color:var(--gold)">GIÁ BÁN (ASK)</div>
-        <div id="goldSell" style="font-size:19px;font-weight:700;color:var(--gold);margin-top:2px;">--</div>
+        <div class="label" style="color:var(--gold)">BÁN RA (TR/CHỈ)</div>
+        <div id="goldSell" style="font-size:20px;font-weight:700;color:var(--gold);margin-top:2px;">13.95</div>
       </div>
     </div>
 
-    <!-- Khung biểu đồ Vàng XAU/USD tràn viền -->
+    <!-- Khung biểu đồ Nến thế giới 1 năm (USD/oz) -->
     <div class="chart-box" id="goldChart"></div>
   </section>
 </div>
@@ -487,26 +484,15 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   `;
 }
 
-/* ===== 7. VẼ BIỂU ĐỒ VÀNG THẾ GIỚI XAU/USD (TRỤC Y USD/OZ + NẾN 1 NĂM) ===== */
-function renderGoldChart(prices, dates, curVal, changeStr, pctStr, isUp) {
-  const vEl = document.getElementById("goldVal");
-  const cEl = document.getElementById("goldChange");
-  if (vEl) {
-    vEl.textContent = curVal;
-    vEl.className = isUp ? "font-up" : "font-down";
-  }
-  if (cEl) {
-    cEl.textContent = `${changeStr} (${pctStr})`;
-    cEl.className = isUp ? "font-up" : "font-down";
-  }
-
+/* ===== 7. VẼ BIỂU ĐỒ NẾN VÀNG THẾ GIỚI 1 NĂM (USD/OZ) ===== */
+function renderGoldChart(prices, dates) {
   const box = document.getElementById("goldChart");
   if (!box || !prices || prices.length < 2) return;
 
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
 
-  // 3 Mốc trục Y số tròn USD (ví dụ: 2,800 - 2,400 - 2,000)
+  // 3 Mốc trục Y số tròn USD
   const yMaxVal = Math.ceil(maxP / 100) * 100;
   const yMinVal = Math.floor(minP / 100) * 100;
   const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
@@ -545,7 +531,6 @@ function renderGoldChart(prices, dates, curVal, changeStr, pctStr, isUp) {
           <stop offset="100%" stop-color="#facc15" stop-opacity="0.0"/>
         </linearGradient>
       </defs>
-      <!-- 3 đường dóng ngang trục Y -->
       <line x1="${padL}" y1="${yTopLine}" x2="${width - padR}" y2="${yTopLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       <line x1="${padL}" y1="${yMidLine}" x2="${width - padR}" y2="${yMidLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
       <line x1="${padL}" y1="${yBotLine}" x2="${width - padR}" y2="${yBotLine}" stroke="#223042" stroke-width="1.6" stroke-dasharray="5 5" />
@@ -572,8 +557,8 @@ function renderGoldChart(prices, dates, curVal, changeStr, pctStr, isUp) {
 const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1737.32];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
 
-const DEFAULT_GOLD_PRICES = [1985.0, 2025.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
-const DEFAULT_GOLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
+const DEFAULT_WORLD_PRICES = [1985.0, 2030.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
+const DEFAULT_WORLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
 
 async function loadMarketJSON() {
   try {
@@ -607,21 +592,21 @@ async function loadMarketJSON() {
       });
     }
 
-    // 3. Cập nhật Vàng XAU/USD
+    // 3. Cập nhật Vàng BTMC (Số Mua/Bán BTMC + Biểu đồ nến XAU/USD)
     if (data.gold) {
       const bEl = document.getElementById("goldBuy");
       const sEl = document.getElementById("goldSell");
       if (bEl && sEl) {
-        bEl.textContent = data.gold.bid || `$${(data.gold.raw - 0.5).toFixed(2)}`;
-        sEl.textContent = data.gold.ask || `$${(data.gold.raw + 0.5).toFixed(2)}`;
+        bEl.textContent = data.gold.buy || "13.55";
+        sEl.textContent = data.gold.sell || "13.95";
       }
-      const gPrices = (data.gold.prices && data.gold.prices.length >= 2) ? data.gold.prices : DEFAULT_GOLD_PRICES;
-      const gDates = (data.gold.dates && data.gold.dates.length >= 2) ? data.gold.dates : DEFAULT_GOLD_DATES;
-      renderGoldChart(gPrices, gDates, data.gold.val, data.gold.change, data.gold.pct, data.gold.isUp);
+      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : (data.gold.prices || DEFAULT_WORLD_PRICES);
+      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : (data.gold.dates || DEFAULT_WORLD_DATES);
+      renderGoldChart(gPrices, gDates);
     }
   } catch (e) {
     renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,737.32", "-5.75", "-0.33%", false);
-    renderGoldChart(DEFAULT_GOLD_PRICES, DEFAULT_GOLD_DATES, "$2,685.50", "+13.30", "+0.50%", true);
+    renderGoldChart(DEFAULT_WORLD_PRICES, DEFAULT_WORLD_DATES);
   }
 }
 
