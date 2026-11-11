@@ -48,7 +48,7 @@ jobs:
           to_ts = int(time.time())
           from_ts = to_ts - 370 * 86400
           dates = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"]
-          prices = [1250.0, 1280.0, 1320.0, 1450.0, 1580.0, 1690.0, 1737.32]
+          prices = [1250.0, 1280.0, 1320.0, 1450.0, 1580.0, 1690.0, 1738.69]
           ref_price = 1743.07
 
           try:
@@ -92,12 +92,12 @@ jobs:
           except Exception as e:
               print(f"[LỖI] VN-INDEX Live: {e}")
 
-          # 3. CÀO 4 MÃ CỔ PHIẾU (VPS ĐÃ CHẠY HOÀN HẢO)
+          # 3. CÀO 4 MÃ CỔ PHIẾU (VPS)
           stocks = {
               "HSG": {"price": 10.95, "pct": "+0.46%", "isUp": True},
               "VND": {"price": 14.65, "pct": "-1.68%", "isUp": False},
-              "VCK": {"price": 28.05, "pct": "-1.92%", "isUp": False},
-              "SHB": {"price": 11.1, "pct": "+1.83%", "isUp": True}
+              "VCK": {"price": 28.15, "pct": "-1.57%", "isUp": False},
+              "SHB": {"price": 11.15, "pct": "+2.29%", "isUp": True}
           }
 
           try:
@@ -122,7 +122,7 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Cào cổ phiếu: {e}")
 
-          # 4. CÀO GIÁ MUA VÀO / BÁN RA THỰC TẾ CỦA BẢO TÍN MINH CHÂU
+          # 4. CÀO GIÁ MUA VÀO / BÁN RA BTMC
           gold_buy, gold_sell = "13.55", "13.95"
           try:
               r_gold = requests.get("https://webgia.com/gia-vang/bao-tin-minh-chau/", headers=headers, timeout=7)
@@ -147,19 +147,15 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Cào Vàng BTMC: {e}")
 
-          # 5. KÉO NẾN 1 NĂM VÀNG THẾ GIỚI XAU/USD (USD/OZ) ĐỂ VẼ BIỂU ĐỒ
+          # 5. KÉO NẾN 1 NĂM VÀNG THẾ GIỚI XAU/USD (USD/OZ)
           world_prices = [1985.0, 2025.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50]
           world_dates = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"]
-          world_ok = False
-
-          # Nguồn 1: Yahoo Finance Chart API (GC=F)
           try:
               url_yg = "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1y"
               r_yg = requests.get(url_yg, headers=headers, timeout=6)
               if r_yg.status_code == 200:
-                  j_yg = r_yg.json()
-                  res = j_yg.get("chart", {}).get("result", [])
-                  if res and len(res) > 0:
+                  res = r_yg.json().get("chart", {}).get("result", [])
+                  if res:
                       ts_list = res[0].get("timestamp", [])
                       c_list = res[0].get("indicators", {}).get("quote", [{}])[0].get("close", [])
                       valid_pts = [(t, float(c)) for t, c in zip(ts_list, c_list) if c is not None]
@@ -170,28 +166,36 @@ jobs:
                               sampled.append(valid_pts[-1])
                           world_prices = [round(p, 2) for _, p in sampled]
                           world_dates = [datetime.fromtimestamp(t, timezone(timedelta(hours=7))).strftime("%m/%y") for t, _ in sampled]
-                          world_ok = True
-                          print(f"[THÀNH CÔNG] Đã tải nến Vàng thế giới Yahoo Finance ({len(world_prices)} điểm)")
+                          print(f"[THÀNH CÔNG] Đã tải nến Vàng XAU/USD ({len(world_prices)} điểm)")
           except Exception as e:
-              print(f"[LỖI] Vàng Yahoo: {e}")
+              print(f"[LỖI] Vàng XAU/USD: {e}")
 
-          # Nguồn 2: Dự phòng Stooq
-          if not world_ok:
-              try:
-                  r_stooq = requests.get("https://stooq.com/q/d/l/?s=xauusd&i=d", headers=headers, timeout=6)
-                  if r_stooq.status_code == 200 and "Date" in r_stooq.text:
-                      lines = [line.split(",") for line in r_stooq.text.strip().split("\n")[1:] if len(line.split(",")) >= 5]
-                      lines = lines[-250:]
-                      if len(lines) >= 15:
-                          step = max(1, len(lines) // 70)
-                          sampled = lines[::step] + [lines[-1]]
-                          world_prices = [round(float(row[4]), 2) for row in sampled]
-                          world_dates = [row[0][5:7] + "/" + row[0][2:4] for row in sampled]
-                          print(f"[THÀNH CÔNG] Đã tải nến Vàng thế giới Stooq ({len(world_prices)} điểm)")
-              except Exception as e:
-                  print(f"[LỖI] Vàng Stooq: {e}")
+          # 6. CÀO GIÁ XĂNG DẦU PETROLIMEX (VÙNG 1)
+          gas_ron95 = "20.850"
+          gas_e10 = "20.150"
+          try:
+              r_gas = requests.get("https://webgia.com/gia-xang-dau/petrolimex/", headers=headers, timeout=6)
+              if r_gas.status_code == 200:
+                  soup = BeautifulSoup(r_gas.text, "html.parser")
+                  for tr in soup.find_all("tr"):
+                      txt = tr.get_text().lower()
+                      if "95-iii" in txt or "ron 95-iii" in txt:
+                          for td in tr.find_all(["td", "th"]):
+                              digits = re.sub(r"[^\d]", "", td.get_text())
+                              if len(digits) >= 5 and float(digits) >= 15000:
+                                  gas_ron95 = f"{int(digits):,}".replace(",", ".")
+                                  break
+                      if "e10" in txt or "e5" in txt or "ron 92" in txt:
+                          for td in tr.find_all(["td", "th"]):
+                              digits = re.sub(r"[^\d]", "", td.get_text())
+                              if len(digits) >= 5 and float(digits) >= 15000:
+                                  gas_e10 = f"{int(digits):,}".replace(",", ".")
+                                  break
+                  print(f"[THÀNH CÔNG] Xăng RON 95-III: {gas_ron95} - E10: {gas_e10}")
+          except Exception as e:
+              print(f"[LỖI] Cào xăng dầu: {e}")
 
-          # 6. XUẤT FILE MARKET.JSON CHUẨN ĐỦ CẢ BTMC LẪN XAU/USD
+          # 7. XUẤT FILE MARKET.JSON
           market_output = {
               "updated_at": time_str,
               "time": time_str,
@@ -211,6 +215,10 @@ jobs:
                   "sell": gold_sell,
                   "world_dates": world_dates,
                   "world_prices": world_prices
+              },
+              "gas": {
+                  "ron95": gas_ron95,
+                  "e10": gas_e10
               }
           }
 
