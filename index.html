@@ -184,16 +184,16 @@
   <section class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Thị trường</span>
-      <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;"></span>
+      <span id="marketTime" style="font-size:12px;color:var(--muted);font-weight:normal;">Đang nạp...</span>
     </div>
 
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
         <div style="display:flex;align-items:baseline;gap:10px;">
           <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">1,743.07</span>
+          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">--</span>
         </div>
-        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+8.45 (+0.49%)</span>
+        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">--</span>
       </div>
       <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
@@ -201,23 +201,23 @@
     <div class="stocks-grid">
       <div class="stock-item">
         <span class="stock-code">HSG</span>
-        <span id="price-HSG" class="stock-price font-up">26.50</span>
-        <span id="change-HSG" class="stock-chg font-up">+1.92%</span>
+        <span id="price-HSG" class="stock-price">--</span>
+        <span id="change-HSG" class="stock-chg">--</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VND</span>
-        <span id="price-VND" class="stock-price font-up">18.20</span>
-        <span id="change-VND" class="stock-chg font-up">+1.39%</span>
+        <span id="price-VND" class="stock-price">--</span>
+        <span id="change-VND" class="stock-chg">--</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VCK</span>
-        <span id="price-VCK" class="stock-price font-up">22.80</span>
-        <span id="change-VCK" class="stock-chg font-up">+2.24%</span>
+        <span id="price-VCK" class="stock-price">--</span>
+        <span id="change-VCK" class="stock-chg">--</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">SHB</span>
-        <span id="price-SHB" class="stock-price font-up">13.50</span>
-        <span id="change-SHB" class="stock-chg font-up">+1.12%</span>
+        <span id="price-SHB" class="stock-price">--</span>
+        <span id="change-SHB" class="stock-chg">--</span>
       </div>
     </div>
   </section>
@@ -226,18 +226,18 @@
   <section class="card">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Vàng Bảo Tín Minh Châu</span>
-      <span id="goldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Trực tiếp</span>
+      <span id="goldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Tự động</span>
     </div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Nhẫn tròn trơn Vàng Rồng Thăng Long 999.9</div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">MUA VÀO</div>
-        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">13.68</div>
+        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">--</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">BÁN RA</div>
-        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">14.08</div>
+        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">--</div>
       </div>
     </div>
     
@@ -376,40 +376,20 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000);
 
-/* ===== 6. THỊ TRƯỜNG & CHỨNG KHOÁN (CHUẨN THEO BIỂU ĐỒ 1.743,07) ===== */
-const MARKET_HISTORY = {
-  dates: ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"],
-  prices: [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07]
-};
+/* ===== 6 & 7. NẠP DỮ LIỆU TỰ ĐỘNG TỪ MARKET.JSON ===== */
+const FALLBACK_PRICES = [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07];
+const FALLBACK_DATES = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"];
 
-function drawChart(latestIndex, change, pct) {
-  const prices = [...MARKET_HISTORY.prices];
-  prices[prices.length - 1] = latestIndex;
-  const dates = MARKET_HISTORY.dates;
-  const n = prices.length;
-  const isUp = change >= 0;
-
+function renderChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const vEl = document.getElementById("vnindexVal");
   const cEl = document.getElementById("vnindexChange");
-  const tEl = document.getElementById("marketTime");
-
   if (vEl) {
-    vEl.textContent = latestIndex.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    vEl.textContent = curVal;
     vEl.className = isUp ? "font-up" : "font-down";
   }
   if (cEl) {
-    cEl.textContent = `${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
+    cEl.textContent = `${changeStr} (${pctStr})`;
     cEl.className = isUp ? "font-up" : "font-down";
-  }
-
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  const isTrading = (day >= 1 && day <= 5) && ((hour >= 9 && hour < 11) || (hour === 11 && now.getMinutes() <= 30) || (hour >= 13 && hour < 15));
-
-  if (tEl) {
-    tEl.textContent = isTrading ? `Trực tiếp • ${now.toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"})}`
-                                : `Chốt phiên • ${now.toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"})}`;
   }
 
   const width = 360, height = 105;
@@ -418,6 +398,7 @@ function drawChart(latestIndex, change, pct) {
   const minP = Math.min(...prices), maxP = Math.max(...prices);
   const padY = (maxP - minP) * 0.15 || 1;
   const yMin = minP - padY, yMax = maxP + padY;
+  const n = prices.length;
 
   const coords = prices.map((p, i) => {
     const x = padL + (i / (n - 1)) * chartW;
@@ -456,119 +437,53 @@ function drawChart(latestIndex, change, pct) {
   }
 }
 
-async function fetchRealMarket() {
-  const now = new Date();
-  const hour = now.getHours();
-  const day = now.getDay();
-  const isTrading = (day >= 1 && day <= 5) && ((hour >= 9 && hour < 11) || (hour === 11 && now.getMinutes() <= 30) || (hour >= 13 && hour < 15));
-
-  // Trong giờ giao dịch: Tự kéo biến động từ bảng điện
-  if (isTrading) {
-    try {
-      const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        const idx = data.dataIndex;
-        if (idx && idx.indexValue) {
-          drawChart(parseFloat(idx.indexValue), parseFloat(idx.change), parseFloat(idx.changePercent));
-        }
-      }
-    } catch (e) {}
-
-    try {
-      const res = await fetch("https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:HSG,VND,SHB&size=3", { cache: "no-store" });
-      if (res.ok) {
-        const json = await res.json();
-        json.data.forEach(item => {
-          const code = item.code;
-          const p = item.close / 1000;
-          const pct = item.changePercent;
-          const isUp = pct >= 0;
-          const pEl = document.getElementById(`price-${code}`);
-          const cEl = document.getElementById(`change-${code}`);
-          if (pEl && cEl) {
-            pEl.textContent = p.toFixed(2);
-            pEl.className = isUp ? "stock-price font-up" : "stock-price font-down";
-            cEl.textContent = `${isUp ? "+" : ""}${pct.toFixed(2)}%`;
-            cEl.className = isUp ? "stock-chg font-up" : "stock-chg font-down";
-          }
-        });
-      }
-    } catch (e) {}
-  } else {
-    // Ngoài giờ giao dịch: Khóa số liệu chốt phiên chuẩn theo FireAnt
-    drawChart(1743.07, 8.45, 0.49);
-  }
-}
-
-drawChart(1743.07, 8.45, 0.49);
-fetchRealMarket();
-setInterval(fetchRealMarket, 30000); // Quét lại mỗi 30 giây
-
-/* ===== 7. VÀNG BẢO TÍN MINH CHÂU (CHUẨN 13.68 - 14.08) ===== */
-async function fetchBTMCGold() {
-  const buyEl = document.getElementById("goldBuy");
-  const sellEl = document.getElementById("goldSell");
-  const statusEl = document.getElementById("goldStatus");
-  if (!buyEl || !sellEl) return;
-
-  const updateTime = () => new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-
+async function loadMarketJSON() {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
-    // Bóc tách trực tiếp từ btmc.vn qua proxy
-    const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://btmc.vn/");
-    const res = await fetch(proxyUrl, { signal: controller.signal, cache: "no-store" });
-    clearTimeout(timeoutId);
+    const res = await fetch("./market.json?t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
 
-    if (res.ok) {
-      const htmlText = await res.text();
-      const doc = new DOMParser().parseFromString(htmlText, "text/html");
+    const tEl = document.getElementById("marketTime");
+    const updateTime = data.time || data.updated_at || "";
+    if (tEl && updateTime) tEl.textContent = `Cập nhật • ${updateTime}`;
 
-      let buyVal = "", sellVal = "";
-      doc.querySelectorAll("tr").forEach(r => {
-        const txt = r.innerText.toLowerCase();
-        // Nhận diện chính xác hàng "NHẪN TRÒN TRƠN BẢO TÍN MINH CHÂU"
-        if (txt.includes("nhẫn tròn") || (txt.includes("bảo tín") && txt.includes("999.9"))) {
-          const cells = r.querySelectorAll("td, th");
-          const nums = [];
-          cells.forEach(c => {
-            const clean = c.innerText.trim().replace(/[^0-9.,]/g, "");
-            if (clean && clean.length >= 4) nums.push(clean);
-          });
-          if (nums.length >= 2 && !buyVal) {
-            buyVal = nums[0];
-            sellVal = nums[1];
-          }
+    if (data.vnindex) {
+      const prices = data.vnindex.prices || FALLBACK_PRICES;
+      const dates = data.vnindex.dates || FALLBACK_DATES;
+      renderChart(prices, dates, data.vnindex.val, data.vnindex.change, data.vnindex.pct, data.vnindex.isUp);
+    }
+
+    if (data.stocks) {
+      Object.keys(data.stocks).forEach(code => {
+        const item = data.stocks[code];
+        const pEl = document.getElementById(`price-${code}`);
+        const cEl = document.getElementById(`change-${code}`);
+        if (pEl && cEl) {
+          pEl.textContent = Number(item.price).toFixed(2);
+          pEl.className = item.isUp ? "stock-price font-up" : "stock-price font-down";
+          cEl.textContent = item.pct;
+          cEl.className = item.isUp ? "stock-chg font-up" : "stock-chg font-down";
         }
       });
+    }
 
-      if (buyVal && sellVal) {
-        // Đơn vị BTMC là 1 = 1.000 VNĐ -> 13680 chia cho 1000 = 13.68 triệu/chỉ
-        const toTrieu = (v) => {
-          let n = parseFloat(v.replace(/\./g, "").replace(",", "."));
-          if (n >= 10000) return (n / 1000).toFixed(2);
-          if (n > 1000000) return (n / 1000000).toFixed(2);
-          return v;
-        };
-        buyEl.textContent = toTrieu(buyVal);
-        sellEl.textContent = toTrieu(sellVal);
-        if (statusEl) statusEl.textContent = `Trực tiếp • ${updateTime()}`;
-        return;
+    if (data.gold) {
+      const bEl = document.getElementById("goldBuy");
+      const sEl = document.getElementById("goldSell");
+      const statusEl = document.getElementById("goldStatus");
+      if (bEl && sEl) {
+        bEl.textContent = data.gold.buy;
+        sEl.textContent = data.gold.sell;
+        if (statusEl && updateTime) statusEl.textContent = `Tự động • ${updateTime}`;
       }
     }
-    throw new Error();
   } catch (e) {
-    // Luôn giữ chuẩn giá niêm yết hiện tại của BTMC
-    buyEl.textContent = "13.68";
-    sellEl.textContent = "14.08";
-    if (statusEl) statusEl.textContent = `Cập nhật • ${updateTime()}`;
+    renderChart(FALLBACK_PRICES, FALLBACK_DATES, "1,743.07", "+8.45", "+0.49%", true);
   }
 }
 
-fetchBTMCGold();
-setInterval(fetchBTMCGold, 10 * 60 * 1000);
+loadMarketJSON();
+setInterval(loadMarketJSON, 60000); // Tự quét lại file market.json mỗi phút
 </script>
 </body>
 </html>
