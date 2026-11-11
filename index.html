@@ -73,7 +73,7 @@
   .day .dow { font-size: 12px; color: var(--muted); }
   .day .t { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
-  /* KHU VỰC TIỆN ÍCH DƯỚI - TỰ CO GIÃN ĐẦY 100% CHIỀU CAO TRỐNG */
+  /* KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI CHOÁN HẾT PHẦN TRỐNG */
   .hero-bottom-group {
     flex: 1;
     display: flex;
@@ -91,7 +91,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex: 1; /* Tự động chia đều và choán hết chiều cao còn lại */
+    flex: 1;
   }
   .aqi-bar-bg {
     width: 100%; height: 6px;
@@ -242,7 +242,7 @@
       </div>
     </div>
 
-    <!-- KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI CHOÁN HẾT PHẦN TRỐNG -->
+    <!-- KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI -->
     <div class="hero-bottom-group">
       <!-- 1. KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) -->
       <div class="sub-box">
@@ -283,7 +283,7 @@
         </div>
       </div>
 
-      <!-- 3. KHỐI XĂNG SINH HỌC E10 (CHIẾM TRỌN CHIỀU NGANG) -->
+      <!-- 3. KHỐI XĂNG SINH HỌC E10 -->
       <div class="sub-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span class="label">NHIÊN LIỆU (PETROLIMEX)</span>
@@ -298,7 +298,7 @@
             </div>
           </div>
           <div style="text-align:right;">
-            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">20.150</span>
+            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">20.890</span>
             <span style="font-size:11px;color:var(--muted);margin-left:2px;">đ</span>
           </div>
         </div>
@@ -314,7 +314,7 @@
     <div id="calendarWrap" class="calendar-wrap"></div>
   </section>
 
-  <!-- Cột 3 trên: Khung ảnh tràn viền -->
+  <!-- Cột 3 trên: Khung ảnh tràn viền (Tự động nạp từ thư mục photos) -->
   <section class="card" style="padding:0;position:relative;overflow:hidden;">
     <div id="photoCounter" style="position:absolute;top:10px;right:14px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
     <div class="photo-wrap">
@@ -639,8 +639,8 @@ if (CONFIG.googleCalendarEmbedUrl) {
   wrap.appendChild(f);
 }
 
-/* ===== 7. KHUNG ẢNH ===== */
-const photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
+/* ===== 7. TRÌNH CHIẾU ẢNH TỰ ĐỘNG ===== */
+let photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
 let currentPhotoIdx = 0;
 
 function updatePhoto() {
@@ -806,7 +806,7 @@ function renderGoldChart(prices, dates) {
 }
 
 /* ===== 10. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
-const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1738.69];
+const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1740.19];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
 const DEFAULT_WORLD_PRICES = [1985.0, 2030.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
 const DEFAULT_WORLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
@@ -851,8 +851,8 @@ async function loadMarketJSON() {
         bEl.textContent = data.gold.buy || "13.55";
         sEl.textContent = data.gold.sell || "13.95";
       }
-      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : (data.gold.prices || DEFAULT_WORLD_PRICES);
-      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : (data.gold.dates || DEFAULT_WORLD_DATES);
+      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : DEFAULT_WORLD_PRICES;
+      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : DEFAULT_WORLD_DATES;
       renderGoldChart(gPrices, gDates);
     }
 
@@ -861,8 +861,13 @@ async function loadMarketJSON() {
       const eEl = document.getElementById("gasE10");
       if (eEl && data.gas.e10) eEl.textContent = data.gas.e10;
     }
+
+    // 5. Cập nhật Danh sách ảnh tự động từ thư mục photos
+    if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+      photoList = data.photos;
+    }
   } catch (e) {
-    renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,738.69", "-4.38", "-0.25%", false);
+    renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,740.19", "-2.88", "-0.17%", false);
     renderGoldChart(DEFAULT_WORLD_PRICES, DEFAULT_WORLD_DATES);
   }
 }
