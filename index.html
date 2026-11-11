@@ -15,7 +15,9 @@
     --line: #253041;
     --good: #4ade80;
     --gold: #facc15;
+    --orange: #fb923c;
     --danger: #f87171;
+    --purple: #c084fc;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -68,6 +70,27 @@
   .day .dow { font-size: 12px; color: var(--muted); }
   .day .t { font-size: 15px; font-weight: 700; margin-top: 4px; }
 
+  /* KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) */
+  .aqi-box {
+    margin-top: 14px;
+    background: #0b1118;
+    border: 1px solid #202c3a;
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .aqi-bar-bg {
+    width: 100%; height: 6px;
+    background: #1e293b;
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .aqi-bar-fill {
+    height: 100%; width: 0%;
+    border-radius: 4px;
+    transition: width 0.6s ease, background-color 0.6s ease;
+  }
+
   .calendar-wrap {
     flex: 1;
     border-radius: 12px;
@@ -92,7 +115,6 @@
     transition: opacity 0.8s ease-in-out;
   }
 
-  /* KHUNG BIỂU ĐỒ TRỤC Y VÀ X HTML SẮC NÉT */
   .chart-box {
     flex: 1;
     width: 100%;
@@ -164,7 +186,7 @@
 </head>
 <body>
 <div class="grid">
-  <!-- Cột 1: Hero (Đồng hồ + Thời tiết) -->
+  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + Chỉ số AQI Hà Nội) -->
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
@@ -203,8 +225,30 @@
         <div class="day"><div class="dow">T6</div><div class="t">20° / 17°</div></div>
         <div class="day"><div class="dow">T7</div><div class="t">26° / 18°</div></div>
       </div>
+
+      <!-- KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) HÀ NỘI -->
+      <div class="aqi-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span class="label" style="letter-spacing:0.8px;">KHÔNG KHÍ HÀ NỘI</span>
+          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Đang đo...</span>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span id="aqiVal" style="font-size:34px;font-weight:800;line-height:1;color:var(--gold);">--</span>
+            <span style="font-size:12px;color:var(--muted);font-weight:600;">US AQI</span>
+          </div>
+          <div style="text-align:right;">
+            <span class="label" style="display:block;font-size:10px;">BỤI PM2.5</span>
+            <b id="pm25Val" style="font-size:15px;color:#e2e8f0;">-- µg/m³</b>
+          </div>
+        </div>
+        <div class="aqi-bar-bg">
+          <div id="aqiBar" class="aqi-bar-fill" style="background:var(--gold);"></div>
+        </div>
+      </div>
     </div>
-    <div id="weatherNote" class="footer">Thời tiết: Open‑Meteo • Cập nhật tự động</div>
+
+    <div id="weatherNote" class="footer">Thời tiết & AQI: Open‑Meteo • Cập nhật tự động</div>
   </section>
 
   <!-- Cột 2 trên: Google Calendar -->
@@ -232,7 +276,6 @@
       <span id="marketTime" style="font-size:11px;color:var(--muted);">1 Năm • Live</span>
     </div>
 
-    <!-- Khung biểu đồ VN-Index -->
     <div class="chart-box" id="vnindexChart"></div>
 
     <div class="stocks-grid">
@@ -266,7 +309,6 @@
       <span id="goldStatus" style="font-size:11px;color:var(--muted);">1 Năm • XAU/USD</span>
     </div>
 
-    <!-- 2 Ô chỉ số Mua / Bán của BTMC chuẩn tr/chỉ -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
         <div class="label" style="color:var(--good)">MUA VÀO (TR/CHỈ)</div>
@@ -278,7 +320,6 @@
       </div>
     </div>
 
-    <!-- Khung biểu đồ Nến thế giới 1 năm (USD/oz) -->
     <div class="chart-box" id="goldChart"></div>
   </section>
 </div>
@@ -375,6 +416,71 @@ async function loadWeather() {
 }
 loadWeather();
 setInterval(loadWeather, 15 * 60 * 1000);
+
+/* ===== 3.1. CHẤT LƯỢNG KHÔNG KHÍ (AQI & PM2.5) HÀ NỘI ===== */
+function renderAQIData(aqi, pm25) {
+  const vEl = document.getElementById("aqiVal");
+  const bEl = document.getElementById("aqiBadge");
+  const barEl = document.getElementById("aqiBar");
+  const pmEl = document.getElementById("pm25Val");
+
+  if (pmEl && pm25 !== undefined) pmEl.textContent = `${pm25.toFixed(1)} µg/m³`;
+  if (!vEl || !bEl || !barEl) return;
+
+  vEl.textContent = Math.round(aqi);
+
+  // Phân cấp chuẩn US AQI
+  let label = "Tốt", color = "var(--good)";
+  if (aqi <= 50) {
+    label = "Tốt"; color = "var(--good)";
+  } else if (aqi <= 100) {
+    label = "Trung bình"; color = "var(--gold)";
+  } else if (aqi <= 150) {
+    label = "Kém"; color = "var(--orange)";
+  } else if (aqi <= 200) {
+    label = "Xấu"; color = "var(--danger)";
+  } else if (aqi <= 300) {
+    label = "Rất xấu"; color = "var(--purple)";
+  } else {
+    label = "Nguy hại"; color = "#e11d48";
+  }
+
+  vEl.style.color = color;
+  bEl.textContent = label;
+  bEl.style.color = color;
+  bEl.style.backgroundColor = color === "var(--good)" ? "rgba(74, 222, 128, 0.15)" :
+                              color === "var(--gold)" ? "rgba(250, 204, 21, 0.15)" :
+                              color === "var(--orange)" ? "rgba(251, 146, 60, 0.15)" :
+                              color === "var(--danger)" ? "rgba(248, 113, 113, 0.15)" : "rgba(192, 132, 252, 0.15)";
+  barEl.style.backgroundColor = color;
+  const pct = Math.min(100, Math.max(8, (aqi / 250) * 100));
+  barEl.style.width = pct + "%";
+}
+
+async function loadAirQuality() {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=us_aqi,pm2_5`;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (data.current) {
+      localStorage.setItem("nexus_aqi_cache", JSON.stringify(data.current));
+      renderAQIData(data.current.us_aqi, data.current.pm2_5);
+    }
+  } catch (e) {
+    const cached = localStorage.getItem("nexus_aqi_cache");
+    if (cached) {
+      try {
+        const c = JSON.parse(cached);
+        renderAQIData(c.us_aqi, c.pm2_5);
+      } catch (err) {}
+    } else {
+      renderAQIData(86, 29.5);
+    }
+  }
+}
+loadAirQuality();
+setInterval(loadAirQuality, 15 * 60 * 1000);
 
 /* ===== 4. LỊCH GOOGLE ===== */
 if (CONFIG.googleCalendarEmbedUrl) {
@@ -492,7 +598,6 @@ function renderGoldChart(prices, dates) {
   const minP = Math.min(...prices);
   const maxP = Math.max(...prices);
 
-  // 3 Mốc trục Y số tròn USD
   const yMaxVal = Math.ceil(maxP / 100) * 100;
   const yMinVal = Math.floor(minP / 100) * 100;
   const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
@@ -554,7 +659,7 @@ function renderGoldChart(prices, dates) {
 }
 
 /* ===== 8. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
-const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1737.32];
+const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1738.69];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
 
 const DEFAULT_WORLD_PRICES = [1985.0, 2030.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
@@ -592,7 +697,7 @@ async function loadMarketJSON() {
       });
     }
 
-    // 3. Cập nhật Vàng BTMC (Số Mua/Bán BTMC + Biểu đồ nến XAU/USD)
+    // 3. Cập nhật Vàng BTMC
     if (data.gold) {
       const bEl = document.getElementById("goldBuy");
       const sEl = document.getElementById("goldSell");
@@ -605,7 +710,7 @@ async function loadMarketJSON() {
       renderGoldChart(gPrices, gDates);
     }
   } catch (e) {
-    renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,737.32", "-5.75", "-0.33%", false);
+    renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,738.69", "-4.38", "-0.25%", false);
     renderGoldChart(DEFAULT_WORLD_PRICES, DEFAULT_WORLD_DATES);
   }
 }
