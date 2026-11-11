@@ -1,6 +1,6 @@
 {
-  "updated_at": "13:07 11/11",
-  "time": "13:07 11/11",
+  "updated_at": "13:16 11/11",
+  "time": "13:16 11/11",
   "vnindex": {
     "val": "1,250.00",
     "raw": 1250.0,
@@ -44,13 +44,13 @@
       "isUp": false
     },
     "VCK": {
-      "price": 21.3,
-      "pct": "+1.91%",
-      "isUp": true
+      "price": 28.05,
+      "pct": "-1.92%",
+      "isUp": false
     },
     "SHB": {
-      "price": 11.25,
-      "pct": "+3.21%",
+      "price": 11.15,
+      "pct": "+2.29%",
       "isUp": true
     }
   },
