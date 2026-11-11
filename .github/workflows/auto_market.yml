@@ -71,7 +71,7 @@ jobs:
           except Exception as e:
               print(f"[LỖI] VN-INDEX 1 năm: {e}")
 
-          # 2. CÀO ĐIỂM SỐ VN-INDEX LIVE PHIÊN HÔM NAY (NẾN 1 PHÚT ENTRADE)
+          # 2. CÀO ĐIỂM SỐ VN-INDEX LIVE TRONG PHIÊN
           vn_val, vn_chg, vn_pct, is_up = ref_price, 0.0, 0.0, True
           try:
               from_1m = to_ts - 7200
@@ -92,7 +92,7 @@ jobs:
           except Exception as e:
               print(f"[LỖI] VN-INDEX Live: {e}")
 
-          # 3. CÀO 4 MÃ CỔ PHIẾU (VPS ĐÃ CHẠY HOÀN HẢO 100%)
+          # 3. CÀO 4 MÃ CỔ PHIẾU (VPS ĐÃ CHẠY HOÀN HẢO)
           stocks = {
               "HSG": {"price": 10.95, "pct": "+0.46%", "isUp": True},
               "VND": {"price": 14.65, "pct": "-1.68%", "isUp": False},
@@ -122,14 +122,37 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Cào cổ phiếu: {e}")
 
-          # 4. KÉO DỮ LIỆU NẾN 1 NĂM VÀ GIÁ LIVE VÀNG THẾ GIỚI (XAU/USD - ĐƠN VỊ USD/OZ)
-          gold_price = 2685.50
-          gold_ref = 2672.20
-          gold_dates = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"]
-          gold_prices = [1985.0, 2025.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50]
-          gold_ok = False
+          # 4. CÀO GIÁ MUA VÀO / BÁN RA THỰC TẾ CỦA BẢO TÍN MINH CHÂU
+          gold_buy, gold_sell = "13.55", "13.95"
+          try:
+              r_gold = requests.get("https://webgia.com/gia-vang/bao-tin-minh-chau/", headers=headers, timeout=7)
+              if r_gold.status_code == 200:
+                  soup = BeautifulSoup(r_gold.text, "html.parser")
+                  for tr in soup.find_all("tr"):
+                      txt = tr.get_text().lower()
+                      if "nhẫn tròn" in txt or "vàng rồng thăng long" in txt:
+                          prices_found = []
+                          for td in tr.find_all(["td", "th"]):
+                              td_str = td.get_text().strip().lower()
+                              if "k" in td_str or "hàm lượng" in td_str:
+                                  continue
+                              digits = re.sub(r"[^\d]", "", td_str)
+                              if len(digits) >= 6 and float(digits) >= 5000000:
+                                  prices_found.append(float(digits))
+                          if len(prices_found) >= 2:
+                              gold_buy = f"{prices_found[0] / 1000000:.2f}"
+                              gold_sell = f"{prices_found[1] / 1000000:.2f}"
+                              print(f"[THÀNH CÔNG] Vàng BTMC: Mua {gold_buy} - Bán {gold_sell} tr/chỉ")
+                              break
+          except Exception as e:
+              print(f"[LỖI] Cào Vàng BTMC: {e}")
 
-          # Nguồn 1: Yahoo Finance Chart API (Gold Futures GC=F)
+          # 5. KÉO NẾN 1 NĂM VÀNG THẾ GIỚI XAU/USD (USD/OZ) ĐỂ VẼ BIỂU ĐỒ
+          world_prices = [1985.0, 2025.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50]
+          world_dates = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"]
+          world_ok = False
+
+          # Nguồn 1: Yahoo Finance Chart API (GC=F)
           try:
               url_yg = "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1d&range=1y"
               r_yg = requests.get(url_yg, headers=headers, timeout=6)
@@ -137,7 +160,6 @@ jobs:
                   j_yg = r_yg.json()
                   res = j_yg.get("chart", {}).get("result", [])
                   if res and len(res) > 0:
-                      meta = res[0].get("meta", {})
                       ts_list = res[0].get("timestamp", [])
                       c_list = res[0].get("indicators", {}).get("quote", [{}])[0].get("close", [])
                       valid_pts = [(t, float(c)) for t, c in zip(ts_list, c_list) if c is not None]
@@ -146,20 +168,15 @@ jobs:
                           sampled = valid_pts[::step]
                           if valid_pts[-1] not in sampled:
                               sampled.append(valid_pts[-1])
-                          gold_prices = [round(p, 2) for _, p in sampled]
-                          gold_dates = [datetime.fromtimestamp(t, timezone(timedelta(hours=7))).strftime("%m/%y") for t, _ in sampled]
-                          
-                          cur_p = meta.get("regularMarketPrice")
-                          gold_price = round(float(cur_p), 2) if cur_p else gold_prices[-1]
-                          prev_p = meta.get("chartPreviousClose")
-                          gold_ref = round(float(prev_p), 2) if prev_p else (gold_prices[-2] if len(gold_prices) >= 2 else gold_price)
-                          gold_ok = True
-                          print(f"[THÀNH CÔNG] Vàng XAU/USD (Yahoo): {gold_price}$/oz (Lịch sử: {len(gold_prices)} điểm)")
+                          world_prices = [round(p, 2) for _, p in sampled]
+                          world_dates = [datetime.fromtimestamp(t, timezone(timedelta(hours=7))).strftime("%m/%y") for t, _ in sampled]
+                          world_ok = True
+                          print(f"[THÀNH CÔNG] Đã tải nến Vàng thế giới Yahoo Finance ({len(world_prices)} điểm)")
           except Exception as e:
               print(f"[LỖI] Vàng Yahoo: {e}")
 
-          # Nguồn 2: Stooq nếu Yahoo trục trặc
-          if not gold_ok:
+          # Nguồn 2: Dự phòng Stooq
+          if not world_ok:
               try:
                   r_stooq = requests.get("https://stooq.com/q/d/l/?s=xauusd&i=d", headers=headers, timeout=6)
                   if r_stooq.status_code == 200 and "Date" in r_stooq.text:
@@ -168,21 +185,13 @@ jobs:
                       if len(lines) >= 15:
                           step = max(1, len(lines) // 70)
                           sampled = lines[::step] + [lines[-1]]
-                          gold_prices = [round(float(row[4]), 2) for row in sampled]
-                          gold_dates = [row[0][5:7] + "/" + row[0][2:4] for row in sampled]
-                          gold_price = gold_prices[-1]
-                          gold_ref = gold_prices[-2] if len(gold_prices) >= 2 else gold_price
-                          gold_ok = True
-                          print(f"[THÀNH CÔNG] Vàng XAU/USD (Stooq): {gold_price}$/oz")
+                          world_prices = [round(float(row[4]), 2) for row in sampled]
+                          world_dates = [row[0][5:7] + "/" + row[0][2:4] for row in sampled]
+                          print(f"[THÀNH CÔNG] Đã tải nến Vàng thế giới Stooq ({len(world_prices)} điểm)")
               except Exception as e:
                   print(f"[LỖI] Vàng Stooq: {e}")
 
-          gold_chg = round(gold_price - gold_ref, 2)
-          gold_pct = round((gold_chg / gold_ref) * 100, 2) if gold_ref > 0 else 0.0
-          bid_val = round(gold_price - 0.50, 2)
-          ask_val = round(gold_price + 0.50, 2)
-
-          # 5. XUẤT FILE MARKET.JSON
+          # 6. XUẤT FILE MARKET.JSON CHUẨN ĐỦ CẢ BTMC LẪN XAU/USD
           market_output = {
               "updated_at": time_str,
               "time": time_str,
@@ -197,25 +206,18 @@ jobs:
               },
               "stocks": stocks,
               "gold": {
-                  "name": "Vàng thế giới (XAU/USD)",
-                  "symbol": "XAU/USD",
-                  "unit": "USD/oz",
-                  "val": f"${gold_price:,.2f}",
-                  "raw": gold_price,
-                  "change": f"{'+' if gold_chg >= 0 else ''}{gold_chg:.2f}",
-                  "pct": f"{'+' if gold_pct >= 0 else ''}{gold_pct:.2f}%",
-                  "isUp": gold_chg >= 0,
-                  "bid": f"${bid_val:,.2f}",
-                  "ask": f"${ask_val:,.2f}",
-                  "dates": gold_dates,
-                  "prices": gold_prices
+                  "name": "Nhẫn tròn trơn BTMC 999.9",
+                  "buy": gold_buy,
+                  "sell": gold_sell,
+                  "world_dates": world_dates,
+                  "world_prices": world_prices
               }
           }
 
           with open("market.json", "w", encoding="utf-8") as f:
               json.dump(market_output, f, ensure_ascii=False, indent=2)
 
-          print("=== ĐÃ GHI FILE MARKET.JSON VÀNG THẾ GIỚI THÀNH CÔNG ===")
+          print("=== ĐÃ GHI FILE MARKET.JSON THÀNH CÔNG ===")
           EOF
 
       - name: Commit and Push market.json
