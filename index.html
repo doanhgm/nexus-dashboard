@@ -73,7 +73,7 @@
   .day .dow { font-size: 12px; color: var(--muted); }
   .day .t { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
-  /* KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI CHOÁN HẾT PHẦN TRỐNG */
+  /* KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI */
   .hero-bottom-group {
     flex: 1;
     display: flex;
@@ -201,7 +201,7 @@
 </head>
 <body>
 <div class="grid">
-  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + AQI + Lịch Âm + Xăng E10 Full Ô) -->
+  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + AQI + Lịch Âm + Xăng E10 RON 95-III) -->
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
@@ -283,7 +283,7 @@
         </div>
       </div>
 
-      <!-- 3. KHỐI XĂNG SINH HỌC E10 -->
+      <!-- 3. KHỐI XĂNG E10 RON 95-III -->
       <div class="sub-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span class="label">NHIÊN LIỆU (PETROLIMEX)</span>
@@ -291,14 +291,14 @@
         </div>
         <div style="background:#080c11;border:1px solid #1e293b;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;color:var(--good);font-weight:800;font-size:13px;">E10</div>
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;color:var(--good);font-weight:800;font-size:12px;">E10</div>
             <div>
-              <div style="font-size:14px;font-weight:700;color:#f8fafc;">Xăng Sinh học E10</div>
-              <div style="font-size:10px;color:var(--muted);">Chuẩn khí thải mới</div>
+              <div style="font-size:14px;font-weight:700;color:#f8fafc;">E10 RON 95-III</div>
+              <div style="font-size:10px;color:var(--muted);">Xăng sinh học • Vùng 1</div>
             </div>
           </div>
           <div style="text-align:right;">
-            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">20.890</span>
+            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">21.150</span>
             <span style="font-size:11px;color:var(--muted);margin-left:2px;">đ</span>
           </div>
         </div>
@@ -314,7 +314,7 @@
     <div id="calendarWrap" class="calendar-wrap"></div>
   </section>
 
-  <!-- Cột 3 trên: Khung ảnh tràn viền (Tự động nạp từ thư mục photos) -->
+  <!-- Cột 3 trên: Khung ảnh tràn viền -->
   <section class="card" style="padding:0;position:relative;overflow:hidden;">
     <div id="photoCounter" style="position:absolute;top:10px;right:14px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
     <div class="photo-wrap">
@@ -856,7 +856,7 @@ async function loadMarketJSON() {
       renderGoldChart(gPrices, gDates);
     }
 
-    // 4. Cập nhật Giá Xăng E10
+    // 4. Cập nhật Giá Xăng E10 RON 95-III
     if (data.gas) {
       const eEl = document.getElementById("gasE10");
       if (eEl && data.gas.e10) eEl.textContent = data.gas.e10;
