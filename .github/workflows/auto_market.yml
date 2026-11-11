@@ -44,75 +44,99 @@ jobs:
               "Accept": "application/json, text/html, */*"
           }
 
-          # 1. KÉO LỊCH SỬ NẾN VN-INDEX ĐỂ VẼ BIỂU ĐỒ (ENTRADE)
+          # 1. KÉO LỊCH SỬ NẾN VN-INDEX ĐỂ VẼ BIỂU ĐỒ (ENTRADE 1D)
           dates = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"]
           prices = [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07]
+          ref_price = 1743.07
+
           try:
               to_ts = int(time.time())
               from_ts = to_ts - 35 * 86400
-              r_ent = requests.get(
+              r_ent_d = requests.get(
                   f"https://services.entrade.com.vn/chart-api/v2/ohlcs/index?resolution=1D&symbol=VNINDEX&from={from_ts}&to={to_ts}",
                   headers=headers,
                   timeout=5
               )
-              if r_ent.status_code == 200:
-                  d_ent = r_ent.json()
+              if r_ent_d.status_code == 200:
+                  d_ent = r_ent_d.json()
                   if isinstance(d_ent, dict) and d_ent.get("c") and len(d_ent["c"]) >= 2:
                       prices = [round(float(x), 2) for x in d_ent["c"][-10:]]
                       dates = [datetime.fromtimestamp(ts, timezone(timedelta(hours=7))).strftime("%d/%m") for ts in d_ent["t"][-10:]]
+                      ref_price = prices[-1]
           except Exception as e:
               pass
 
-          # 2. CÀO ĐIỂM SỐ VN-INDEX TRỰC TIẾP
-          vn_val, vn_chg, vn_pct, is_up = 1737.27, -5.8, -0.33, False
+          # 2. CÀO ĐIỂM SỐ VN-INDEX TRỰC TIẾP TRONG PHIÊN
+          vn_val, vn_chg, vn_pct, is_up = ref_price, 0.0, 0.0, True
           vn_live_ok = False
 
-          # Nguồn 1: CafeF (Bóc sạch thẻ HTML qua BeautifulSoup để Regex không bao giờ trượt)
+          # Nguồn 1: Nến 1 phút Entrade (Lấy chính xác tick khớp gần nhất trong phiên)
           try:
-              r_cf = requests.get("https://cafef.vn/", headers=headers, timeout=6)
-              if r_cf.status_code == 200:
-                  soup = BeautifulSoup(r_cf.text, "html.parser")
-                  clean_txt = soup.get_text()
-                  m = re.search(r'VNI[:\s]*([\d\.,]+)\s*([+-]?[\d\.,]+)\s*([+-]?[\d\.,]+)%', clean_txt)
-                  if m:
-                      vn_val = round(float(m.group(1).replace(",", "")), 2)
-                      vn_chg = round(float(m.group(2).replace(",", "")), 2)
-                      vn_pct = round(float(m.group(3).replace(",", "")), 2)
+              to_ts = int(time.time())
+              from_1m = to_ts - 7200 # Quét 2 tiếng gần nhất
+              r_1m = requests.get(
+                  f"https://services.entrade.com.vn/chart-api/v2/ohlcs/index?resolution=1&symbol=VNINDEX&from={from_1m}&to={to_ts}",
+                  headers=headers,
+                  timeout=5
+              )
+              if r_1m.status_code == 200:
+                  d_1m = r_1m.json()
+                  if isinstance(d_1m, dict) and d_1m.get("c") and len(d_1m["c"]) > 0:
+                      vn_val = round(float(d_1m["c"][-1]), 2)
+                      vn_chg = round(vn_val - ref_price, 2)
+                      vn_pct = round((vn_chg / ref_price) * 100, 2)
                       is_up = vn_chg >= 0
                       vn_live_ok = True
-                      print(f"[THÀNH CÔNG] VN-INDEX (CafeF): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                      print(f"[THÀNH CÔNG] VN-INDEX (Entrade Live): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
           except Exception as e:
-              print(f"[LỖI] VN-INDEX CafeF: {e}")
+              print(f"[LỖI] VN-INDEX Entrade Live: {e}")
 
-          # Nguồn 2: Bảng điện VNDirect Leader Lagger
+          # Nguồn 2: SSI iBoard Index API
           if not vn_live_ok:
               try:
-                  r_mkw = requests.get("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", headers=headers, timeout=5)
-                  if r_mkw.status_code == 200:
-                      d_idx = r_mkw.json().get("dataIndex", {})
-                      if d_idx.get("indexValue"):
-                          vn_val = round(float(d_idx["indexValue"]), 2)
-                          vn_chg = round(float(d_idx.get("change", 0)), 2)
-                          vn_pct = round(float(d_idx.get("changePercent", 0)), 2)
+                  r_ssi = requests.get("https://iboard-query.ssi.com.vn/v2/stock/market-watch?type=index", headers=headers, timeout=5)
+                  if r_ssi.status_code == 200:
+                      for it in r_ssi.json().get("data", []):
+                          if str(it.get("indexId", "")).upper() == "VNINDEX":
+                              vn_val = round(float(it.get("indexValue")), 2)
+                              vn_chg = round(float(it.get("change")), 2)
+                              vn_pct = round(float(it.get("changePercent")), 2)
+                              is_up = vn_chg >= 0
+                              vn_live_ok = True
+                              print(f"[THÀNH CÔNG] VN-INDEX (SSI): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                              break
+              except Exception as e:
+                  print(f"[LỖI] VN-INDEX SSI: {e}")
+
+          # Nguồn 3: CafeF Mobile Header API
+          if not vn_live_ok:
+              try:
+                  r_cf = requests.get("https://m.cafef.vn/", headers=headers, timeout=5)
+                  if r_cf.status_code == 200:
+                      m = re.search(r'VN-INDEX[:\s]*([\d\.,]+)\s*([+-]?[\d\.,]+)\s*([+-]?[\d\.,]+)%', r_cf.text, re.I)
+                      if m:
+                          vn_val = round(float(m.group(1).replace(",", "")), 2)
+                          vn_chg = round(float(m.group(2).replace(",", "")), 2)
+                          vn_pct = round(float(m.group(3).replace(",", "")), 2)
                           is_up = vn_chg >= 0
                           vn_live_ok = True
-                          print(f"[THÀNH CÔNG] VN-INDEX (VNDirect): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                          print(f"[THÀNH CÔNG] VN-INDEX (CafeF): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
               except Exception as e:
-                  print(f"[LỖI] VN-INDEX VNDirect: {e}")
+                  print(f"[LỖI] VN-INDEX CafeF: {e}")
 
-          # Cập nhật điểm live vào cuối danh sách biểu đồ
+          # Cập nhật điểm live vào đuôi biểu đồ
           if dates[-1] == today_dm:
               prices[-1] = vn_val
           else:
               prices = prices[1:] + [vn_val]
               dates = dates[1:] + [today_dm]
 
-          # 3. CÀO CỔ PHIẾU (VPS ĐÃ CHẠY HOÀN HẢO)
+          # 3. CÀO CỔ PHIẾU (VPS ĐÃ CHẠY HOÀN HẢO 100%)
           stocks = {
               "HSG": {"price": 10.95, "pct": "+0.46%", "isUp": True},
               "VND": {"price": 14.6, "pct": "-2.01%", "isUp": False},
               "VCK": {"price": 28.05, "pct": "-1.92%", "isUp": False},
-              "SHB": {"price": 11.15, "pct": "+2.29%", "isUp": True}
+              "SHB": {"price": 11.1, "pct": "+1.83%", "isUp": True}
           }
 
           try:
@@ -123,11 +147,11 @@ jobs:
                       if not code:
                           continue
                       last_price = float(item.get("lastPrice", 0))
-                      ref_price = float(item.get("r", 0))
-                      price = last_price if last_price > 0 else ref_price
+                      ref_p = float(item.get("r", 0))
+                      price = last_price if last_price > 0 else ref_p
                       if price > 0:
-                          diff = round(price - ref_price, 2)
-                          pct = round((diff / ref_price) * 100, 2) if ref_price > 0 else 0.0
+                          diff = round(price - ref_p, 2)
+                          pct = round((diff / ref_p) * 100, 2) if ref_p > 0 else 0.0
                           stocks[code] = {
                               "price": round(price, 2),
                               "pct": f"{'+' if pct >= 0 else ''}{pct:.2f}%",
