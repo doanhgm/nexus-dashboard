@@ -46,41 +46,55 @@
   }
   .hero {
     grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
   }
   .clock { font-size: 80px; line-height: .95; font-weight: 700; letter-spacing: -3px; }
   .seconds { font-size: 26px; color: var(--muted); }
-  .date { font-size: 22px; margin-top: 10px; color: #d7dee8; }
+  .date { font-size: 22px; margin-top: 8px; color: #d7dee8; }
   
   .weather-main {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; margin-top: 18px;
+    gap: 12px; margin-top: 14px;
   }
   .weather-icon svg { width: 95px; height: 95px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6)); }
   .temp { font-size: 58px; font-weight: 700; line-height: 1; }
   .weather-desc { font-size: 20px; color: #dce5ef; padding-bottom: 6px; }
   
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 9px 10px; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 8px 10px; }
   .meta b { display: block; font-size: 16px; margin-top: 2px; }
   .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
   .title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
   
-  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
-  .day { padding: 7px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
+  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+  .day { padding: 6px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
   .day .dow { font-size: 12px; color: var(--muted); }
-  .day .t { font-size: 15px; font-weight: 700; margin-top: 3px; }
+  .day .t { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
-  /* KHỐI TIỆN ÍCH CỘT TRÁI */
+  /* KHU VỰC TIỆN ÍCH DƯỚI - TỰ CO GIÃN ĐẦY 100% CHIỀU CAO TRỐNG */
+  .hero-bottom-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 12px 0 6px 0;
+    gap: 10px;
+    min-height: 0;
+  }
   .sub-box {
-    margin-top: 10px;
     background: #0b1118;
     border: 1px solid #202c3a;
     border-radius: 14px;
-    padding: 10px 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1; /* Tự động chia đều và choán hết chiều cao còn lại */
   }
   .aqi-bar-bg {
-    width: 100%; height: 5px;
+    width: 100%; height: 6px;
     background: #1e293b;
     border-radius: 4px;
     margin-top: 8px;
@@ -175,7 +189,7 @@
   .stock-chg { font-size: 11px; font-weight: 600; }
   .font-up { color: var(--good); }
   .font-down { color: var(--danger); }
-  .footer { font-size: 11px; color: #6f7c89; margin-top: 8px; }
+  .footer { font-size: 11px; color: #6f7c89; margin-top: 4px; }
 
   @media (orientation: portrait) {
     body { overflow: auto; }
@@ -187,11 +201,11 @@
 </head>
 <body>
 <div class="grid">
-  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + AQI + Lịch Âm + Xăng Dầu) -->
+  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + AQI + Lịch Âm + Xăng E10 Full Ô) -->
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
-      <div style="margin-top:10px">
+      <div style="margin-top:8px">
         <span id="clock" class="clock">--:--</span>
         <span id="seconds" class="seconds">--</span>
       </div>
@@ -226,21 +240,24 @@
         <div class="day"><div class="dow">T6</div><div class="t">20° / 17°</div></div>
         <div class="day"><div class="dow">T7</div><div class="t">26° / 18°</div></div>
       </div>
+    </div>
 
+    <!-- KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI CHOÁN HẾT PHẦN TRỐNG -->
+    <div class="hero-bottom-group">
       <!-- 1. KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
           <span class="label">KHÔNG KHÍ HÀ NỘI</span>
-          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Trung bình</span>
+          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Trung bình</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="aqiVal" style="font-size:28px;font-weight:800;line-height:1;color:var(--gold);">86</span>
+            <span id="aqiVal" style="font-size:32px;font-weight:800;line-height:1;color:var(--gold);">86</span>
             <span style="font-size:11px;color:var(--muted);font-weight:600;">US AQI</span>
           </div>
           <div style="text-align:right;">
             <span class="label" style="display:block;font-size:9px;">BỤI PM2.5</span>
-            <b id="pm25Val" style="font-size:13px;color:#e2e8f0;">29.5 µg/m³</b>
+            <b id="pm25Val" style="font-size:14px;color:#e2e8f0;">29.5 µg/m³</b>
           </div>
         </div>
         <div class="aqi-bar-bg">
@@ -250,42 +267,39 @@
 
       <!-- 2. KHỐI LỊCH ÂM & CAN CHI VIỆT NAM -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span class="label">LỊCH ÂM VIỆT NAM</span>
-          <span id="lunarYearCanChi" style="font-size:11px;font-weight:700;color:var(--gold);">Năm Bính Ngọ</span>
+          <span id="lunarYearCanChi" style="font-size:12px;font-weight:700;color:var(--gold);">Năm Bính Ngọ</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div>
-            <span id="lunarDayMonth" style="font-size:22px;font-weight:800;color:#f8fafc;">03/10</span>
-            <span style="font-size:11px;color:var(--muted);margin-left:4px;">(Âm lịch)</span>
+            <span id="lunarDayMonth" style="font-size:26px;font-weight:800;color:#f8fafc;">03/10</span>
+            <span style="font-size:12px;color:var(--muted);margin-left:4px;">(Âm lịch)</span>
           </div>
           <div style="text-align:right;">
-            <span id="lunarDayCanChi" style="font-size:13px;font-weight:700;color:#cbd5e1;">Ngày Kỷ Sửu</span>
-            <span style="display:block;font-size:10px;color:var(--muted);">Tiết Lập Đông</span>
+            <span id="lunarDayCanChi" style="font-size:14px;font-weight:700;color:#cbd5e1;">Ngày Kỷ Sửu</span>
+            <span style="display:block;font-size:11px;color:var(--muted);margin-top:2px;">Tiết Lập Đông</span>
           </div>
         </div>
       </div>
 
-      <!-- 3. KHỐI GIÁ XĂNG DẦU (PETROLIMEX VÙNG 1) -->
+      <!-- 3. KHỐI XĂNG SINH HỌC E10 (CHIẾM TRỌN CHIỀU NGANG) -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span class="label">XĂNG DẦU (PETROLIMEX)</span>
-          <span style="font-size:10px;color:var(--muted);">Vùng 1 • đ/lít</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span class="label">NHIÊN LIỆU (PETROLIMEX)</span>
+          <span style="font-size:11px;color:var(--muted);">Vùng 1 • đ/lít</span>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:#080c11;border:1px solid #1e293b;border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="background:#080c11;border:1px solid #1e293b;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;color:var(--good);font-weight:800;font-size:13px;">E10</div>
             <div>
-              <div style="font-size:11px;font-weight:700;color:var(--cyan);">RON 95-III</div>
-              <div class="label" style="font-size:9px;">Khoáng</div>
+              <div style="font-size:14px;font-weight:700;color:#f8fafc;">Xăng Sinh học E10</div>
+              <div style="font-size:10px;color:var(--muted);">Chuẩn khí thải mới</div>
             </div>
-            <div id="gasRon95" style="font-size:16px;font-weight:800;color:#f8fafc;">20.850</div>
           </div>
-          <div style="background:#080c11;border:1px solid #1e293b;border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--good);">XĂNG E10</div>
-              <div class="label" style="font-size:9px;">Sinh học</div>
-            </div>
-            <div id="gasE10" style="font-size:16px;font-weight:800;color:#f8fafc;">20.150</div>
+          <div style="text-align:right;">
+            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">20.150</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:2px;">đ</span>
           </div>
         </div>
       </div>
@@ -837,16 +851,14 @@ async function loadMarketJSON() {
         bEl.textContent = data.gold.buy || "13.55";
         sEl.textContent = data.gold.sell || "13.95";
       }
-      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : DEFAULT_WORLD_PRICES;
-      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : DEFAULT_WORLD_DATES;
+      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : (data.gold.prices || DEFAULT_WORLD_PRICES);
+      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : (data.gold.dates || DEFAULT_WORLD_DATES);
       renderGoldChart(gPrices, gDates);
     }
 
-    // 4. Cập nhật Giá Xăng Dầu
+    // 4. Cập nhật Giá Xăng E10
     if (data.gas) {
-      const rEl = document.getElementById("gasRon95");
       const eEl = document.getElementById("gasE10");
-      if (rEl && data.gas.ron95) rEl.textContent = data.gas.ron95;
       if (eEl && data.gas.e10) eEl.textContent = data.gas.e10;
     }
   } catch (e) {
