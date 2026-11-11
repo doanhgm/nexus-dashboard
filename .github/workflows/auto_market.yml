@@ -30,7 +30,7 @@ jobs:
       - name: Run Crawler
         run: |
           python - << 'EOF'
-          import json, re, requests
+          import json, re, time, requests
           from datetime import datetime, timezone, timedelta
           from bs4 import BeautifulSoup
 
@@ -43,15 +43,21 @@ jobs:
               "Accept": "application/json, text/html, */*"
           }
 
-          # 1. CÀO VN-INDEX (HỖ TRỢ ĐA NGUỒN AN TOÀN)
+          # 1. CÀO VN-INDEX & 10 PHIÊN LỊCH SỬ
           vn_val, vn_chg, vn_pct, is_up = 1250.0, 0.0, 0.0, True
           dates = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "11/11"]
           prices = [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1250.0]
           vn_ok = False
 
-          # Nguồn 1: Entrade API (Chuẩn nến ngày và điểm real-time)
+          # Nguồn 1: Entrade API (bổ sung đầy đủ from/to timestamp để lấy 10 phiên)
           try:
-              r_ent = requests.get("https://services.entrade.com.vn/chart-api/v2/ohlcs/index?resolution=1D&symbol=VNINDEX", headers=headers, timeout=5)
+              to_ts = int(time.time())
+              from_ts = to_ts - 35 * 86400 # Lùi 35 ngày để đủ ít nhất 10 ngày giao dịch
+              r_ent = requests.get(
+                  f"https://services.entrade.com.vn/chart-api/v2/ohlcs/index?resolution=1D&symbol=VNINDEX&from={from_ts}&to={to_ts}",
+                  headers=headers,
+                  timeout=6
+              )
               if r_ent.status_code == 200:
                   d_ent = r_ent.json()
                   if isinstance(d_ent, dict) and d_ent.get("c") and len(d_ent["c"]) >= 2:
@@ -66,58 +72,49 @@ jobs:
           except Exception as e:
               print(f"[LỖI] VN-INDEX Entrade: {e}")
 
-          # Nguồn 2: CafeF với mã VN-INDEX chuẩn
+          # Nguồn 2: SSI iBoard API (Dự phòng nếu Entrade nghẽn)
           if not vn_ok:
               try:
-                  url_cf = "https://s.cafef.vn/Ajax/PageNew/DataHistory/PriceHistory.ashx?Symbol=VN-INDEX&StartDate=&EndDate=&PageIndex=1&PageSize=10"
-                  r_cf = requests.get(url_cf, headers=headers, timeout=5)
-                  if r_cf.status_code == 200:
-                      d_cf = r_cf.json()
-                      if isinstance(d_cf, dict) and isinstance(d_cf.get("Data"), dict):
-                          items = d_cf["Data"].get("Data", [])
-                          if items and len(items) >= 2:
-                              items_rev = list(reversed(items))
-                              prices = [round(float(x["GiaDongCua"]), 2) for x in items_rev]
-                              dates = [x["Ngay"][:5] for x in items_rev]
-                              vn_val = prices[-1]
-                              vn_chg = round(vn_val - prices[-2], 2)
-                              vn_pct = round((vn_chg / prices[-2]) * 100, 2)
+                  r_ssi = requests.get("https://iboard-query.ssi.com.vn/v2/stock/market-watch?type=index", headers=headers, timeout=5)
+                  if r_ssi.status_code == 200:
+                      for idx_item in r_ssi.json().get("data", []):
+                          if idx_item.get("indexId") == "VNINDEX":
+                              vn_val = float(idx_item.get("indexValue", vn_val))
+                              vn_chg = float(idx_item.get("change", 0))
+                              vn_pct = float(idx_item.get("changePercent", 0))
                               is_up = vn_chg >= 0
+                              prices[-1] = vn_val
                               vn_ok = True
-                              print(f"[THÀNH CÔNG] VN-INDEX (CafeF): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                              print(f"[THÀNH CÔNG] VN-INDEX (SSI): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                              break
               except Exception as e:
-                  print(f"[LỖI] VN-INDEX CafeF: {e}")
+                  print(f"[LỖI] VN-INDEX SSI: {e}")
 
-          # Nguồn 3: Cào trực tiếp từ trang VnExpress Kinh Doanh
+          # Nguồn 3: Google Finance (Dự phòng cuối cùng)
           if not vn_ok:
               try:
-                  r_vne = requests.get("https://vnexpress.net/kinh-doanh/chung-khoan", headers=headers, timeout=5)
-                  if r_vne.status_code == 200:
-                      soup = BeautifulSoup(r_vne.text, "html.parser")
-                      for tag in soup.find_all(text=re.compile(r"VN-Index", re.I)):
-                          parent_txt = tag.find_parent().parent.get_text()
-                          nums = re.findall(r"\d{1,2}(?:\.\d{3})*,\d{2}|\d{3,4}\.\d{2}", parent_txt)
-                          if nums:
-                              clean_val = float(nums[0].replace(".", "").replace(",", "."))
-                              if 1000 <= clean_val <= 2000:
-                                  vn_val = clean_val
-                                  prices[-1] = vn_val
-                                  vn_ok = True
-                                  print(f"[THÀNH CÔNG] VN-INDEX (VnExpress): {vn_val}")
-                                  break
+                  r_gf = requests.get("https://www.google.com/finance/quote/INDEXVIE:VNI", headers=headers, timeout=6)
+                  if r_gf.status_code == 200:
+                      soup = BeautifulSoup(r_gf.text, "html.parser")
+                      val_el = soup.select_one("div.YMlKec.fxKbKc")
+                      if val_el:
+                          clean_num = float(val_el.get_text().replace(",", ""))
+                          vn_val = clean_num
+                          prices[-1] = vn_val
+                          vn_ok = True
+                          print(f"[THÀNH CÔNG] VN-INDEX (Google Finance): {vn_val}")
               except Exception as e:
-                  print(f"[LỖI] VN-INDEX VnExpress: {e}")
+                  print(f"[LỖI] VN-INDEX Google: {e}")
 
-          # 2. CÀO ĐẦY ĐỦ 4 MÃ: HSG, VND, VCK, SHB QUA BẢNG ĐIỆN VPS
+          # 2. CÀO CỔ PHIẾU (ĐÃ CHUẨN 100% QUA BẢNG ĐIỆN VPS)
           stocks = {
               "HSG": {"price": 11.0, "pct": "+0.92%", "isUp": True},
               "VND": {"price": 14.6, "pct": "-2.01%", "isUp": False},
-              "VCK": {"price": 21.30, "pct": "+1.91%", "isUp": True},
-              "SHB": {"price": 11.25, "pct": "+3.21%", "isUp": True}
+              "VCK": {"price": 28.05, "pct": "-1.92%", "isUp": False},
+              "SHB": {"price": 11.15, "pct": "+2.29%", "isUp": True}
           }
 
           try:
-              # Đã thêm chính xác mã VCK vào danh sách yêu cầu
               r_stocks = requests.get("https://bgapidatafeed.vps.com.vn/getliststockdata/HSG,VND,VCK,SHB", headers=headers, timeout=6)
               if r_stocks.status_code == 200 and isinstance(r_stocks.json(), list):
                   for item in r_stocks.json():
@@ -139,30 +136,7 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Cào cổ phiếu VPS: {e}")
 
-          # Dự phòng riêng cho VCK qua CafeF nếu VPS chưa trả về
-          if "VCK" not in stocks or stocks["VCK"]["price"] == 21.30:
-              try:
-                  url_vck = "https://s.cafef.vn/Ajax/PageNew/DataHistory/PriceHistory.ashx?Symbol=VCK&StartDate=&EndDate=&PageIndex=1&PageSize=2"
-                  r_vck = requests.get(url_vck, headers=headers, timeout=5)
-                  if r_vck.status_code == 200:
-                      v_json = r_vck.json()
-                      if isinstance(v_json, dict) and isinstance(v_json.get("Data"), dict):
-                          v_items = v_json["Data"].get("Data", [])
-                          if len(v_items) >= 2:
-                              cur_p = float(v_items[0]["GiaDongCua"])
-                              prev_p = float(v_items[1]["GiaDongCua"])
-                              diff = round(cur_p - prev_p, 2)
-                              pct = round((diff / prev_p) * 100, 2)
-                              stocks["VCK"] = {
-                                  "price": round(cur_p, 2),
-                                  "pct": f"{'+' if pct >= 0 else ''}{pct:.2f}%",
-                                  "isUp": diff >= 0
-                              }
-                              print(f"[THÀNH CÔNG] Mã VCK (CafeF): {cur_p} ({pct:+0.2f}%)")
-              except Exception as e:
-                  print(f"[LỖI] Cào VCK CafeF: {e}")
-
-          # 3. CÀO GIÁ VÀNG BẢO TÍN MINH CHÂU (ĐÃ CHUẨN 100%)
+          # 3. CÀO VÀNG BẢO TÍN MINH CHÂU (ĐÃ CHUẨN 100%)
           gold_buy, gold_sell = "13.55", "13.95"
           try:
               r_gold = requests.get("https://webgia.com/gia-vang/bao-tin-minh-chau/", headers=headers, timeout=7)
