@@ -9,8 +9,12 @@ on:
     - cron: '0 12 * * *'
   push:
     paths:
-      - 'photos/**' # CHỈ kích hoạt khi bạn thêm/sửa ảnh trong thư mục photos, sửa html/yml sẽ không kích hoạt
+      - 'photos/**' # Chỉ kích hoạt khi bạn thêm/xóa ảnh trong thư mục photos
   workflow_dispatch:
+
+concurrency:
+  group: market-update
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -22,7 +26,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Kéo toàn bộ lịch sử để chống xung đột git push
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -175,23 +179,23 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Vàng XAU/USD: {e}")
 
-          # 6. CÀO GIÁ XĂNG E10
-          gas_e10 = "20.890"
+          # 6. CÀO CHÍNH XÁC XĂNG E10 RON 95-III (VÙNG 1)
+          gas_e10 = "21.150"
           try:
               r_gas = requests.get("https://webgia.com/gia-xang-dau/petrolimex/", headers=headers, timeout=6)
               if r_gas.status_code == 200:
                   soup = BeautifulSoup(r_gas.text, "html.parser")
                   for tr in soup.find_all("tr"):
                       txt = tr.get_text().lower()
-                      if "e10" in txt or "e5" in txt or "ron 92" in txt or "ron 95" in txt:
+                      # Bắt đúng dòng E10 RON 95 mức 3 / 95-III, loại trừ mức 5 và 95-V
+                      if "e10" in txt and ("mức 3" in txt or "muc 3" in txt or "95-iii" in txt or "95 iii" in txt):
                           for td in tr.find_all(["td", "th"]):
                               digits = re.sub(r"[^\d]", "", td.get_text())
                               if len(digits) >= 5 and float(digits) >= 15000:
                                   gas_e10 = f"{int(digits):,}".replace(",", ".")
                                   break
-                          if gas_e10 != "20.890":
-                              break
-                  print(f"[THÀNH CÔNG] Giá xăng E10: {gas_e10} đ/lít")
+                          break
+                  print(f"[THÀNH CÔNG] Giá xăng E10 RON 95-III: {gas_e10} đ/lít")
           except Exception as e:
               print(f"[LỖI] Cào xăng dầu: {e}")
 
@@ -207,7 +211,7 @@ jobs:
 
           if not scanned_photos:
               scanned_photos = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"]
-          print(f"[THÀNH CÔNG] Đã quét được {len(scanned_photos)} ảnh")
+          print(f"[THÀNH CÔNG] Đã quét được {len(scanned_photos)} ảnh trong thư mục photos")
 
           # 8. XUẤT FILE MARKET.JSON
           market_output = {
