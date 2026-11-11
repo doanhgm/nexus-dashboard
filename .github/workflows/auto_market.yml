@@ -2,20 +2,21 @@ name: Auto Update Market & Gold
 
 on:
   schedule:
-    # Chạy mỗi 15 phút trong giờ giao dịch (từ 9h - 15h30 thứ 2 đến thứ 6 giờ VN)
-    - cron: '*/15 2-9 * * 1-5'
-    # Chạy cập nhật 1 lần vào buổi tối
+    # Quét định kỳ mỗi 15 phút trong phiên giao dịch (9h - 15h, Thứ 2 đến Thứ 6)
+    - cron: '*/15 2-8 * * 1-5'
+    # Chốt phiên chiều lúc 15h30 (8h30 UTC) và buổi tối lúc 19h00 (12h00 UTC)
+    - cron: '30 8 * * 1-5'
     - cron: '0 12 * * *'
-  workflow_dispatch: # Nút bấm để bạn có thể bấm chạy thử ngay lập tức
+  workflow_dispatch: # Nút bấm chạy kiểm tra bất cứ lúc nào
 
 permissions:
   contents: write
 
 jobs:
-  update-data:
+  scrape-and-commit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -23,10 +24,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Scraper Tools
+      - name: Install dependencies
         run: pip install requests beautifulsoup4
 
-      - name: Crawl Market and Gold
+      - name: Run Crawler
         run: |
           python - << 'EOF'
           import json, re, requests
@@ -36,86 +37,117 @@ jobs:
           vn_now = datetime.now(timezone(timedelta(hours=7)))
           time_str = vn_now.strftime("%H:%M %d/%m")
 
-          # 1. Cào điểm số VN-INDEX
-          vn_val, vn_chg, vn_pct = 1252.72, -3.52, -0.28
-          try:
-            r = requests.get("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
-            if r.status_code == 200:
-              d = r.json().get("dataIndex", {})
-              vn_val = float(d.get("indexValue", vn_val))
-              vn_chg = float(d.get("change", vn_chg))
-              vn_pct = float(d.get("changePercent", vn_pct))
-          except Exception as e:
-            print("VNIndex error:", e)
-
-          # 2. Cào giá cổ phiếu (HSG, VND, SHB)
-          stocks = {
-            "HSG": {"price": 20.85, "pct": "-1.42%", "isUp": False},
-            "VND": {"price": 14.90, "pct": "-1.32%", "isUp": False},
-            "VCK": {"price": 21.30, "pct": "+1.91%", "isUp": True},
-            "SHB": {"price": 10.85, "pct": "-0.91%", "isUp": False}
+          headers = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
           }
-          try:
-            url = "https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:HSG,VND,SHB&size=3"
-            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
-            if r.status_code == 200:
-              for item in r.json().get("data", []):
-                code = item.get("code")
-                p = round(item.get("close", 0) / 1000, 2)
-                pct = item.get("changePercent", 0)
-                stocks[code] = {
-                  "price": p,
-                  "pct": f"{'+' if pct >= 0 else ''}{pct:.2f}%",
-                  "isUp": pct >= 0
-                }
-          except Exception as e:
-            print("Stocks error:", e)
 
-          # 3. Cào giá vàng Bảo Tín Minh Châu (VRTL 999.9)
-          gold_buy, gold_sell = "8.70", "8.83"
-          try:
-            # Thử qua API tygia
-            rg = requests.get("https://tygia.com/json.php?ran=0&rate=0&gold=1&bank=VIETCOM&date=now", timeout=5)
-            if rg.status_code == 200:
-              items = rg.json().get("golds", [{}])[0].get("value", [])
-              for it in items:
-                t = it.get("type", "").lower()
-                if "bảo tín" in t or "btmc" in t or "rồng" in t:
-                  b = float(it.get("buy", 0))
-                  s = float(it.get("sell", 0))
-                  if b > 0 and s > 0:
-                    gold_buy = f"{b/10:.2f}" if b > 100 else f"{b:.2f}"
-                    gold_sell = f"{s/10:.2f}" if s > 100 else f"{s:.2f}"
-                    break
-          except Exception as e:
-            print("Gold error:", e)
+          # 1. CÀO VN-INDEX (API TCBS KHÔNG CHẶN IP NƯỚC NGOÀI)
+          vn_val, vn_chg, vn_pct, is_up = 1743.07, 8.45, 0.49, True
+          dates = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"]
+          prices = [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07]
 
-          # Ghi kết quả vào market.json
-          data = {
-            "time": time_str,
-            "vnindex": {
-              "val": f"{vn_val:,.2f}",
-              "raw": vn_val,
-              "change": f"{'+' if vn_chg >= 0 else ''}{vn_chg:.2f}",
-              "pct": f"{'+' if vn_pct >= 0 else ''}{vn_pct:.2f}%",
-              "isUp": vn_chg >= 0
-            },
-            "stocks": stocks,
-            "gold": {
-              "buy": gold_buy,
-              "sell": gold_sell
-            }
+          try:
+              res = requests.get(
+                  "https://apipubanalytics.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=VNINDEX&type=index&resolution=D&countBack=10",
+                  headers=headers,
+                  timeout=7
+              )
+              if res.status_code == 200:
+                  bars = res.json().get("data", [])
+                  if len(bars) >= 2:
+                      prices = [round(float(b["close"]), 2) for b in bars]
+                      dates = [b["tradingDate"][8:10] + "/" + b["tradingDate"][5:7] for b in bars]
+                      vn_val = prices[-1]
+                      vn_chg = round(vn_val - prices[-2], 2)
+                      vn_pct = round((vn_chg / prices[-2]) * 100, 2)
+                      is_up = vn_chg >= 0
+          except Exception as e:
+              print("Lỗi kéo VN-INDEX:", e)
+
+          # 2. CÀO 4 MÃ CỔ PHIẾU
+          stocks = {
+              "HSG": {"price": 26.50, "pct": "+1.92%", "isUp": True},
+              "VND": {"price": 18.20, "pct": "+1.39%", "isUp": True},
+              "VCK": {"price": 22.80, "pct": "+2.24%", "isUp": True},
+              "SHB": {"price": 13.50, "pct": "+1.12%", "isUp": True}
+          }
+
+          for code in ["HSG", "VND", "SHB"]:
+              try:
+                  s_res = requests.get(
+                      f"https://apipubanalytics.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker={code}&type=stock&resolution=D&countBack=2",
+                      headers=headers,
+                      timeout=5
+                  )
+                  if s_res.status_code == 200:
+                      s_bars = s_res.json().get("data", [])
+                      if len(s_bars) >= 2:
+                          cur_p = float(s_bars[-1]["close"])
+                          prev_p = float(s_bars[-2]["close"])
+                          if cur_p > 500:
+                              cur_p /= 1000
+                              prev_p /= 1000
+                          chg_pct = round(((cur_p - prev_p) / prev_p) * 100, 2)
+                          stocks[code] = {
+                              "price": round(cur_p, 2),
+                              "pct": f"{'+' if chg_pct >= 0 else ''}{chg_pct:.2f}%",
+                              "isUp": chg_pct >= 0
+                          }
+              except Exception as e:
+                  print(f"Lỗi kéo mã {code}:", e)
+
+          # 3. CÀO BẢNG GIÁ VÀNG BẢO TÍN MINH CHÂU (13.68 - 14.08)
+          gold_buy, gold_sell = "13.68", "14.08"
+          try:
+              r_btmc = requests.get("https://btmc.vn/", headers=headers, timeout=8)
+              if r_btmc.status_code == 200:
+                  soup = BeautifulSoup(r_btmc.text, "html.parser")
+                  for tr in soup.find_all("tr"):
+                      txt = tr.get_text().lower()
+                      if "nhẫn tròn" in txt or ("bảo tín" in txt and "999.9" in txt):
+                          tds = tr.find_all(["td", "th"])
+                          nums = [re.sub(r"[^0-9.]", "", td.get_text().strip()) for td in tds]
+                          valid = [n for n in nums if len(n) >= 4]
+                          if len(valid) >= 2:
+                              b = float(valid[0])
+                              s = float(valid[1])
+                              gold_buy = f"{b / 1000:.2f}" if b >= 10000 else f"{b:.2f}"
+                              gold_sell = f"{s / 1000:.2f}" if s >= 10000 else f"{s:.2f}"
+                              break
+          except Exception as e:
+              print("Lỗi cào BTMC:", e)
+
+          # 4. GHI ĐÈ KẾT QUẢ VÀO MARKET.JSON
+          market_output = {
+              "updated_at": time_str,
+              "time": time_str,
+              "vnindex": {
+                  "val": f"{vn_val:,.2f}",
+                  "raw": vn_val,
+                  "change": f"{'+' if vn_chg >= 0 else ''}{vn_chg:.2f}",
+                  "pct": f"{'+' if vn_pct >= 0 else ''}{vn_pct:.2f}%",
+                  "isUp": is_up,
+                  "dates": dates,
+                  "prices": prices
+              },
+              "stocks": stocks,
+              "gold": {
+                  "name": "Nhẫn tròn trơn Vàng Rồng Thăng Long 999.9",
+                  "buy": gold_buy,
+                  "sell": gold_sell
+              }
           }
 
           with open("market.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-          print("Saved market.json successfully!")
+              json.dump(market_output, f, ensure_ascii=False, indent=2)
+
+          print("Cập nhật file market.json thành công!")
           EOF
 
-      - name: Commit and Push
+      - name: Commit and Push market.json
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add market.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto update market.json [skip ci]"
-          git push
+          git diff --staged --quiet || (git commit -m "Auto update market data [skip ci]" && git push)
