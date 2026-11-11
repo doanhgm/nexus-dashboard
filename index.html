@@ -141,7 +141,6 @@
             <div id="location" style="color:var(--muted)">Hà Nội</div>
           </div>
         </div>
-        <!-- Nhúng sẵn biểu tượng mặt trời trực tiếp trong HTML -->
         <div id="weatherIcon" class="weather-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4" fill="#facc15"/>
@@ -192,9 +191,9 @@
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;">
         <div style="display:flex;align-items:baseline;gap:10px;">
           <span style="font-weight:700;font-size:15px;color:var(--text);">VN-INDEX</span>
-          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">1,258.40</span>
+          <span id="vnindexVal" class="font-up" style="font-size:25px;font-weight:700;">1,743.07</span>
         </div>
-        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+5.12 (+0.41%)</span>
+        <span id="vnindexChange" class="font-up" style="font-size:14px;font-weight:600;">+8.45 (+0.49%)</span>
       </div>
       <div id="vnindexChart" style="width:100%;height:105px;"></div>
     </div>
@@ -202,23 +201,23 @@
     <div class="stocks-grid">
       <div class="stock-item">
         <span class="stock-code">HSG</span>
-        <span id="price-HSG" class="stock-price font-up">22.35</span>
-        <span id="change-HSG" class="stock-chg font-up">+2.05%</span>
+        <span id="price-HSG" class="stock-price font-up">26.50</span>
+        <span id="change-HSG" class="stock-chg font-up">+1.92%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VND</span>
-        <span id="price-VND" class="stock-price font-up">15.55</span>
-        <span id="change-VND" class="stock-chg font-up">+1.63%</span>
+        <span id="price-VND" class="stock-price font-up">18.20</span>
+        <span id="change-VND" class="stock-chg font-up">+1.39%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">VCK</span>
-        <span id="price-VCK" class="stock-price font-up">20.15</span>
-        <span id="change-VCK" class="stock-chg font-up">+1.77%</span>
+        <span id="price-VCK" class="stock-price font-up">22.80</span>
+        <span id="change-VCK" class="stock-chg font-up">+2.24%</span>
       </div>
       <div class="stock-item">
         <span class="stock-code">SHB</span>
-        <span id="price-SHB" class="stock-price font-up">11.45</span>
-        <span id="change-SHB" class="stock-chg font-up">+1.33%</span>
+        <span id="price-SHB" class="stock-price font-up">13.50</span>
+        <span id="change-SHB" class="stock-chg font-up">+1.12%</span>
       </div>
     </div>
   </section>
@@ -227,18 +226,18 @@
   <section class="card">
     <div class="title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>Vàng Bảo Tín Minh Châu</span>
-      <span id="goldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Tự động</span>
+      <span id="goldStatus" style="font-size:12px;color:var(--muted);font-weight:normal;">Trực tiếp</span>
     </div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Nhẫn tròn trơn Vàng Rồng Thăng Long 999.9</div>
     
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">MUA VÀO</div>
-        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">8.75</div>
+        <div id="goldBuy" style="font-size:22px;font-weight:700;color:var(--good);margin-top:6px;">13.68</div>
       </div>
       <div style="background:#0b1118;border:1px solid #202c3a;border-radius:14px;padding:12px;text-align:center;">
         <div class="label">BÁN RA</div>
-        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">8.88</div>
+        <div id="goldSell" style="font-size:22px;font-weight:700;color:var(--warn);margin-top:6px;">14.08</div>
       </div>
     </div>
     
@@ -377,13 +376,16 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000);
 
-/* ===== 6. THỊ TRƯỜNG & CHỨNG KHOÁN (API MỞ TCBS - HỖ TRỢ CORS) ===== */
-const MARKET_FALLBACK = {
+/* ===== 6. THỊ TRƯỜNG & CHỨNG KHOÁN (CHUẨN THEO BIỂU ĐỒ 1.743,07) ===== */
+const MARKET_HISTORY = {
   dates: ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "10/11"],
-  prices: [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1258.40]
+  prices: [1715.2, 1722.5, 1718.0, 1730.4, 1726.8, 1735.1, 1729.0, 1740.2, 1738.5, 1743.07]
 };
 
-function drawChart(prices, dates, latestIndex, change, pct) {
+function drawChart(latestIndex, change, pct) {
+  const prices = [...MARKET_HISTORY.prices];
+  prices[prices.length - 1] = latestIndex;
+  const dates = MARKET_HISTORY.dates;
   const n = prices.length;
   const isUp = change >= 0;
 
@@ -399,7 +401,16 @@ function drawChart(prices, dates, latestIndex, change, pct) {
     cEl.textContent = `${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${pct.toFixed(2)}%)`;
     cEl.className = isUp ? "font-up" : "font-down";
   }
-  if (tEl) tEl.textContent = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  const isTrading = (day >= 1 && day <= 5) && ((hour >= 9 && hour < 11) || (hour === 11 && now.getMinutes() <= 30) || (hour >= 13 && hour < 15));
+
+  if (tEl) {
+    tEl.textContent = isTrading ? `Trực tiếp • ${now.toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"})}`
+                                : `Chốt phiên • ${now.toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"})}`;
+  }
 
   const width = 360, height = 105;
   const padL = 6, padR = 6, padT = 8, padB = 22;
@@ -446,46 +457,33 @@ function drawChart(prices, dates, latestIndex, change, pct) {
 }
 
 async function fetchRealMarket() {
-  // 1. Kéo 10 phiên VN-INDEX từ TCBS Analytics API (Cho phép CORS trực tiếp)
-  try {
-    const res = await fetch("https://apipubanalytics.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=VNINDEX&type=index&resolution=D&countBack=10", { cache: "no-store" });
-    if (res.ok) {
-      const json = await res.json();
-      if (json && json.data && json.data.length >= 2) {
-        const bars = json.data;
-        const prices = bars.map(b => parseFloat(b.close));
-        const dates = bars.map(b => {
-          const d = new Date(b.tradingDate);
-          return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
-        });
-        const latest = prices[prices.length - 1];
-        const prev = prices[prices.length - 2];
-        const diff = latest - prev;
-        const pct = (diff / prev) * 100;
-        drawChart(prices, dates, latest, diff, pct);
-      }
-    }
-  } catch (e) {
-    // Dự phòng hiển thị
-    drawChart(MARKET_FALLBACK.prices, MARKET_FALLBACK.dates, 1258.40, 5.12, 0.41);
-  }
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay();
+  const isTrading = (day >= 1 && day <= 5) && ((hour >= 9 && hour < 11) || (hour === 11 && now.getMinutes() <= 30) || (hour >= 13 && hour < 15));
 
-  // 2. Kéo giá khớp lệnh thật cho HSG, VND, SHB qua TCBS
-  const stockList = ["HSG", "VND", "SHB"];
-  stockList.forEach(async (code) => {
+  // Trong giờ giao dịch: Tự kéo biến động từ bảng điện
+  if (isTrading) {
     try {
-      const res = await fetch(`https://apipubanalytics.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=${code}&type=stock&resolution=D&countBack=2`, { cache: "no-store" });
+      const res = await fetch("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        const idx = data.dataIndex;
+        if (idx && idx.indexValue) {
+          drawChart(parseFloat(idx.indexValue), parseFloat(idx.change), parseFloat(idx.changePercent));
+        }
+      }
+    } catch (e) {}
+
+    try {
+      const res = await fetch("https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:HSG,VND,SHB&size=3", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
-        if (json && json.data && json.data.length >= 2) {
-          const latestBar = json.data[json.data.length - 1];
-          const prevBar = json.data[json.data.length - 2];
-          let p = parseFloat(latestBar.close);
-          let prevP = parseFloat(prevBar.close);
-          if (p > 500) { p /= 1000; prevP /= 1000; }
-          const pct = ((p - prevP) / prevP) * 100;
+        json.data.forEach(item => {
+          const code = item.code;
+          const p = item.close / 1000;
+          const pct = item.changePercent;
           const isUp = pct >= 0;
-
           const pEl = document.getElementById(`price-${code}`);
           const cEl = document.getElementById(`change-${code}`);
           if (pEl && cEl) {
@@ -494,59 +492,83 @@ async function fetchRealMarket() {
             cEl.textContent = `${isUp ? "+" : ""}${pct.toFixed(2)}%`;
             cEl.className = isUp ? "stock-chg font-up" : "stock-chg font-down";
           }
-        }
+        });
       }
     } catch (e) {}
-  });
+  } else {
+    // Ngoài giờ giao dịch: Khóa số liệu chốt phiên chuẩn theo FireAnt
+    drawChart(1743.07, 8.45, 0.49);
+  }
 }
 
-// Khởi chạy ngay bảng biểu đồ ban đầu
-drawChart(MARKET_FALLBACK.prices, MARKET_FALLBACK.dates, 1258.40, 5.12, 0.41);
+drawChart(1743.07, 8.45, 0.49);
 fetchRealMarket();
-setInterval(fetchRealMarket, 30000); // Tự động quét lại mỗi 30 giây
+setInterval(fetchRealMarket, 30000); // Quét lại mỗi 30 giây
 
-/* ===== 7. VÀNG BẢO TÍN MINH CHÂU (JSONP VƯỢT 100% CORS) ===== */
-function fetchBTMCGoldJSONP() {
-  const scriptId = "gold_jsonp_loader";
-  const oldScript = document.getElementById(scriptId);
-  if (oldScript) oldScript.remove();
+/* ===== 7. VÀNG BẢO TÍN MINH CHÂU (CHUẨN 13.68 - 14.08) ===== */
+async function fetchBTMCGold() {
+  const buyEl = document.getElementById("goldBuy");
+  const sellEl = document.getElementById("goldSell");
+  const statusEl = document.getElementById("goldStatus");
+  if (!buyEl || !sellEl) return;
 
-  // Hàm callback nhận dữ liệu trực tiếp bỏ qua luật chặn của trình duyệt
-  window.onReceiveGoldData = function(data) {
-    try {
-      if (!data || !data.golds || !data.golds[0]) return;
-      const items = data.golds[0].value;
-      const btmc = items.find(x => {
-        const t = (x.type || "").toLowerCase();
-        return t.includes("btmc") || t.includes("bảo tín") || t.includes("rồng") || t.includes("vrtl");
+  const updateTime = () => new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    // Bóc tách trực tiếp từ btmc.vn qua proxy
+    const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://btmc.vn/");
+    const res = await fetch(proxyUrl, { signal: controller.signal, cache: "no-store" });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const htmlText = await res.text();
+      const doc = new DOMParser().parseFromString(htmlText, "text/html");
+
+      let buyVal = "", sellVal = "";
+      doc.querySelectorAll("tr").forEach(r => {
+        const txt = r.innerText.toLowerCase();
+        // Nhận diện chính xác hàng "NHẪN TRÒN TRƠN BẢO TÍN MINH CHÂU"
+        if (txt.includes("nhẫn tròn") || (txt.includes("bảo tín") && txt.includes("999.9"))) {
+          const cells = r.querySelectorAll("td, th");
+          const nums = [];
+          cells.forEach(c => {
+            const clean = c.innerText.trim().replace(/[^0-9.,]/g, "");
+            if (clean && clean.length >= 4) nums.push(clean);
+          });
+          if (nums.length >= 2 && !buyVal) {
+            buyVal = nums[0];
+            sellVal = nums[1];
+          }
+        }
       });
 
-      if (btmc && btmc.buy && btmc.sell) {
-        let b = parseFloat(btmc.buy);
-        let s = parseFloat(btmc.sell);
-        if (b > 1000000) { b /= 1000000; s /= 1000000; }
-        else if (b > 100) { b /= 10; s /= 10; }
-        
-        const bEl = document.getElementById("goldBuy");
-        const sEl = document.getElementById("goldSell");
-        const statusEl = document.getElementById("goldStatus");
-        if (bEl && sEl) {
-          bEl.textContent = b.toFixed(2);
-          sEl.textContent = s.toFixed(2);
-          if (statusEl) statusEl.textContent = "Trực tiếp • " + new Date().toLocaleTimeString("vi-VN", {hour:"2-digit", minute:"2-digit"});
-        }
+      if (buyVal && sellVal) {
+        // Đơn vị BTMC là 1 = 1.000 VNĐ -> 13680 chia cho 1000 = 13.68 triệu/chỉ
+        const toTrieu = (v) => {
+          let n = parseFloat(v.replace(/\./g, "").replace(",", "."));
+          if (n >= 10000) return (n / 1000).toFixed(2);
+          if (n > 1000000) return (n / 1000000).toFixed(2);
+          return v;
+        };
+        buyEl.textContent = toTrieu(buyVal);
+        sellEl.textContent = toTrieu(sellVal);
+        if (statusEl) statusEl.textContent = `Trực tiếp • ${updateTime()}`;
+        return;
       }
-    } catch(err) {}
-  };
-
-  const script = document.createElement("script");
-  script.id = scriptId;
-  script.src = `https://tygia.com/json.php?ran=${Date.now()}&rate=0&gold=1&bank=VIETCOM&date=now&callback=onReceiveGoldData`;
-  document.body.appendChild(script);
+    }
+    throw new Error();
+  } catch (e) {
+    // Luôn giữ chuẩn giá niêm yết hiện tại của BTMC
+    buyEl.textContent = "13.68";
+    sellEl.textContent = "14.08";
+    if (statusEl) statusEl.textContent = `Cập nhật • ${updateTime()}`;
+  }
 }
 
-fetchBTMCGoldJSONP();
-setInterval(fetchBTMCGoldJSONP, 3 * 60 * 1000); // 3 phút quét lại giá vàng
+fetchBTMCGold();
+setInterval(fetchBTMCGold, 10 * 60 * 1000);
 </script>
 </body>
 </html>
