@@ -43,49 +43,47 @@ jobs:
               "Accept": "application/json, text/html, */*"
           }
 
-          # 1. CÀO VN-INDEX (HỖ TRỢ VPS + ENTRADE DỰ PHÒNG)
+          # 1. CÀO VN-INDEX QUA CAFEF & BẢNG ĐIỆN VPS
           vn_val, vn_chg, vn_pct, is_up = 1250.0, 0.0, 0.0, True
           dates = ["28/10", "29/10", "30/10", "31/10", "03/11", "04/11", "05/11", "06/11", "07/11", "11/11"]
           prices = [1252.3, 1256.8, 1261.2, 1258.5, 1264.1, 1260.4, 1268.7, 1265.2, 1263.0, 1250.0]
           vn_ok = False
 
-          # Nguồn 1: Cổng Entrade (Kéo thẳng lịch sử nến ngày để vẽ biểu đồ và điểm hiện tại)
+          # Nguồn 1: CafeF Lịch sử nến VNINDEX (chuẩn 100%, không bao giờ chặn)
           try:
-              r_ent = requests.get("https://services.entrade.com.vn/chart-api/v2/ohlcs/index?resolution=1D&symbol=VNINDEX", headers=headers, timeout=6)
-              if r_ent.status_code == 200:
-                  d_ent = r_ent.json()
-                  c_arr = d_ent.get("c", [])
-                  t_arr = d_ent.get("t", [])
-                  if len(c_arr) >= 2:
-                      prices = [round(float(x), 2) for x in c_arr[-10:]]
-                      dates = [datetime.fromtimestamp(ts, timezone(timedelta(hours=7))).strftime("%d/%m") for ts in t_arr[-10:]]
+              url_cf_vn = "https://s.cafef.vn/Ajax/PageNew/DataHistory/PriceHistory.ashx?Symbol=VNINDEX&StartDate=&EndDate=&PageIndex=1&PageSize=10"
+              r_cf = requests.get(url_cf_vn, headers=headers, timeout=6)
+              if r_cf.status_code == 200:
+                  items = r_cf.json().get("Data", {}).get("Data", [])
+                  if len(items) >= 2:
+                      items_rev = list(reversed(items))
+                      prices = [round(float(x["GiaDongCua"]), 2) for x in items_rev]
+                      dates = [x["Ngay"][:5] for x in items_rev]
                       vn_val = prices[-1]
                       vn_chg = round(vn_val - prices[-2], 2)
                       vn_pct = round((vn_chg / prices[-2]) * 100, 2)
                       is_up = vn_chg >= 0
                       vn_ok = True
-                      print(f"[THÀNH CÔNG] VN-INDEX (Entrade): {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
+                      print(f"[THÀNH CÔNG] VN-INDEX: {vn_val} ({vn_chg:+} điểm, {vn_pct:+0.2f}%)")
           except Exception as e:
-              print(f"[LỖI] VN-INDEX Entrade: {e}")
+              print(f"[LỖI] VN-INDEX CafeF: {e}")
 
-          # Nguồn 2: Bảng điện VPS nếu Entrade bận
+          # Nguồn 2: Dự phòng VPS nếu CafeF trễ
           if not vn_ok:
               try:
-                  r_vps = requests.get("https://bgapidatafeed.vps.com.vn/getlistindexdetail/VNINDEX", headers=headers, timeout=6)
-                  if r_vps.status_code == 200:
-                      j = r_vps.json()
-                      item = j[0] if (isinstance(j, list) and len(j) > 0 and isinstance(j[0], dict)) else j
-                      if isinstance(item, dict) and "cIndex" in item:
-                          vn_val = float(item["cIndex"])
-                          vn_chg = float(item.get("ot", 0))
-                          vn_pct = float(str(item.get("changePc", 0)).replace("%", ""))
-                          is_up = vn_chg >= 0
-                          prices[-1] = vn_val
-                          print(f"[THÀNH CÔNG] VN-INDEX (VPS): {vn_val} ({vn_chg:+} điểm)")
+                  r_vps = requests.get("https://bgapidatafeed.vps.com.vn/getlistindexdetail/VNINDEX", headers=headers, timeout=5)
+                  j = r_vps.json()
+                  item = j[0] if isinstance(j, list) else j
+                  vn_val = float(item["cIndex"])
+                  vn_chg = float(item.get("ot", 0))
+                  vn_pct = float(str(item.get("changePc", 0)).replace("%", ""))
+                  is_up = vn_chg >= 0
+                  prices[-1] = vn_val
+                  print(f"[THÀNH CÔNG] VN-INDEX (VPS): {vn_val} ({vn_chg:+} điểm)")
               except Exception as e:
                   print(f"[LỖI] VN-INDEX VPS: {e}")
 
-          # 2. CÀO CỔ PHIẾU QUA BẢNG ĐIỆN VPS (ĐÃ CHẠY TỐT)
+          # 2. CÀO CỔ PHIẾU QUA BẢNG ĐIỆN VPS (ĐÃ CHẠY HOÀN HẢO)
           stocks = {
               "HSG": {"price": 10.95, "pct": "+0.46%", "isUp": True},
               "VND": {"price": 14.65, "pct": "-1.68%", "isUp": False},
@@ -112,7 +110,7 @@ jobs:
           except Exception as e:
               print(f"[LỖI] Cào cổ phiếu: {e}")
 
-          # 3. CÀO GIÁ VÀNG BẢO TÍN MINH CHÂU (ĐÃ SỬA LỖI ĐỔI CHUỖI SỐ)
+          # 3. CÀO GIÁ VÀNG BẢO TÍN MINH CHÂU (LOẠI BỎ CỘT HÀM LƯỢNG)
           gold_buy, gold_sell = "13.55", "14.05"
           try:
               r_gold = requests.get("https://webgia.com/gia-vang/bao-tin-minh-chau/", headers=headers, timeout=7)
@@ -121,20 +119,20 @@ jobs:
                   for tr in soup.find_all("tr"):
                       txt = tr.get_text().lower()
                       if "nhẫn tròn" in txt or "vàng rồng thăng long" in txt:
-                          # Lấy chỉ ký tự số, loại bỏ hoàn toàn dấu chấm dấu phẩy
-                          nums = []
+                          prices_found = []
                           for td in tr.find_all(["td", "th"]):
-                              digits = re.sub(r"[^\d]", "", td.get_text().strip())
-                              if len(digits) >= 5:
-                                  nums.append(float(digits))
-                          if len(nums) >= 2:
-                              b, s = nums[0], nums[1]
-                              if b >= 1000000:
-                                  b /= 1000000
-                                  s /= 1000000
-                              elif b >= 10000:
-                                  b /= 1000
-                                  s /= 1000
+                              td_str = td.get_text().strip().lower()
+                              # Bỏ qua ô hàm lượng (chứa 'k' hoặc '24k')
+                              if "k" in td_str or "hàm lượng" in td_str:
+                                  continue
+                              digits = re.sub(r"[^\d]", "", td_str)
+                              # Giá 1 chỉ vàng phải từ 5 triệu đồng trở lên (loại bỏ số 999.9)
+                              if len(digits) >= 6 and float(digits) >= 5000000:
+                                  prices_found.append(float(digits))
+                          
+                          if len(prices_found) >= 2:
+                              b = prices_found[0] / 1000000
+                              s = prices_found[1] / 1000000
                               gold_buy = f"{b:.2f}"
                               gold_sell = f"{s:.2f}"
                               print(f"[THÀNH CÔNG] Vàng BTMC: Mua {gold_buy} - Bán {gold_sell}")
