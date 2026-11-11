@@ -1,0 +1,121 @@
+name: Auto Update Market & Gold
+
+on:
+  schedule:
+    # Chạy mỗi 15 phút trong giờ giao dịch (từ 9h - 15h30 thứ 2 đến thứ 6 giờ VN)
+    - cron: '*/15 2-9 * * 1-5'
+    # Chạy cập nhật 1 lần vào buổi tối
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Nút bấm để bạn có thể bấm chạy thử ngay lập tức
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Scraper Tools
+        run: pip install requests beautifulsoup4
+
+      - name: Crawl Market and Gold
+        run: |
+          python - << 'EOF'
+          import json, re, requests
+          from datetime import datetime, timezone, timedelta
+          from bs4 import BeautifulSoup
+
+          vn_now = datetime.now(timezone(timedelta(hours=7)))
+          time_str = vn_now.strftime("%H:%M %d/%m")
+
+          # 1. Cào điểm số VN-INDEX
+          vn_val, vn_chg, vn_pct = 1252.72, -3.52, -0.28
+          try:
+            r = requests.get("https://mkw.vndirect.com.vn/leader_lagger?index=VNINDEX", headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+            if r.status_code == 200:
+              d = r.json().get("dataIndex", {})
+              vn_val = float(d.get("indexValue", vn_val))
+              vn_chg = float(d.get("change", vn_chg))
+              vn_pct = float(d.get("changePercent", vn_pct))
+          except Exception as e:
+            print("VNIndex error:", e)
+
+          # 2. Cào giá cổ phiếu (HSG, VND, SHB)
+          stocks = {
+            "HSG": {"price": 20.85, "pct": "-1.42%", "isUp": False},
+            "VND": {"price": 14.90, "pct": "-1.32%", "isUp": False},
+            "VCK": {"price": 21.30, "pct": "+1.91%", "isUp": True},
+            "SHB": {"price": 10.85, "pct": "-0.91%", "isUp": False}
+          }
+          try:
+            url = "https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=date&q=code:HSG,VND,SHB&size=3"
+            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+            if r.status_code == 200:
+              for item in r.json().get("data", []):
+                code = item.get("code")
+                p = round(item.get("close", 0) / 1000, 2)
+                pct = item.get("changePercent", 0)
+                stocks[code] = {
+                  "price": p,
+                  "pct": f"{'+' if pct >= 0 else ''}{pct:.2f}%",
+                  "isUp": pct >= 0
+                }
+          except Exception as e:
+            print("Stocks error:", e)
+
+          # 3. Cào giá vàng Bảo Tín Minh Châu (VRTL 999.9)
+          gold_buy, gold_sell = "8.70", "8.83"
+          try:
+            # Thử qua API tygia
+            rg = requests.get("https://tygia.com/json.php?ran=0&rate=0&gold=1&bank=VIETCOM&date=now", timeout=5)
+            if rg.status_code == 200:
+              items = rg.json().get("golds", [{}])[0].get("value", [])
+              for it in items:
+                t = it.get("type", "").lower()
+                if "bảo tín" in t or "btmc" in t or "rồng" in t:
+                  b = float(it.get("buy", 0))
+                  s = float(it.get("sell", 0))
+                  if b > 0 and s > 0:
+                    gold_buy = f"{b/10:.2f}" if b > 100 else f"{b:.2f}"
+                    gold_sell = f"{s/10:.2f}" if s > 100 else f"{s:.2f}"
+                    break
+          except Exception as e:
+            print("Gold error:", e)
+
+          # Ghi kết quả vào market.json
+          data = {
+            "time": time_str,
+            "vnindex": {
+              "val": f"{vn_val:,.2f}",
+              "raw": vn_val,
+              "change": f"{'+' if vn_chg >= 0 else ''}{vn_chg:.2f}",
+              "pct": f"{'+' if vn_pct >= 0 else ''}{vn_pct:.2f}%",
+              "isUp": vn_chg >= 0
+            },
+            "stocks": stocks,
+            "gold": {
+              "buy": gold_buy,
+              "sell": gold_sell
+            }
+          }
+
+          with open("market.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+          print("Saved market.json successfully!")
+          EOF
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add market.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto update market.json [skip ci]"
+          git push
