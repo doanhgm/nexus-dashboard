@@ -18,6 +18,7 @@
     --orange: #fb923c;
     --danger: #f87171;
     --purple: #c084fc;
+    --cyan: #38bdf8;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -53,36 +54,36 @@
   
   .weather-main {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; margin-top: 20px;
+    gap: 12px; margin-top: 18px;
   }
   .weather-icon svg { width: 95px; height: 95px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6)); }
   .temp { font-size: 58px; font-weight: 700; line-height: 1; }
   .weather-desc { font-size: 20px; color: #dce5ef; padding-bottom: 6px; }
   
   .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 10px; }
+  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 9px 10px; }
   .meta b { display: block; font-size: 16px; margin-top: 2px; }
   .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
   .title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
   
-  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 14px; }
-  .day { padding: 8px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
+  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+  .day { padding: 7px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
   .day .dow { font-size: 12px; color: var(--muted); }
-  .day .t { font-size: 15px; font-weight: 700; margin-top: 4px; }
+  .day .t { font-size: 15px; font-weight: 700; margin-top: 3px; }
 
-  /* KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) */
-  .aqi-box {
-    margin-top: 14px;
+  /* KHỐI TIỆN ÍCH CỘT TRÁI */
+  .sub-box {
+    margin-top: 10px;
     background: #0b1118;
     border: 1px solid #202c3a;
     border-radius: 14px;
-    padding: 12px 14px;
+    padding: 10px 12px;
   }
   .aqi-bar-bg {
-    width: 100%; height: 6px;
+    width: 100%; height: 5px;
     background: #1e293b;
     border-radius: 4px;
-    margin-top: 10px;
+    margin-top: 8px;
     overflow: hidden;
   }
   .aqi-bar-fill {
@@ -174,7 +175,7 @@
   .stock-chg { font-size: 11px; font-weight: 600; }
   .font-up { color: var(--good); }
   .font-down { color: var(--danger); }
-  .footer { font-size: 11px; color: #6f7c89; margin-top: 10px; }
+  .footer { font-size: 11px; color: #6f7c89; margin-top: 8px; }
 
   @media (orientation: portrait) {
     body { overflow: auto; }
@@ -186,11 +187,11 @@
 </head>
 <body>
 <div class="grid">
-  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + Chỉ số AQI Hà Nội) -->
+  <!-- Cột 1: Hero (Đồng hồ + Thời tiết + AQI + Lịch Âm + Xăng Dầu) -->
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
-      <div style="margin-top:14px">
+      <div style="margin-top:10px">
         <span id="clock" class="clock">--:--</span>
         <span id="seconds" class="seconds">--</span>
       </div>
@@ -226,29 +227,71 @@
         <div class="day"><div class="dow">T7</div><div class="t">26° / 18°</div></div>
       </div>
 
-      <!-- KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) HÀ NỘI -->
-      <div class="aqi-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span class="label" style="letter-spacing:0.8px;">KHÔNG KHÍ HÀ NỘI</span>
-          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Đang đo...</span>
+      <!-- 1. KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) -->
+      <div class="sub-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span class="label">KHÔNG KHÍ HÀ NỘI</span>
+          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Trung bình</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="aqiVal" style="font-size:34px;font-weight:800;line-height:1;color:var(--gold);">--</span>
-            <span style="font-size:12px;color:var(--muted);font-weight:600;">US AQI</span>
+            <span id="aqiVal" style="font-size:28px;font-weight:800;line-height:1;color:var(--gold);">86</span>
+            <span style="font-size:11px;color:var(--muted);font-weight:600;">US AQI</span>
           </div>
           <div style="text-align:right;">
-            <span class="label" style="display:block;font-size:10px;">BỤI PM2.5</span>
-            <b id="pm25Val" style="font-size:15px;color:#e2e8f0;">-- µg/m³</b>
+            <span class="label" style="display:block;font-size:9px;">BỤI PM2.5</span>
+            <b id="pm25Val" style="font-size:13px;color:#e2e8f0;">29.5 µg/m³</b>
           </div>
         </div>
         <div class="aqi-bar-bg">
-          <div id="aqiBar" class="aqi-bar-fill" style="background:var(--gold);"></div>
+          <div id="aqiBar" class="aqi-bar-fill" style="background:var(--gold);width:34%;"></div>
+        </div>
+      </div>
+
+      <!-- 2. KHỐI LỊCH ÂM & CAN CHI VIỆT NAM -->
+      <div class="sub-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span class="label">LỊCH ÂM VIỆT NAM</span>
+          <span id="lunarYearCanChi" style="font-size:11px;font-weight:700;color:var(--gold);">Năm Bính Ngọ</span>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <div>
+            <span id="lunarDayMonth" style="font-size:22px;font-weight:800;color:#f8fafc;">03/10</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:4px;">(Âm lịch)</span>
+          </div>
+          <div style="text-align:right;">
+            <span id="lunarDayCanChi" style="font-size:13px;font-weight:700;color:#cbd5e1;">Ngày Kỷ Sửu</span>
+            <span style="display:block;font-size:10px;color:var(--muted);">Tiết Lập Đông</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. KHỐI GIÁ XĂNG DẦU (PETROLIMEX VÙNG 1) -->
+      <div class="sub-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span class="label">XĂNG DẦU (PETROLIMEX)</span>
+          <span style="font-size:10px;color:var(--muted);">Vùng 1 • đ/lít</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#080c11;border:1px solid #1e293b;border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--cyan);">RON 95-III</div>
+              <div class="label" style="font-size:9px;">Khoáng</div>
+            </div>
+            <div id="gasRon95" style="font-size:16px;font-weight:800;color:#f8fafc;">20.850</div>
+          </div>
+          <div style="background:#080c11;border:1px solid #1e293b;border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--good);">XĂNG E10</div>
+              <div class="label" style="font-size:9px;">Sinh học</div>
+            </div>
+            <div id="gasE10" style="font-size:16px;font-weight:800;color:#f8fafc;">20.150</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="weatherNote" class="footer">Thời tiết & AQI: Open‑Meteo • Cập nhật tự động</div>
+    <div id="weatherNote" class="footer">Dữ liệu: Open‑Meteo • Petrolimex • Tự động</div>
   </section>
 
   <!-- Cột 2 trên: Google Calendar -->
@@ -334,7 +377,96 @@ const CONFIG = {
   googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043"
 };
 
-/* ===== 2. ĐỒNG HỒ ===== */
+/* ===== 2. THUẬT TOÁN TÍNH THIÊN VĂN LỊCH ÂM VIỆT NAM ===== */
+function calculateLunarDate(d, m, y) {
+  const PI = Math.PI;
+  function jd(dd, mm, yy) {
+    const a = Math.floor((14 - mm) / 12);
+    const y2 = yy + 4800 - a;
+    const m2 = mm + 12 * a - 3;
+    return dd + Math.floor((153 * m2 + 2) / 5) + 365 * y2 + Math.floor(y2 / 4) - Math.floor(y2 / 100) + Math.floor(y2 / 400) - 32045;
+  }
+  function newMoon(k) {
+    const T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = PI / 180;
+    let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+    Jd1 += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+    const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+    const Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+    const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+    let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+    C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(2 * dr * Mpr) - 0.0004 * Math.sin(3 * dr * Mpr);
+    C1 = C1 + 0.0104 * Math.sin(2 * dr * F) - 0.0051 * Math.sin((M + Mpr) * dr) - 0.0074 * Math.sin((M - Mpr) * dr);
+    const deltat = (T < -11) ? (0.001 + 0.000839 * T + 0.0002261 * T2) : (-0.000078 + 0.0000025 * T + 0.0000202 * T2);
+    return Math.floor(Jd1 + C1 - deltat + 0.5 + 7 / 24);
+  }
+  function sunLong(jdn) {
+    const T = (jdn - 2451545.0 + 0.5 - 7 / 24) / 36525;
+    const dr = PI / 180;
+    const M = 357.52910 + 35999.05030 * T;
+    const L0 = 280.46645 + 36000.76983 * T;
+    const DL = 1.914600 * Math.sin(dr * M) + 0.019993 * Math.sin(dr * 2 * M);
+    let L = (L0 + DL) * dr;
+    L = L - 2 * PI * Math.floor(L / (2 * PI));
+    return Math.floor(L / PI * 6);
+  }
+  const jdn = jd(d, m, y);
+  let k = Math.floor((jdn - 2415021.0769986) / 29.530588853);
+  let nm = newMoon(k + 1);
+  if (nm > jdn) nm = newMoon(k); else k = k + 1;
+  const lDay = jdn - nm + 1;
+
+  function getL11(yy) {
+    const off = jd(31, 12, yy) - 2415021;
+    let k11 = Math.floor(off / 29.530588853);
+    let nm11 = newMoon(k11);
+    if (sunLong(nm11) >= 9) nm11 = newMoon(k11 - 1);
+    return nm11;
+  }
+  let p11 = getL11(y), b11 = p11;
+  if (p11 >= nm) {
+    p11 = getL11(y - 1);
+    b11 = getL11(y);
+  } else {
+    b11 = getL11(y + 1);
+  }
+  const k_diff = Math.floor(0.5 + (nm - p11) / 29.530588853);
+  const tot_m = Math.floor(0.5 + (b11 - p11) / 29.530588853);
+  let leapMonth = 0;
+  if (tot_m > 12) {
+    for (let i = 1; i <= tot_m; i++) {
+      const nm1 = newMoon(Math.floor(0.5 + (p11 - 2415021.0769986) / 29.530588853) + i);
+      const nm2 = newMoon(Math.floor(0.5 + (p11 - 2415021.0769986) / 29.530588853) + i + 1);
+      if (sunLong(nm1) === sunLong(nm2)) { leapMonth = i; break; }
+    }
+  }
+  let lMonth = k_diff + 11;
+  if (tot_m > 12 && k_diff >= leapMonth) lMonth = k_diff + 10;
+  if (lMonth > 12) lMonth -= 12;
+  let lYear = y;
+  if (lMonth >= 11 && m < 3) lYear = y - 1;
+  else if (lMonth < 5 && m > 10) lYear = y + 1;
+
+  const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
+  const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+  const canChiYear = CAN[(lYear + 6) % 10] + " " + CHI[(lYear + 8) % 12];
+  const canChiDay = CAN[(jdn + 9) % 10] + " " + CHI[(jdn + 1) % 12];
+  return { day: lDay, month: lMonth, year: lYear, canChiYear, canChiDay };
+}
+
+function updateLunarInfo() {
+  const now = new Date();
+  const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
+  const res = calculateLunarDate(d, m, y);
+  
+  const dEl = document.getElementById("lunarDayMonth");
+  const dcEl = document.getElementById("lunarDayCanChi");
+  const ycEl = document.getElementById("lunarYearCanChi");
+  if (dEl) dEl.textContent = `${res.day < 10 ? '0' : ''}${res.day}/${res.month < 10 ? '0' : ''}${res.month}`;
+  if (dcEl) dcEl.textContent = `Ngày ${res.canChiDay}`;
+  if (ycEl) ycEl.textContent = `Năm ${res.canChiYear}`;
+}
+
+/* ===== 3. ĐỒNG HỒ ===== */
 function updateClock(){
   const now = new Date();
   const timeFmt = new Intl.DateTimeFormat("vi-VN", {
@@ -348,13 +480,15 @@ function updateClock(){
   });
   document.getElementById("clock").textContent = timeFmt.format(now);
   document.getElementById("seconds").textContent = secFmt.format(now);
-  let d = dateFmt.format(now);
-  document.getElementById("date").textContent = d.charAt(0).toUpperCase() + d.slice(1);
+  let dStr = dateFmt.format(now);
+  document.getElementById("date").textContent = dStr.charAt(0).toUpperCase() + dStr.slice(1);
 }
 setInterval(updateClock, 1000);
 updateClock();
+updateLunarInfo();
+setInterval(updateLunarInfo, 3600000);
 
-/* ===== 3. THỜI TIẾT ===== */
+/* ===== 4. THỜI TIẾT ===== */
 const weatherMap = {
   0:"Trời quang", 1:"Khá quang", 2:"Có mây", 3:"Nhiều mây",
   45:"Sương mù", 48:"Sương mù đóng băng",
@@ -417,7 +551,7 @@ async function loadWeather() {
 loadWeather();
 setInterval(loadWeather, 15 * 60 * 1000);
 
-/* ===== 3.1. CHẤT LƯỢNG KHÔNG KHÍ (AQI & PM2.5) HÀ NỘI ===== */
+/* ===== 5. CHẤT LƯỢNG KHÔNG KHÍ (AQI) ===== */
 function renderAQIData(aqi, pm25) {
   const vEl = document.getElementById("aqiVal");
   const bEl = document.getElementById("aqiBadge");
@@ -429,7 +563,6 @@ function renderAQIData(aqi, pm25) {
 
   vEl.textContent = Math.round(aqi);
 
-  // Phân cấp chuẩn US AQI
   let label = "Tốt", color = "var(--good)";
   if (aqi <= 50) {
     label = "Tốt"; color = "var(--good)";
@@ -482,7 +615,7 @@ async function loadAirQuality() {
 loadAirQuality();
 setInterval(loadAirQuality, 15 * 60 * 1000);
 
-/* ===== 4. LỊCH GOOGLE ===== */
+/* ===== 6. LỊCH GOOGLE ===== */
 if (CONFIG.googleCalendarEmbedUrl) {
   const wrap = document.getElementById("calendarWrap");
   wrap.innerHTML = "";
@@ -492,7 +625,7 @@ if (CONFIG.googleCalendarEmbedUrl) {
   wrap.appendChild(f);
 }
 
-/* ===== 5. KHUNG ẢNH ===== */
+/* ===== 7. KHUNG ẢNH ===== */
 const photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
 let currentPhotoIdx = 0;
 
@@ -512,7 +645,7 @@ function updatePhoto() {
 updatePhoto();
 setInterval(updatePhoto, 30000);
 
-/* ===== 6. VẼ BIỂU ĐỒ VN-INDEX (TRỤC Y + LƯỚI NGANG + TRỤC X HTML) ===== */
+/* ===== 8. VẼ BIỂU ĐỒ VN-INDEX (TRỤC Y + LƯỚI NGANG + TRỤC X HTML) ===== */
 function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const vEl = document.getElementById("vnindexVal");
   const cEl = document.getElementById("vnindexChange");
@@ -590,7 +723,7 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   `;
 }
 
-/* ===== 7. VẼ BIỂU ĐỒ NẾN VÀNG THẾ GIỚI 1 NĂM (USD/OZ) ===== */
+/* ===== 9. VẼ BIỂU ĐỒ NẾN VÀNG THẾ GIỚI 1 NĂM (USD/OZ) ===== */
 function renderGoldChart(prices, dates) {
   const box = document.getElementById("goldChart");
   if (!box || !prices || prices.length < 2) return;
@@ -658,10 +791,9 @@ function renderGoldChart(prices, dates) {
   `;
 }
 
-/* ===== 8. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
+/* ===== 10. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
 const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1738.69];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
-
 const DEFAULT_WORLD_PRICES = [1985.0, 2030.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
 const DEFAULT_WORLD_DATES = ["11/25", "01/26", "03/26", "05/26", "07/26", "09/26", "11/26"];
 
@@ -675,7 +807,7 @@ async function loadMarketJSON() {
     const updateTime = data.time || data.updated_at || "";
     if (tEl && updateTime) tEl.textContent = `1 Năm • ${updateTime}`;
 
-    // 1. Cập nhật VN-INDEX 1 Năm
+    // 1. Cập nhật VN-INDEX
     if (data.vnindex) {
       const prices = (data.vnindex.prices && data.vnindex.prices.length >= 2) ? data.vnindex.prices : DEFAULT_VN_PRICES;
       const dates = (data.vnindex.dates && data.vnindex.dates.length >= 2) ? data.vnindex.dates : DEFAULT_VN_DATES;
@@ -705,9 +837,17 @@ async function loadMarketJSON() {
         bEl.textContent = data.gold.buy || "13.55";
         sEl.textContent = data.gold.sell || "13.95";
       }
-      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : (data.gold.prices || DEFAULT_WORLD_PRICES);
-      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : (data.gold.dates || DEFAULT_WORLD_DATES);
+      const gPrices = (data.gold.world_prices && data.gold.world_prices.length >= 2) ? data.gold.world_prices : DEFAULT_WORLD_PRICES;
+      const gDates = (data.gold.world_dates && data.gold.world_dates.length >= 2) ? data.gold.world_dates : DEFAULT_WORLD_DATES;
       renderGoldChart(gPrices, gDates);
+    }
+
+    // 4. Cập nhật Giá Xăng Dầu
+    if (data.gas) {
+      const rEl = document.getElementById("gasRon95");
+      const eEl = document.getElementById("gasE10");
+      if (rEl && data.gas.ron95) rEl.textContent = data.gas.ron95;
+      if (eEl && data.gas.e10) eEl.textContent = data.gas.e10;
     }
   } catch (e) {
     renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,738.69", "-4.38", "-0.25%", false);
