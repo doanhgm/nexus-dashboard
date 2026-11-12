@@ -67,14 +67,12 @@
   .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 10px; padding: 5px 8px; }
   .meta b { display: block; font-size: 13px; margin-top: 1px; }
   .label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
-  .title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   
   .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 6px; }
   .day { padding: 4px 2px; background: #0b1118; border: 1px solid #202c3a; border-radius: 10px; text-align: center; }
   .day .dow { font-size: 10px; color: var(--muted); }
   .day .t { font-size: 12px; font-weight: 700; margin-top: 1px; }
 
-  /* KHU VỰC TIỆN ÍCH DƯỚI - VỪA KHÍT MÀN HÌNH 7 INCH */
   .hero-bottom-group {
     flex: 1;
     display: flex;
@@ -108,18 +106,101 @@
     transition: width 0.6s ease, background-color 0.6s ease;
   }
 
-  .calendar-wrap {
-    flex: 1;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #0b1118;
-    border: 1px solid #202c3a;
+  /* LỊCH DARK MODE ĐỒNG BỘ */
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
   }
-  iframe {
-    border: 0; width: 100%; height: 100%;
-    filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.25);
-    transform: translateZ(0);
-    opacity: 0.94;
+  .cal-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .cal-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(250, 204, 21, 0.12);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .cal-weekdays span {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .cal-weekdays span.sat { color: var(--cyan); }
+  .cal-weekdays span.sun { color: var(--danger); }
+  .cal-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 4px;
+    min-height: 0;
+  }
+  .cal-cell {
+    background: #0b1118;
+    border: 1px solid #1c2633;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    min-height: 0;
+    position: relative;
+  }
+  .cal-cell.other-month {
+    opacity: 0.28;
+  }
+  .cal-cell .s-day {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.05;
+    color: #e2e8f0;
+  }
+  .cal-cell.sat .s-day { color: #7dd3fc; }
+  .cal-cell.sun .s-day { color: #fca5a5; }
+  .cal-cell .l-day {
+    font-size: 8.5px;
+    line-height: 1.05;
+    color: #64748b;
+    margin-top: 1px;
+  }
+  .cal-cell.lunar-special .l-day {
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .cal-cell.holiday {
+    border-color: rgba(248, 113, 113, 0.45);
+    background: rgba(248, 113, 113, 0.08);
+  }
+  .cal-cell.holiday .s-day {
+    color: var(--danger);
+  }
+  .cal-cell.today {
+    background: rgba(56, 189, 248, 0.2);
+    border: 1.5px solid var(--cyan);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+  }
+  .cal-cell.today .s-day {
+    color: #ffffff;
+  }
+  .cal-cell.today .l-day {
+    color: #bae6fd;
+    font-weight: 700;
   }
 
   .photo-wrap {
@@ -311,10 +392,22 @@
     <div id="weatherNote" class="footer">Dữ liệu: AQICN • Open‑Meteo • Petrolimex</div>
   </section>
 
-  <!-- Cột 2 trên: Google Calendar -->
+  <!-- Cột 2 trên: LỊCH THÁNG DARK MODE (DƯƠNG + ÂM LỊCH) -->
   <section class="card">
-    <div class="title">Lịch</div>
-    <div id="calendarWrap" class="calendar-wrap"></div>
+    <div class="cal-header">
+      <span id="calMonthTitle" class="cal-title">Lịch • Tháng 11/2026</span>
+      <span id="calNextEvent" class="cal-badge">Đang tải...</span>
+    </div>
+    <div class="cal-weekdays">
+      <span>T2</span>
+      <span>T3</span>
+      <span>T4</span>
+      <span>T5</span>
+      <span>T6</span>
+      <span class="sat">T7</span>
+      <span class="sun">CN</span>
+    </div>
+    <div id="calGrid" class="cal-grid"></div>
   </section>
 
   <!-- Cột 3 trên: Khung ảnh tràn viền -->
@@ -390,8 +483,7 @@ const CONFIG = {
   locationName: "Hà Nội",
   latitude: 21.11,
   longitude: 105.82,
-  timezone: "Asia/Bangkok",
-  googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043"
+  timezone: "Asia/Bangkok"
 };
 
 /* ===== 2. THUẬT TOÁN TÍNH THIÊN VĂN LỊCH ÂM VIỆT NAM ===== */
@@ -470,6 +562,116 @@ function calculateLunarDate(d, m, y) {
   return { day: lDay, month: lMonth, year: lYear, canChiYear, canChiDay };
 }
 
+const SOLAR_HOLIDAYS = {
+  "1/1": "Tết Dương lịch",
+  "30/4": "Giải phóng miền Nam",
+  "1/5": "Quốc tế Lao động",
+  "2/9": "Quốc khánh",
+  "20/11": "Ngày Nhà giáo VN",
+  "24/12": "Lễ Giáng sinh"
+};
+
+const LUNAR_HOLIDAYS = {
+  "1/1": "Mùng 1 Tết",
+  "2/1": "Mùng 2 Tết",
+  "3/1": "Mùng 3 Tết",
+  "15/1": "Rằm tháng Giêng",
+  "10/3": "Giỗ Tổ Hùng Vương",
+  "15/4": "Lễ Phật Đản",
+  "5/5": "Tết Đoan Ngọ",
+  "15/7": "Lễ Vu Lan",
+  "15/8": "Tết Trung Thu",
+  "23/12": "Ông Công Ông Táo"
+};
+
+let lastRenderedCalKey = "";
+
+function renderDarkCalendar() {
+  const now = new Date();
+  const curY = now.getFullYear();
+  const curM = now.getMonth();
+  const curD = now.getDate();
+  const calKey = `${curY}-${curM}-${curD}`;
+  if (calKey === lastRenderedCalKey) return;
+  lastRenderedCalKey = calKey;
+
+  const titleEl = document.getElementById("calMonthTitle");
+  if (titleEl) titleEl.textContent = `Lịch • Tháng ${curM + 1}/${curY}`;
+
+  const gridEl = document.getElementById("calGrid");
+  if (!gridEl) return;
+  gridEl.innerHTML = "";
+
+  const firstDow = new Date(curY, curM, 1).getDay();
+  const startOffset = (firstDow + 6) % 7; // T2 = 0 ... CN = 6
+  const daysInMonth = new Date(curY, curM + 1, 0).getDate();
+  const prevMonthDays = new Date(curY, curM, 0).getDate();
+  const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    const col = i % 7;
+    const rawDay = i - startOffset + 1;
+    let d, m, y, isOther = false;
+
+    if (rawDay <= 0) {
+      isOther = true;
+      d = prevMonthDays + rawDay;
+      m = curM === 0 ? 12 : curM;
+      y = curM === 0 ? curY - 1 : curY;
+    } else if (rawDay > daysInMonth) {
+      isOther = true;
+      d = rawDay - daysInMonth;
+      m = curM === 11 ? 1 : curM + 2;
+      y = curM === 11 ? curY + 1 : curY;
+    } else {
+      d = rawDay;
+      m = curM + 1;
+      y = curY;
+    }
+
+    const lunar = calculateLunarDate(d, m, y);
+    const sKey = `${d}/${m}`;
+    const lKey = `${lunar.day}/${lunar.month}`;
+    const isHoliday = Boolean(SOLAR_HOLIDAYS[sKey] || LUNAR_HOLIDAYS[lKey]);
+    const isLunarSpecial = (lunar.day === 1 || lunar.day === 15);
+    const isToday = (!isOther && d === curD);
+
+    const cell = document.createElement("div");
+    let cls = "cal-cell";
+    if (isOther) cls += " other-month";
+    if (col === 5) cls += " sat";
+    if (col === 6) cls += " sun";
+    if (isLunarSpecial) cls += " lunar-special";
+    if (isHoliday) cls += " holiday";
+    if (isToday) cls += " today";
+    cell.className = cls;
+
+    const lunarText = (lunar.day === 1) ? `${lunar.day}/${lunar.month}` : `${lunar.day}`;
+    cell.innerHTML = `<span class="s-day">${d}</span><span class="l-day">${lunarText}</span>`;
+    gridEl.appendChild(cell);
+  }
+
+  // Tìm sự kiện / ngày lễ / Rằm - Mùng 1 gần nhất trong 30 ngày tới
+  const badgeEl = document.getElementById("calNextEvent");
+  if (badgeEl) {
+    let foundText = "";
+    for (let offset = 0; offset <= 30; offset++) {
+      const checkDate = new Date(curY, curM, curD + offset);
+      const cd = checkDate.getDate();
+      const cm = checkDate.getMonth() + 1;
+      const cy = checkDate.getFullYear();
+      const cl = calculateLunarDate(cd, cm, cy);
+      const name = SOLAR_HOLIDAYS[`${cd}/${cm}`] || LUNAR_HOLIDAYS[`${cl.day}/${cl.month}`] ||
+                   (cl.day === 1 ? `Mùng 1 tháng ${cl.month} ÂL` : (cl.day === 15 ? `Rằm tháng ${cl.month} ÂL` : ""));
+      if (name) {
+        foundText = offset === 0 ? `Hôm nay: ${name}` : `${cd}/${cm}: ${name}`;
+        break;
+      }
+    }
+    badgeEl.textContent = foundText || "Bình an • Thuận lợi";
+  }
+}
+
 function updateLunarInfo() {
   const now = new Date();
   const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
@@ -481,6 +683,8 @@ function updateLunarInfo() {
   if (dEl) dEl.textContent = `${res.day < 10 ? '0' : ''}${res.day}/${res.month < 10 ? '0' : ''}${res.month}`;
   if (dcEl) dcEl.textContent = `Ngày ${res.canChiDay}`;
   if (ycEl) ycEl.textContent = `Năm ${res.canChiYear}`;
+
+  renderDarkCalendar();
 }
 
 /* ===== 3. ĐỒNG HỒ ===== */
@@ -503,7 +707,7 @@ function updateClock(){
 setInterval(updateClock, 1000);
 updateClock();
 updateLunarInfo();
-setInterval(updateLunarInfo, 3600000);
+setInterval(updateLunarInfo, 60000);
 
 /* ===== 4. THỜI TIẾT ===== */
 const weatherMap = {
@@ -551,7 +755,7 @@ function renderWeatherData(w) {
 }
 
 async function loadWeather() {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
   try {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error();
@@ -615,7 +819,7 @@ function renderAQIData(aqi, pm25, source) {
 
 async function loadAirQualityFallback() {
   if (hasServerAQI) return;
-  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=us_aqi,pm2_5`;
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=us_aqi,pm2_5`;
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error();
@@ -626,17 +830,7 @@ async function loadAirQualityFallback() {
   } catch (e) {}
 }
 
-/* ===== 6. LỊCH GOOGLE ===== */
-if (CONFIG.googleCalendarEmbedUrl) {
-  const wrap = document.getElementById("calendarWrap");
-  wrap.innerHTML = "";
-  const f = document.createElement("iframe");
-  f.src = CONFIG.googleCalendarEmbedUrl;
-  f.loading = "lazy";
-  wrap.appendChild(f);
-}
-
-/* ===== 7. TRÌNH CHIẾU ẢNH TỰ ĐỘNG ===== */
+/* ===== 6. TRÌNH CHIẾU ẢNH TỰ ĐỘNG ===== */
 let photoList = [];
 let currentPhotoIdx = 0;
 
@@ -655,7 +849,7 @@ function updatePhoto() {
 }
 setInterval(updatePhoto, 30000);
 
-/* ===== 8. VẼ BIỂU ĐỒ VN-INDEX ===== */
+/* ===== 7. VẼ BIỂU ĐỒ VN-INDEX ===== */
 function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const vEl = document.getElementById("vnindexVal");
   const cEl = document.getElementById("vnindexChange");
@@ -733,7 +927,7 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   `;
 }
 
-/* ===== 9. VẼ BIỂU ĐỒ NẾN VÀNG THẾ GIỚI 1 NĂM (USD/OZ) ===== */
+/* ===== 8. VẼ BIỂU ĐỒ NẾN VÀNG THẾ GIỚI 1 NĂM (USD/OZ) ===== */
 function renderGoldChart(prices, dates) {
   const box = document.getElementById("goldChart");
   if (!box || !prices || prices.length < 2) return;
@@ -801,7 +995,7 @@ function renderGoldChart(prices, dates) {
   `;
 }
 
-/* ===== 10. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
+/* ===== 9. NẠP DỮ LIỆU TỪ MARKET.JSON ===== */
 const DEFAULT_VN_PRICES = [1250, 1260, 1285, 1310, 1350, 1420, 1480, 1530, 1590, 1640, 1690, 1720, 1740.19];
 const DEFAULT_VN_DATES = ["11/25", "12/25", "01/26", "02/26", "03/26", "04/26", "05/26", "06/26", "07/26", "08/26", "09/26", "10/26", "11/26"];
 const DEFAULT_WORLD_PRICES = [1985.0, 2030.0, 2160.0, 2330.0, 2410.0, 2580.0, 2685.50];
