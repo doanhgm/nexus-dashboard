@@ -235,9 +235,9 @@
 
       <div id="forecast" class="forecast">
         <div class="day"><div class="dow">Hôm nay</div><div class="t">20° / 15°</div></div>
-        <div class="day"><div class="dow">T5</div><div class="t">22° / 15°</div></div>
-        <div class="day"><div class="dow">T6</div><div class="t">20° / 17°</div></div>
-        <div class="day"><div class="dow">T7</div><div class="t">26° / 18°</div></div>
+        <div class="day"><div class="dow">T6</div><div class="t">22° / 15°</div></div>
+        <div class="day"><div class="dow">T7</div><div class="t">20° / 17°</div></div>
+        <div class="day"><div class="dow">CN</div><div class="t">26° / 18°</div></div>
       </div>
     </div>
 
@@ -547,7 +547,7 @@ function renderWeatherData(w) {
 }
 
 async function loadWeather() {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
   try {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error();
@@ -609,10 +609,9 @@ function renderAQIData(aqi, pm25, source) {
   barEl.style.width = pct + "%";
 }
 
-// Dự phòng gọi trực tiếp nếu market.json chưa cập nhật trường aqi
 async function loadAirQualityFallback() {
   if (hasServerAQI) return;
-  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=us_aqi,pm2_5`;
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=us_aqi,pm2_5`;
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error();
@@ -878,6 +877,17 @@ async function loadMarketJSON() {
 
 loadMarketJSON();
 setInterval(loadMarketJSON, 60000);
+
+// Tự động cập nhật ngay khi mở sáng màn hình tablet hoặc khi Wi-Fi vừa kết nối lại
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    setTimeout(loadMarketJSON, 2000);
+    setTimeout(loadWeather, 2500);
+  }
+});
+window.addEventListener("online", () => {
+  setTimeout(loadMarketJSON, 1500);
+});
 </script>
 </body>
 </html>
