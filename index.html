@@ -26,20 +26,21 @@
     background: var(--bg); color: var(--text);
     font-family: Arial, Helvetica, sans-serif; overflow: hidden;
   }
-  body { padding: 14px; }
+  body { padding: 10px; }
   .grid {
     display: grid;
     grid-template-columns: 1fr 1.38fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     height: 100%;
   }
   .card {
     background: linear-gradient(180deg, var(--panel), var(--panel2));
     border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 16px;
+    border-radius: 18px;
+    padding: 12px 14px;
     min-width: 0;
+    min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -50,53 +51,55 @@
     flex-direction: column;
     justify-content: space-between;
   }
-  .clock { font-size: 80px; line-height: .95; font-weight: 700; letter-spacing: -3px; }
-  .seconds { font-size: 26px; color: var(--muted); }
-  .date { font-size: 22px; margin-top: 8px; color: #d7dee8; }
+  .clock { font-size: 56px; line-height: .95; font-weight: 700; letter-spacing: -2px; }
+  .seconds { font-size: 20px; color: var(--muted); }
+  .date { font-size: 15px; margin-top: 4px; color: #d7dee8; }
   
   .weather-main {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; margin-top: 14px;
+    gap: 8px; margin-top: 8px;
   }
-  .weather-icon svg { width: 95px; height: 95px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6)); }
-  .temp { font-size: 58px; font-weight: 700; line-height: 1; }
-  .weather-desc { font-size: 20px; color: #dce5ef; padding-bottom: 6px; }
+  .weather-icon svg { width: 58px; height: 58px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6)); }
+  .temp { font-size: 42px; font-weight: 700; line-height: 1; }
+  .weather-desc { font-size: 15px; color: #dce5ef; padding-bottom: 2px; }
   
-  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; padding: 8px 10px; }
-  .meta b { display: block; font-size: 16px; margin-top: 2px; }
-  .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
+  .meta div { background: #0b1118; border: 1px solid #202c3a; border-radius: 10px; padding: 5px 8px; }
+  .meta b { display: block; font-size: 13px; margin-top: 1px; }
+  .label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  .title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   
-  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-  .day { padding: 6px 4px; background: #0b1118; border: 1px solid #202c3a; border-radius: 12px; text-align: center; }
-  .day .dow { font-size: 12px; color: var(--muted); }
-  .day .t { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 6px; }
+  .day { padding: 4px 2px; background: #0b1118; border: 1px solid #202c3a; border-radius: 10px; text-align: center; }
+  .day .dow { font-size: 10px; color: var(--muted); }
+  .day .t { font-size: 12px; font-weight: 700; margin-top: 1px; }
 
+  /* KHU VỰC TIỆN ÍCH DƯỚI - VỪA KHÍT MÀN HÌNH 7 INCH */
   .hero-bottom-group {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: 12px 0 6px 0;
-    gap: 10px;
+    margin: 7px 0 4px 0;
+    gap: 6px;
     min-height: 0;
   }
   .sub-box {
     background: #0b1118;
     border: 1px solid #202c3a;
-    border-radius: 14px;
-    padding: 12px 14px;
+    border-radius: 12px;
+    padding: 7px 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     flex: 1;
+    min-height: 0;
   }
   .aqi-bar-bg {
-    width: 100%; height: 6px;
+    width: 100%; height: 5px;
     background: #1e293b;
     border-radius: 4px;
-    margin-top: 8px;
+    margin-top: 5px;
     overflow: hidden;
   }
   .aqi-bar-fill {
@@ -114,18 +117,19 @@
   }
   iframe {
     border: 0; width: 100%; height: 100%;
-    filter: invert(1) hue-rotate(180deg) brightness(1.25) contrast(1.4);
-    mix-blend-mode: screen;
+    filter: invert(1) hue-rotate(180deg) brightness(1.15) contrast(1.25);
+    transform: translateZ(0);
+    opacity: 0.94;
   }
 
   .photo-wrap {
-    height: 100%; border-radius: 20px; overflow: hidden;
+    height: 100%; border-radius: 18px; overflow: hidden;
     background: #0b1118; display: flex; align-items: center; justify-content: center;
   }
   .photo-wrap img {
     width: 100%; height: 100%;
     object-fit: cover; object-position: top center;
-    border-radius: 20px; opacity: 0;
+    border-radius: 18px; opacity: 0;
     transition: opacity 0.8s ease-in-out;
   }
 
@@ -134,7 +138,7 @@
     width: 100%;
     min-height: 0;
     position: relative;
-    margin: 4px 0 6px 0;
+    margin: 2px 0 4px 0;
   }
   .chart-box svg {
     width: 100%;
@@ -151,24 +155,24 @@
   .y-tick {
     position: absolute;
     right: 0;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     color: #64748b;
-    background: rgba(11, 17, 24, 0.85);
-    padding: 1px 5px;
+    background: rgba(11, 17, 24, 0.88);
+    padding: 1px 4px;
     border-radius: 4px;
     transform: translateY(-50%);
     line-height: 1;
   }
   .x-axis {
     position: absolute;
-    bottom: 2px; left: 4px; right: 4px;
+    bottom: 1px; left: 4px; right: 4px;
     display: flex;
     justify-content: space-between;
     pointer-events: none;
   }
   .x-axis span {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: #64748b;
     line-height: 1;
@@ -176,19 +180,19 @@
 
   .stocks-grid {
     display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 6px; margin-top: auto;
+    gap: 5px; margin-top: auto;
   }
   .stock-item {
-    background: #0b1118; border: 1px solid #202c3a; border-radius: 10px;
-    padding: 6px 3px; text-align: center; display: flex;
-    flex-direction: column; gap: 2px;
+    background: #0b1118; border: 1px solid #202c3a; border-radius: 9px;
+    padding: 5px 2px; text-align: center; display: flex;
+    flex-direction: column; gap: 1px;
   }
-  .stock-code { font-size: 12px; font-weight: 700; color: #94a3b8; }
-  .stock-price { font-size: 16px; font-weight: 700; }
-  .stock-chg { font-size: 11px; font-weight: 600; }
+  .stock-code { font-size: 11px; font-weight: 700; color: #94a3b8; }
+  .stock-price { font-size: 14px; font-weight: 700; }
+  .stock-chg { font-size: 10px; font-weight: 600; }
   .font-up { color: var(--good); }
   .font-down { color: var(--danger); }
-  .footer { font-size: 11px; color: #6f7c89; margin-top: 4px; }
+  .footer { font-size: 9.5px; color: #6f7c89; line-height: 1.1; }
 
   @media (orientation: portrait) {
     body { overflow: auto; }
@@ -204,18 +208,18 @@
   <section class="card hero">
     <div>
       <div class="label">NEXUS 7 DASHBOARD</div>
-      <div style="margin-top:8px">
+      <div style="margin-top:4px">
         <span id="clock" class="clock">--:--</span>
         <span id="seconds" class="seconds">--</span>
       </div>
       <div id="date" class="date">Đang tải...</div>
 
       <div class="weather-main">
-        <div style="display:flex;align-items:flex-end;gap:12px;">
+        <div style="display:flex;align-items:flex-end;gap:10px;">
           <div id="temp" class="temp">19°</div>
           <div>
             <div id="weatherDesc" class="weather-desc">Trời quang</div>
-            <div id="location" style="color:var(--muted)">Hà Nội</div>
+            <div id="location" style="font-size:12px;color:var(--muted)">Hà Nội</div>
           </div>
         </div>
         <div id="weatherIcon" class="weather-icon">
@@ -241,22 +245,22 @@
       </div>
     </div>
 
-    <!-- KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI -->
+    <!-- KHU VỰC TIỆN ÍCH DƯỚI -->
     <div class="hero-bottom-group">
       <!-- 1. KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
           <span class="label" id="aqiTitle">KHÔNG KHÍ HÀ NỘI</span>
-          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(148,163,184,0.15);color:#94a3b8;">Đang tải...</span>
+          <span id="aqiBadge" style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;background:rgba(148,163,184,0.15);color:#94a3b8;">Đang tải...</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
-          <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="aqiVal" style="font-size:32px;font-weight:800;line-height:1;color:var(--gold);">--</span>
-            <span style="font-size:11px;color:var(--muted);font-weight:600;">US AQI</span>
+          <div style="display:flex;align-items:baseline;gap:5px;">
+            <span id="aqiVal" style="font-size:24px;font-weight:800;line-height:1;color:var(--gold);">--</span>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">US AQI</span>
           </div>
           <div style="text-align:right;">
-            <span class="label" style="display:block;font-size:9px;">BỤI PM2.5</span>
-            <b id="pm25Val" style="font-size:14px;color:#e2e8f0;">-- µg/m³</b>
+            <span class="label" style="display:block;font-size:8.5px;">BỤI PM2.5</span>
+            <b id="pm25Val" style="font-size:12px;color:#e2e8f0;">-- µg/m³</b>
           </div>
         </div>
         <div class="aqi-bar-bg">
@@ -266,39 +270,39 @@
 
       <!-- 2. KHỐI LỊCH ÂM & CAN CHI VIỆT NAM -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
           <span class="label">LỊCH ÂM VIỆT NAM</span>
-          <span id="lunarYearCanChi" style="font-size:12px;font-weight:700;color:var(--gold);">Năm Bính Ngọ</span>
+          <span id="lunarYearCanChi" style="font-size:11px;font-weight:700;color:var(--gold);">Năm Bính Ngọ</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div>
-            <span id="lunarDayMonth" style="font-size:26px;font-weight:800;color:#f8fafc;">04/10</span>
-            <span style="font-size:12px;color:var(--muted);margin-left:4px;">(Âm lịch)</span>
+            <span id="lunarDayMonth" style="font-size:20px;font-weight:800;color:#f8fafc;">04/10</span>
+            <span style="font-size:10px;color:var(--muted);margin-left:3px;">(Âm lịch)</span>
           </div>
           <div style="text-align:right;">
-            <span id="lunarDayCanChi" style="font-size:14px;font-weight:700;color:#cbd5e1;">Ngày Canh Dần</span>
-            <span style="display:block;font-size:11px;color:var(--muted);margin-top:2px;">Tiết Lập Đông</span>
+            <span id="lunarDayCanChi" style="font-size:12px;font-weight:700;color:#cbd5e1;">Ngày Canh Dần</span>
+            <span style="display:block;font-size:9.5px;color:var(--muted);margin-top:1px;">Tiết Lập Đông</span>
           </div>
         </div>
       </div>
 
       <!-- 3. KHỐI XĂNG E10 RON 95-III -->
       <div class="sub-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
           <span class="label">NHIÊN LIỆU (PETROLIMEX)</span>
-          <span style="font-size:11px;color:var(--muted);">Vùng 1 • đ/lít</span>
+          <span style="font-size:9.5px;color:var(--muted);">Vùng 1 • đ/lít</span>
         </div>
-        <div style="background:#080c11;border:1px solid #1e293b;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;color:var(--good);font-weight:800;font-size:12px;">E10</div>
+        <div style="background:#080c11;border:1px solid #1e293b;border-radius:9px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:7px;background:rgba(74,222,128,0.15);display:flex;align-items:center;justify-content:center;color:var(--good);font-weight:800;font-size:10.5px;">E10</div>
             <div>
-              <div style="font-size:14px;font-weight:700;color:#f8fafc;">E10 RON 95-III</div>
-              <div style="font-size:10px;color:var(--muted);">Xăng sinh học • Vùng 1</div>
+              <div style="font-size:12px;font-weight:700;color:#f8fafc;">E10 RON 95-III</div>
+              <div style="font-size:9px;color:var(--muted);">Xăng sinh học</div>
             </div>
           </div>
           <div style="text-align:right;">
-            <span id="gasE10" style="font-size:22px;font-weight:800;color:var(--good);">21.150</span>
-            <span style="font-size:11px;color:var(--muted);margin-left:2px;">đ</span>
+            <span id="gasE10" style="font-size:18px;font-weight:800;color:var(--good);">21.150</span>
+            <span style="font-size:10px;color:var(--muted);margin-left:1px;">đ</span>
           </div>
         </div>
       </div>
@@ -315,7 +319,7 @@
 
   <!-- Cột 3 trên: Khung ảnh tràn viền -->
   <section class="card" style="padding:0;position:relative;overflow:hidden;">
-    <div id="photoCounter" style="position:absolute;top:10px;right:14px;font-size:11px;color:rgba(255,255,255,0.7);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:10px;z-index:2;"></div>
+    <div id="photoCounter" style="position:absolute;top:8px;right:12px;font-size:10px;color:rgba(255,255,255,0.8);background:rgba(0,0,0,0.45);padding:2px 7px;border-radius:10px;z-index:2;"></div>
     <div class="photo-wrap">
       <img id="photoSlide" src="" alt="Khung ảnh" />
     </div>
@@ -324,12 +328,12 @@
   <!-- Cột 2 dưới: VN-INDEX 1 NĂM & 4 MÃ CỔ PHIẾU -->
   <section class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">
-      <div style="display:flex;align-items:baseline;gap:8px;">
-        <span style="font-weight:700;font-size:16px;">VN-INDEX</span>
-        <span id="vnindexVal" class="font-down" style="font-size:24px;font-weight:700;">--</span>
-        <span id="vnindexChange" class="font-down" style="font-size:13px;font-weight:600;">--</span>
+      <div style="display:flex;align-items:baseline;gap:6px;">
+        <span style="font-weight:700;font-size:14px;">VN-INDEX</span>
+        <span id="vnindexVal" class="font-down" style="font-size:20px;font-weight:700;">--</span>
+        <span id="vnindexChange" class="font-down" style="font-size:11px;font-weight:600;">--</span>
       </div>
-      <span id="marketTime" style="font-size:11px;color:var(--muted);">1 Năm • Live</span>
+      <span id="marketTime" style="font-size:10px;color:var(--muted);">1 Năm • Live</span>
     </div>
 
     <div class="chart-box" id="vnindexChart"></div>
@@ -360,19 +364,19 @@
 
   <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU -->
   <section class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <span style="font-size:15px;font-weight:700;">Vàng BTMC (999.9)</span>
-      <span id="goldStatus" style="font-size:11px;color:var(--muted);">1 Năm • XAU/USD</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+      <span style="font-size:14px;font-weight:700;">Vàng BTMC (999.9)</span>
+      <span id="goldStatus" style="font-size:10px;color:var(--muted);">1 Năm • XAU/USD</span>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:9px;padding:4px;text-align:center;">
         <div class="label" style="color:var(--good)">MUA VÀO (TR/CHỈ)</div>
-        <div id="goldBuy" style="font-size:20px;font-weight:700;color:var(--good);margin-top:2px;">13.55</div>
+        <div id="goldBuy" style="font-size:18px;font-weight:700;color:var(--good);margin-top:1px;">13.55</div>
       </div>
-      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:10px;padding:6px;text-align:center;">
+      <div style="background:#0b1118;border:1px solid #202c3a;border-radius:9px;padding:4px;text-align:center;">
         <div class="label" style="color:var(--gold)">BÁN RA (TR/CHỈ)</div>
-        <div id="goldSell" style="font-size:20px;font-weight:700;color:var(--gold);margin-top:2px;">13.95</div>
+        <div id="goldSell" style="font-size:18px;font-weight:700;color:var(--gold);margin-top:1px;">13.95</div>
       </div>
     </div>
 
@@ -675,7 +679,7 @@ function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
 
   const width = 1000, height = 260;
-  const padT = 18, padB = 30, padL = 2, padR = 2;
+  const padT = 16, padB = 42, padL = 2, padR = 2;
   const chartH = height - padT - padB;
   const chartW = width - padL - padR;
   const range = (yMaxVal - yMinVal) || 1;
@@ -742,7 +746,7 @@ function renderGoldChart(prices, dates) {
   const yMidVal = Math.round((yMaxVal + yMinVal) / 2);
 
   const width = 800, height = 240;
-  const padT = 18, padB = 28, padL = 2, padR = 2;
+  const padT = 16, padB = 40, padL = 2, padR = 2;
   const chartH = height - padT - padB;
   const chartW = width - padL - padR;
   const range = (yMaxVal - yMinVal) || 1;
