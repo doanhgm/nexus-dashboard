@@ -73,7 +73,6 @@
   .day .dow { font-size: 12px; color: var(--muted); }
   .day .t { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
-  /* KHU VỰC TIỆN ÍCH TỰ ĐỘNG KÉO DÀI */
   .hero-bottom-group {
     flex: 1;
     display: flex;
@@ -247,21 +246,21 @@
       <!-- 1. KHỐI CHẤT LƯỢNG KHÔNG KHÍ (AQI) -->
       <div class="sub-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span class="label">KHÔNG KHÍ HÀ NỘI</span>
-          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(250,204,21,0.15);color:var(--gold);">Trung bình</span>
+          <span class="label" id="aqiTitle">KHÔNG KHÍ HÀ NỘI</span>
+          <span id="aqiBadge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(148,163,184,0.15);color:#94a3b8;">Đang tải...</span>
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div style="display:flex;align-items:baseline;gap:6px;">
-            <span id="aqiVal" style="font-size:32px;font-weight:800;line-height:1;color:var(--gold);">86</span>
+            <span id="aqiVal" style="font-size:32px;font-weight:800;line-height:1;color:var(--gold);">--</span>
             <span style="font-size:11px;color:var(--muted);font-weight:600;">US AQI</span>
           </div>
           <div style="text-align:right;">
             <span class="label" style="display:block;font-size:9px;">BỤI PM2.5</span>
-            <b id="pm25Val" style="font-size:14px;color:#e2e8f0;">29.5 µg/m³</b>
+            <b id="pm25Val" style="font-size:14px;color:#e2e8f0;">-- µg/m³</b>
           </div>
         </div>
         <div class="aqi-bar-bg">
-          <div id="aqiBar" class="aqi-bar-fill" style="background:var(--gold);width:34%;"></div>
+          <div id="aqiBar" class="aqi-bar-fill" style="background:var(--gold);width:0%;"></div>
         </div>
       </div>
 
@@ -273,11 +272,11 @@
         </div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;">
           <div>
-            <span id="lunarDayMonth" style="font-size:26px;font-weight:800;color:#f8fafc;">03/10</span>
+            <span id="lunarDayMonth" style="font-size:26px;font-weight:800;color:#f8fafc;">04/10</span>
             <span style="font-size:12px;color:var(--muted);margin-left:4px;">(Âm lịch)</span>
           </div>
           <div style="text-align:right;">
-            <span id="lunarDayCanChi" style="font-size:14px;font-weight:700;color:#cbd5e1;">Ngày Kỷ Sửu</span>
+            <span id="lunarDayCanChi" style="font-size:14px;font-weight:700;color:#cbd5e1;">Ngày Canh Dần</span>
             <span style="display:block;font-size:11px;color:var(--muted);margin-top:2px;">Tiết Lập Đông</span>
           </div>
         </div>
@@ -305,7 +304,7 @@
       </div>
     </div>
 
-    <div id="weatherNote" class="footer">Dữ liệu: Open‑Meteo • Petrolimex • Tự động</div>
+    <div id="weatherNote" class="footer">Dữ liệu: AQICN • Open‑Meteo • Petrolimex</div>
   </section>
 
   <!-- Cột 2 trên: Google Calendar -->
@@ -359,7 +358,7 @@
     </div>
   </section>
 
-  <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU (GIỮ SỐ BTMC + BIỂU ĐỒ NẾN XAU/USD 1 NĂM) -->
+  <!-- Cột 3 dưới: VÀNG BẢO TÍN MINH CHÂU -->
   <section class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
       <span style="font-size:15px;font-weight:700;">Vàng BTMC (999.9)</span>
@@ -385,8 +384,8 @@
 /* ===== 1. CẤU HÌNH ===== */
 const CONFIG = {
   locationName: "Hà Nội",
-  latitude: 21.0285,
-  longitude: 105.8542,
+  latitude: 21.11,
+  longitude: 105.82,
   timezone: "Asia/Bangkok",
   googleCalendarEmbedUrl: "https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FHo_Chi_Minh&showPrint=0&showTitle=0&showNav=0&showCalendars=0&src=ZG9hbmhnbUBnbWFpbC5jb20&src=dmkudmlldG5hbWVzZSNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039be5&color=%230b8043"
 };
@@ -548,7 +547,7 @@ function renderWeatherData(w) {
 }
 
 async function loadWeather() {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(CONFIG.timezone)}&forecast_days=4`;
   try {
     const r = await fetch(url, { cache: "no-store" });
     if (!r.ok) throw new Error();
@@ -566,13 +565,19 @@ loadWeather();
 setInterval(loadWeather, 15 * 60 * 1000);
 
 /* ===== 5. CHẤT LƯỢNG KHÔNG KHÍ (AQI) ===== */
-function renderAQIData(aqi, pm25) {
+let hasServerAQI = false;
+
+function renderAQIData(aqi, pm25, source) {
+  if (aqi === null || aqi === undefined || isNaN(aqi)) return;
+
   const vEl = document.getElementById("aqiVal");
   const bEl = document.getElementById("aqiBadge");
   const barEl = document.getElementById("aqiBar");
   const pmEl = document.getElementById("pm25Val");
+  const tEl = document.getElementById("aqiTitle");
 
-  if (pmEl && pm25 !== undefined) pmEl.textContent = `${pm25.toFixed(1)} µg/m³`;
+  if (tEl && source) tEl.textContent = `KHÔNG KHÍ (${source.toUpperCase()})`;
+  if (pmEl && pm25 !== null && pm25 !== undefined) pmEl.textContent = `${Number(pm25).toFixed(1)} µg/m³`;
   if (!vEl || !bEl || !barEl) return;
 
   vEl.textContent = Math.round(aqi);
@@ -604,30 +609,19 @@ function renderAQIData(aqi, pm25) {
   barEl.style.width = pct + "%";
 }
 
-async function loadAirQuality() {
-  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}¤t=us_aqi,pm2_5`;
+// Dự phòng gọi trực tiếp nếu market.json chưa cập nhật trường aqi
+async function loadAirQualityFallback() {
+  if (hasServerAQI) return;
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=us_aqi,pm2_5`;
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error();
     const data = await res.json();
-    if (data.current) {
-      localStorage.setItem("nexus_aqi_cache", JSON.stringify(data.current));
-      renderAQIData(data.current.us_aqi, data.current.pm2_5);
+    if (data.current && !hasServerAQI) {
+      renderAQIData(data.current.us_aqi, data.current.pm2_5, "Open-Meteo");
     }
-  } catch (e) {
-    const cached = localStorage.getItem("nexus_aqi_cache");
-    if (cached) {
-      try {
-        const c = JSON.parse(cached);
-        renderAQIData(c.us_aqi, c.pm2_5);
-      } catch (err) {}
-    } else {
-      renderAQIData(86, 29.5);
-    }
-  }
+  } catch (e) {}
 }
-loadAirQuality();
-setInterval(loadAirQuality, 15 * 60 * 1000);
 
 /* ===== 6. LỊCH GOOGLE ===== */
 if (CONFIG.googleCalendarEmbedUrl) {
@@ -640,7 +634,7 @@ if (CONFIG.googleCalendarEmbedUrl) {
 }
 
 /* ===== 7. TRÌNH CHIẾU ẢNH TỰ ĐỘNG ===== */
-let photoList = ["anh1.jpg", "anh2.jpg", "anh3.jpg", "anh4.jpg", "anh5.jpg", "anh6.jpg"];
+let photoList = [];
 let currentPhotoIdx = 0;
 
 function updatePhoto() {
@@ -656,10 +650,9 @@ function updatePhoto() {
     currentPhotoIdx = (currentPhotoIdx + 1) % photoList.length;
   }, 400);
 }
-updatePhoto();
 setInterval(updatePhoto, 30000);
 
-/* ===== 8. VẼ BIỂU ĐỒ VN-INDEX (TRỤC Y + LƯỚI NGANG + TRỤC X HTML) ===== */
+/* ===== 8. VẼ BIỂU ĐỒ VN-INDEX ===== */
 function renderVnindexChart(prices, dates, curVal, changeStr, pctStr, isUp) {
   const vEl = document.getElementById("vnindexVal");
   const cEl = document.getElementById("vnindexChange");
@@ -821,14 +814,14 @@ async function loadMarketJSON() {
     const updateTime = data.time || data.updated_at || "";
     if (tEl && updateTime) tEl.textContent = `1 Năm • ${updateTime}`;
 
-    // 1. Cập nhật VN-INDEX
+    // 1. VN-INDEX
     if (data.vnindex) {
       const prices = (data.vnindex.prices && data.vnindex.prices.length >= 2) ? data.vnindex.prices : DEFAULT_VN_PRICES;
       const dates = (data.vnindex.dates && data.vnindex.dates.length >= 2) ? data.vnindex.dates : DEFAULT_VN_DATES;
       renderVnindexChart(prices, dates, data.vnindex.val, data.vnindex.change, data.vnindex.pct, data.vnindex.isUp);
     }
 
-    // 2. Cập nhật 4 mã cổ phiếu
+    // 2. 4 mã cổ phiếu
     if (data.stocks) {
       Object.keys(data.stocks).forEach(code => {
         const item = data.stocks[code];
@@ -843,7 +836,7 @@ async function loadMarketJSON() {
       });
     }
 
-    // 3. Cập nhật Vàng BTMC
+    // 3. Vàng BTMC
     if (data.gold) {
       const bEl = document.getElementById("goldBuy");
       const sEl = document.getElementById("goldSell");
@@ -856,19 +849,30 @@ async function loadMarketJSON() {
       renderGoldChart(gPrices, gDates);
     }
 
-    // 4. Cập nhật Giá Xăng E10 RON 95-III
+    // 4. Xăng E10 RON 95-III
     if (data.gas) {
       const eEl = document.getElementById("gasE10");
       if (eEl && data.gas.e10) eEl.textContent = data.gas.e10;
     }
 
-    // 5. Cập nhật Danh sách ảnh tự động từ thư mục photos
+    // 5. Chất lượng không khí AQI từ market.json
+    if (data.aqi && data.aqi.us_aqi !== null && data.aqi.us_aqi !== undefined) {
+      hasServerAQI = true;
+      renderAQIData(data.aqi.us_aqi, data.aqi.pm2_5, data.aqi.source);
+    } else {
+      loadAirQualityFallback();
+    }
+
+    // 6. Danh sách ảnh tự động từ thư mục photos
     if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+      const firstLoad = photoList.length === 0;
       photoList = data.photos;
+      if (firstLoad) updatePhoto();
     }
   } catch (e) {
     renderVnindexChart(DEFAULT_VN_PRICES, DEFAULT_VN_DATES, "1,740.19", "-2.88", "-0.17%", false);
     renderGoldChart(DEFAULT_WORLD_PRICES, DEFAULT_WORLD_DATES);
+    loadAirQualityFallback();
   }
 }
 
