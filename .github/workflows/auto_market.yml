@@ -1,11 +1,11 @@
 name: Auto Update Market & Gold
 
 on:
-  schedule:
-    # Quét mỗi 15 phút trong giờ giao dịch chứng khoán (9h - 15h, Thứ 2 - Thứ 6)
-    - cron: '*/15 2-8 * * 1-5'
-    # Quét định kỳ mỗi giờ 24/7 để cập nhật liên tục chỉ số không khí AQI & vàng thế giới
-    - cron: '0 * * * *'
+ schedule:
+    # Chạy vào phút 06, 21, 36, 51 (né giờ cao điểm phút tròn của GitHub) từ 9h - 15h, Thứ 2 - Thứ 6
+    - cron: '6,21,36,51 2-8 * * 1-5'
+    # Chạy định kỳ vào phút thứ 12 mỗi giờ 24/7 để cập nhật AQI và vàng thế giới
+    - cron: '12 * * * *'
   push:
     paths:
       - 'photos/**'
