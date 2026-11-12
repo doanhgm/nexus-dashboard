@@ -1,8 +1,8 @@
 name: Auto Update Market & Gold
 
 on:
- schedule:
-    # Chạy vào phút 06, 21, 36, 51 (né giờ cao điểm phút tròn của GitHub) từ 9h - 15h, Thứ 2 - Thứ 6
+  schedule:
+    # Chạy vào phút 06, 21, 36, 51 (né giờ cao điểm phút tròn) từ 9h - 15h, Thứ 2 - Thứ 6
     - cron: '6,21,36,51 2-8 * * 1-5'
     # Chạy định kỳ vào phút thứ 12 mỗi giờ 24/7 để cập nhật AQI và vàng thế giới
     - cron: '12 * * * *'
@@ -215,7 +215,6 @@ jobs:
           pm25_val = None
           aqi_source = "Open-Meteo"
 
-          # Nguồn 1: Trạm quan trắc thực tế tại Hà Nội qua WAQI (AQICN)
           try:
               r_waqi = requests.get("https://api.waqi.info/feed/hanoi/?token=demo", headers=headers, timeout=6)
               if r_waqi.status_code == 200:
@@ -232,7 +231,6 @@ jobs:
           except Exception as e:
               print(f"[LỖI] WAQI Hà Nội: {e}")
 
-          # Nguồn 2: Dự phòng Open-Meteo Air Quality (khu vực Đông Anh / Hà Nội)
           if aqi_val is None:
               try:
                   r_om_aq = requests.get(
