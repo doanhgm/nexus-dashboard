@@ -1,6 +1,6 @@
 {
-  "updated_at": "05:57 19/11",
-  "time": "05:57 19/11",
+  "updated_at": "06:55 19/11",
+  "time": "06:55 19/11",
   "vnindex": {
     "val": "1,703.01",
     "raw": 1703.01,
@@ -185,23 +185,23 @@
   "stocks": {
     "HSG": {
       "price": 10.3,
-      "pct": "-3.74%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "VND": {
       "price": 14.0,
-      "pct": "-2.44%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "VCK": {
       "price": 27.0,
-      "pct": "-1.28%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "SHB": {
       "price": 10.45,
-      "pct": "-3.24%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     }
   },
   "gold": {
@@ -380,15 +380,15 @@
       4074.9,
       4000.5,
       3853.0,
-      3727.8
+      3743.5
     ]
   },
   "gas": {
     "e10": "19.840"
   },
   "aqi": {
-    "us_aqi": 50,
-    "pm2_5": 9.0,
+    "us_aqi": 53,
+    "pm2_5": 10.2,
     "source": "AQICN Hà Nội"
   },
   "photos": [
