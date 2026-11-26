@@ -1,6 +1,6 @@
 {
-  "updated_at": "05:00 27/11",
-  "time": "05:00 27/11",
+  "updated_at": "06:03 27/11",
+  "time": "06:03 27/11",
   "vnindex": {
     "val": "1,629.68",
     "raw": 1629.68,
@@ -183,23 +183,23 @@
   "stocks": {
     "HSG": {
       "price": 9.99,
-      "pct": "-0.60%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "VND": {
       "price": 13.35,
-      "pct": "-4.64%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "VCK": {
       "price": 24.5,
-      "pct": "-5.41%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     },
     "SHB": {
       "price": 10.1,
-      "pct": "-1.94%",
-      "isUp": false
+      "pct": "+0.00%",
+      "isUp": true
     }
   },
   "gold": {
